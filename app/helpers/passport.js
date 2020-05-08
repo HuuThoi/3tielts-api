@@ -4,18 +4,17 @@ const passportJWT = require("passport-jwt");
 const JWTStrategy = passportJWT.Strategy;
 const ExtractJWT = passportJWT.ExtractJwt;
 const Admin = require("./app/models/admin.model");
-const jwtSecretConfig = require("./config/jwt-secret.config");
+const jwtSecretConfig = require("./app/config/jwt-secret.config");
 
 passport.use(
-    new LocalStrategy(
-        {
+    new LocalStrategy({
             usernameField: "email",
             passwordField: "password"
         },
-        function (email, password, cb) {
+        function(email, password, cb) {
             console.log("on local stategy: ", email)
-            // This one is typically a DB call.
-            // Assume that the returned user object is pre-formatted and ready for storing in JWT
+                // This one is typically a DB call.
+                // Assume that the returned user object is pre-formatted and ready for storing in JWT
             return Admin.findOne({ email })
                 .then(user => {
                     if (!user) {
@@ -31,12 +30,11 @@ passport.use(
 );
 
 passport.use(
-    new JWTStrategy(
-        {
+    new JWTStrategy({
             jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
             secretOrKey: jwtSecretConfig.jwtSecret
         },
-        function (jwtPayload, cb) {
+        function(jwtPayload, cb) {
             return jwtPayload;
         }
     )
