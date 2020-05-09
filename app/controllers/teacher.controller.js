@@ -1,6 +1,7 @@
 const ObjectId = require('mongodb').ObjectID;
 const Teacher = require('../models/teacher.model');
 
+// comment teacher
 //Get all teacher
 exports.findAll = async (req, res) => {
   try {
