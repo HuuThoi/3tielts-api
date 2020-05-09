@@ -1,15 +1,20 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const StudentSchema = mongoose.Schema(
   {
-    userId: {
+    dateExpire: {
+        type: Date,
+        default: new Date(),
+      },
+    userID: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
+      ref: "User"
     }
   },
   {
-    timestamps: true
+    timestamps: true,
   }
 );
 
-module.exports = mongoose.model('Student', StudentSchema);
+const Student = mongoose.model("Student", StudentSchema);
+module.exports = Student;

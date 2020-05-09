@@ -1,5 +1,5 @@
 const Student = require("../models/student.model");
-const User = require("../models/user.model");
+const db = require("../models/user.model");
 
 //Get all student
 exports.findAll = async (req, res) => {
