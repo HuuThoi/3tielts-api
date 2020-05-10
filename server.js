@@ -13,6 +13,14 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(logger("dev"));
 
+//swagger
+const pathToSwaggerUi = require('swagger-ui-dist').absolutePath();
+app.use(express.static(pathToSwaggerUi))
+
+var swaggerUi = require('swagger-ui-express'),
+    swaggerDocument = require('./swagger.json');
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 //connecting to the database
 mongoose.Promise = global.Promise;
 mongoose
@@ -35,11 +43,13 @@ app.get("/", (req, res) => {
 });
 
 //route
-app.use("/account", route.AccountRoute);
+app.use("/accounts", route.AccountRoute);
+app.use("/documents", route.DocumentRoute);
+app.use("/shfts", route.ShiftRoute);
 
 //running app 
-app.listen(parseInt(process.env.PORT) || 5000, () => {
-  console.log("Server is listening port 5000");
+app.listen(parseInt(process.env.PORT) || 3000, () => {
+  console.log(`Server is listening at`, "localhost:3000");
 });
 
 module.exports = app;

@@ -1,5 +1,5 @@
 const express = require("express");
-const accountController = require("../controllers/account.controller copy");
+const accountController = require("../controllers/account.controller");
 const { verifySignUp, authJwt } = require("../middlewares/index");
 
 var router = express.Router();
@@ -12,9 +12,9 @@ var router = express.Router();
     next();
   });
 
-  router.post(
+  router.get(
     "/signup",
-    [verifySignUp.checkDuplicateUsernameOrEmail],
+    [authJwt.verifyToken],
     accountController.signup
   );
 
