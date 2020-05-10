@@ -7,6 +7,7 @@ const adminRouter = require('./app/routes/admin.route');
 const studentRouter = require('./app/routes/student.route');
 const teacherRouter = require('./app/routes/teacher.route');
 const userRouter = require('./app/routes/user.route');
+const classRouter = require('./app/routes/class.route');
 
 const cors = require('cors');
 
@@ -23,6 +24,7 @@ app.use('/admin', adminRouter);
 app.use('/admin/student', studentRouter);
 app.use('/admin/teacher', teacherRouter);
 app.use('/admin/user', userRouter);
+app.use('/admin/class', classRouter);
 
 //connecting to the database
 mongoose.Promise = global.Promise;
