@@ -1,12 +1,4 @@
-// const Student = require("../models/student.model");
-// const Teacher = require("../models/teacher.model");
 const User = require("../models/user.model");
-// const EUserTypes = require("../enums/EUserTypes")
-// const passport = require('passport');
-// const jwt = require('jsonwebtoken');
-// const jwtSecretConfig = require('../../config/jwt-secret.config');
-// const userUtils = require('../utils/user.utils');
-// const sendEmailUtils = require('../utils/send-email.utils');
 
 
 exports.findAll = async (req, res) => {
@@ -19,12 +11,12 @@ exports.findAll = async (req, res) => {
 
     const data = await User.find()
       .limit(limit)
-      .skip((offset - 1) * limit)
-    // .populate({
-    //   path: 'userId',
-    //   // match: { isBlock: false },
-    //   select: ['-password', '-passwordHash'],
-    // })
+      .skip((offset - 1)*limit)
+      // .populate({
+      //   path: 'userId',
+      //   // match: { isBlock: false },
+      //   select: ['-password', '-passwordHash'],
+      // })
 
     if (data.length > 0) {
       return res.status(200).json({ data, length })
@@ -44,8 +36,8 @@ exports.findAll = async (req, res) => {
 
 exports.findByName = async (req, res) => {
   try {
-    const { name } = req.params;
-    const users = await User.find({ password: name }, { password: 0, passwordHash: 0 })
+    const {name} = req.params;
+    const users = await User.find({password:name}, { password: 0, passwordHash: 0 })
     if (users) {
       return res.status(200).json({ data: users })
     }
@@ -78,12 +70,10 @@ exports.register = async (req, res) => {
       return res.status(400).json({ message: "Email đã tồn tại, vui lòng nhập email khác." });
     }
     else {
-      console.log("BODY", req.body)
+      console.log("BODY",req.body)
       const user = new User(req.body)
-
-      user.setPasswordHash(password)
-
-      console.log(user);
+      //user.setPasswordHash(password)
+       console.log(user);
       const result = await user.save();
       console.log("result: ", result);
       if (result) {
@@ -106,39 +96,39 @@ exports.register = async (req, res) => {
 
 exports.update = async (req, res) => {
   console.log(req.body)
-  const { _id, displayName } = req.body
+  const { _id, displayName} = req.body
 
   if (!_id) {
-    return res.status(400).json({ message: "Id không được rỗng" })
+      return res.status(400).json({ message: "Id không được rỗng" })
   }
 
-  if (!displayName) {
-    return res.status(400).json({ message: "Tên tag hoặc ngành học không được rỗng" })
+  if (!displayName ) {
+      return res.status(400).json({ message: "Tên tag hoặc ngành học không được rỗng" })
   }
 
   try {
 
-    const user = await User.findOne({ _id })
+      const user = await User.findOne({ _id })
 
-    if (user) {
+      if (user) {
 
-      const result = await User.findOneAndUpdate({ _id }, { displayName: displayName || user.displayName })
-      if (result) {
-        const data = await User.findOne({ _id: result._id })
+          const result = await User.findOneAndUpdate({ _id }, { displayName: displayName || user.displayName})
+          if (result) {
+              const data = await User.findOne({ _id: result._id })
+                  
 
-
-        if (data) {
-          return res.status(200).json({ message: "Cập nhật user năng thành công.", data })
-        }
+              if (data) {
+                  return res.status(200).json({ message: "Cập nhật user năng thành công.", data })
+              }
+          }
       }
-    }
-    else {
-      return res.status(400).json({ message: "Không tìm thấy user." })
-    }
+      else {
+          return res.status(400).json({ message: "Không tìm thấy user." })
+      }
   }
   catch (err) {
-    console.log('err: ', err)
-    return res.status(500).json({ message: "Đã có lỗi xảy ra." })
+      console.log('err: ', err)
+      return res.status(500).json({ message: "Đã có lỗi xảy ra." })
   }
 }
 
@@ -149,21 +139,21 @@ exports.update = async (req, res) => {
 exports.delete = async (req, res) => {
   const { _id } = req.body
   if (!_id) {
-    return res.status(400).json({ message: "Id không được rỗng" })
+      return res.status(400).json({ message: "Id không được rỗng" })
   }
 
   try {
-    const result = await User.findOneAndDelete({ _id })
-    if (result) {
-      return res.status(200).json({ message: "Xóa user thành công.", data: result })
-    }
-    else {
-      return res.status(400).json({ message: "Không tìm thấy user." })
-    }
+      const result = await User.findOneAndDelete({ _id })
+      if (result) {
+          return res.status(200).json({ message: "Xóa user thành công.", data: result })
+      }
+      else {
+          return res.status(400).json({ message: "Không tìm thấy user." })
+      }
   }
   catch (err) {
-    console.log('err: ', err)
-    return res.status(500).json({ message: "Đã có lỗi xảy ra." })
+      console.log('err: ', err)
+      return res.status(500).json({ message: "Đã có lỗi xảy ra." })
   }
 
 }

@@ -14,8 +14,8 @@ const UserSchema = mongoose.Schema(
     birthdate: Date,
     googleID: String,
     facebookID: String,
+   
     gender: String,
-
     isBlock: {
       type: Boolean,
       default: false
