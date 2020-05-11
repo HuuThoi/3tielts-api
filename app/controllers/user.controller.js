@@ -1,180 +1,146 @@
-const Student = require("../models/student.model");
-const Teacher = require("../models/teacher.model");
-// const Class = require("../models/class.model");
-const EUserTypes = require("../enums/EUserTypes")
-const passport = require('passport');
-const jwt = require('jsonwebtoken');
-const jwtSecretConfig = require('../config/jwt-secret.config');
-const userUtils = require('../helpers/user.utils');
-const sendEmailUtils = require('../helpers/send-email.utils');
+const db = require("../models/index");
 
+exports.findAll = async (req, res) => {
+  try {
+    let { limit, offset } = req.params
 
-exports.findAll = async(req, res) => {
-    try {
+    limit = parseInt(limit)
+    offset = parseInt(offset)
+    const length = await db.User.find().countDocuments()
 
-        const users = await User.find();
+    const data = await db.User.find()
+      .limit(limit)
+      .skip((offset - 1) * limit)
+    // .populate({
+    //   path: 'userId',
+    //   // match: { isBlock: false },
+    //   select: ['-password', '-passwordHash'],
+    // })
 
-        if (users) {
-            return res.status(200).json({ data: users })
-        } else {
-            return res.status(400).json({ message: "Không tồn tại tài khoản." })
-        }
-
-    } catch (err) {
-        console.log('err: ', err);
-        return res.status(500).json({ message: "Đã có lỗi xảy ra" })
+    if (data.length > 0) {
+      return res.status(200).json({ data, length })
     }
+    else {
+      return res.status(400).json({ message: "Không tìm thấy dữ liệu." })
+    }
+  }
+  catch (err) {
+    console.log("err: ", err)
+    return res.status(500).json({ message: "Có lỗi xảy ra" });
+  }
+}
+
+exports.findByName = async (req, res) => {
+  try {
+    const { name } = req.params;
+    const users = await db.User.find({ password: name }, { password: 0, passwordHash: 0 })
+    if (users) {
+      return res.status(200).json({ data: users })
+    }
+    else {
+      return res.status(400).json({ message: "Không tồn tại tài khoản." })
+    }
+  }
+  catch (err) {
+    console.log('err: ', err);
+    return res.status(500).json({ message: "Đã có lỗi xảy ra" })
+  }
 }
 
 /**
- * User register
- * @param {String} body._id 
- * _id is id of User not _id of Student or Teacher
+ * {body: {email, password, displayName}}
  */
-exports.getInforUser = async(req, res) => {
-    const { _id } = req.params
+exports.register = async (req, res) => {
+  const { email, password, displayName } = req.body;
+  if (!email || !password) {
+    return res.status(400).send({
+      message: "email and password not empty."
+    })
+  }
+  try {
+    const data = await db.User.findOne({ email });
+    console.log("data: ", data);
 
-    try {
-
-        const user = await User.findOne({ _id })
-
-        if (user) {
-            const { typeID } = user
-            if (parseInt(typeID) === EUserTypes.TEACHER) {
-                const data = await Teacher.findOne({ userId: _id })
-                    .populate({
-                        path: 'userId',
-                        select: ['-password', '-passwordHash'],
-                        populate: [{ path: 'district' }, { path: 'city' }],
-                    })
-                    .populate('tags._id')
-
-                if (data) {
-                    return res.status(200).json({ data })
-                }
-
-                return res.status(400).json({ message: "Tài khoản không tồn tại." });
-            } else {
-                const data = await Student.findOne({ userId: _id })
-                    .populate({
-                        path: 'userId',
-                        select: ['-password', '-passwordHash'],
-                        populate: [{ path: 'district' }, { path: 'city' }],
-                    })
-                return res.status(200).json({ data })
-            }
-        } else {
-            return res.status(400).json({ message: "Không tìm thấy tài khoản người dùng" })
-        }
-    } catch (err) {
-        console.log("err: ", err)
-        return res.status(500).json({ message: "Đã có lỗi xảy ra" })
+    if (data) {
+      return res.status(400).json({ message: "Email đã tồn tại, vui lòng nhập email khác." });
     }
-
+    else {
+      console.log("BODY", req.body)
+      const user = new db.User(req.body)
+      user.setPasswordHash(password)
+      console.log(user);
+      const result = await user.save();
+      console.log("result: ", result);
+      if (result) {
+        return res.status(200).json({ message: "Tạo tài khoản thành công.", user: req.body });
+      } else {
+        return res.status(400).json({ message: "Tạo tài khoản thất bại." });
+      }
+    }
+  } catch {
+    return res.status(500).json({ message: "Đã có lỗi xảy ra, vui lòng thử lại." });
+  }
 }
 
-exports.register = (req, res) => {
-    if (!req.body.email || !req.body.password) {
-        return res.status(400).send({
-            message: 'Email hoặc mật khẩu trống.'
-        });
-    }
-    User.findOne({ email: req.body.email }, (err, data) => {
-        if (err) {
-            return res
-                .status(500)
-                .send({ message: 'Đã có lỗi xảy ra, vui lòng thử lại!' });
-        }
+/**
+ * @param {String} body._id
+ * @param {String} body.name
+ */
+
+exports.update = async (req, res) => {
+  console.log(req.body)
+  const { _id, displayName } = req.body
+
+  if (!_id) {
+    return res.status(400).json({ message: "Id không được rỗng" })
+  }
+
+  if (!displayName) {
+    return res.status(400).json({ message: "Tên tag hoặc ngành học không được rỗng" })
+  }
+
+  try {
+    const user = await db.User.findOne({ _id })
+    if (user) {
+      const result = await db.User.findOneAndUpdate({ _id }, { displayName: displayName || user.displayName })
+      if (result) {
+        const data = await db.User.findOne({ _id: result._id })
         if (data) {
-            return res
-                .status(400)
-                .send({ message: 'Email đã tồn tại, vui lòng nhập email khác.' });
+          return res.status(200).json({ message: "Cập nhật user năng thành công.", data })
         }
+      }
+    }
+    else {
+      return res.status(400).json({ message: "Không tìm thấy user." })
+    }
+  }
+  catch (err) {
+    console.log('err: ', err)
+    return res.status(500).json({ message: "Đã có lỗi xảy ra." })
+  }
+}
 
-        const user = new User(req.body);
-        user.setPasswordHash(req.body.password);
-        user.avatar =
-            'https://cdn.pixabay.com/photo/2016/11/18/23/38/child-1837375_960_720.png';
-        user
-            .save()
-            .then(userData => {
-                // send active email
-                const token = userUtils.createActiveEmailTokenWithId(userData._id);
-                sendEmailUtils.sendVerificationEmail(
-                    userData.displayName,
-                    userData.email,
-                    token
-                );
-                if (userData.typeID === EUserTypes.TEACHER) {
-                    const teacher = new Teacher();
-                    teacher.userId = userData._id;
-                    teacher
-                        .save()
-                        .then(teacherData => {
-                            res.status(200).send({ user: userData });
-                        })
-                        .catch(err => {
-                            console.log('error: ', err.message);
-                            return res
-                                .status(500)
-                                .send({ message: 'Đã có lỗi xảy ra, vui lòng thử lại' });
-                        });
-                } else {
-                    const student = new Student();
-                    student.userId = userData._id;
-                    student
-                        .save()
-                        .then(studentData => {
-                            res.status(200).send({ user: userData });
-                        })
-                        .catch(err => {
-                            console.log('error: ', err.message);
-                            return res
-                                .status(500)
-                                .send({ message: 'Đã có lỗi xảy ra, vui lòng thử lại' });
-                        });
-                }
-            })
-            .catch(err => {
-                console.log('error: ', err.message);
-                return res
-                    .status(500)
-                    .send({ message: 'Đã có lỗi xảy ra, vui lòng thử lại' });
-            });
-    });
-};
+/**
+* @param {String} body._id
+*/
 
-// login with email and password
-exports.login = (req, res) => {
-    passport.authenticate('local', { session: false }, (err, user, info) => {
-        if (err || !user) {
-            console.log('error', err.message);
-            return res.status(400).json({
-                status: false,
-                message: 'Email hoặc mật khẩu không đúng'
-            });
-        }
-        if (user.typeID !== req.body.typeID) {
-            return res.status(400).json({
-                status: false,
-                message: 'Tài khoản không hợp lệ'
-            });
-        }
-        req.login(user, { session: false }, err => {
-            if (err) {
-                return res.status(400).json({
-                    status: false,
-                    message: 'Đã có lỗi xảy ra, vui lòng thử lại!'
-                });
-            }
-            // generate a signed son web token with the contents of user object and return it in the response
-            const {
-                _doc: { passwordHash, password, ...userInfo },
-                ...otherInfo
-            } = user;
-            const token = jwt.sign({...userInfo }, jwtSecretConfig.jwtSecret);
-            console.log('other info: ', userInfo);
-            return res.status(200).json({ user: { token, ...userInfo } });
-        });
-    })(req, res);
-};
+exports.delete = async (req, res) => {
+  const { _id } = req.body
+  if (!_id) {
+    return res.status(400).json({ message: "Id không được rỗng" })
+  }
+
+  try {
+    const result = await db.User.findOneAndDelete({ _id })
+    if (result) {
+      return res.status(200).json({ message: "Xóa user thành công.", data: result })
+    }
+    else {
+      return res.status(400).json({ message: "Không tìm thấy user." })
+    }
+  }
+  catch (err) {
+    console.log('err: ', err)
+    return res.status(500).json({ message: "Đã có lỗi xảy ra." })
+  }
+}

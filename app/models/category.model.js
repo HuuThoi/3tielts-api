@@ -6,11 +6,8 @@ const CategorySchema = mongoose.Schema(
     icons: String,
     level: Number,
     status: Boolean,
-    typeID: Number,
-    majorId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Major",
-    },
+    // typeID: Number,
+   
   },
   {
     timestamps: true,

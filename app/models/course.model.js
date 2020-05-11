@@ -4,7 +4,7 @@ const CourseSchema = mongoose.Schema(
   {
     name: String,
     shortDesc: String,
-    content: Number,
+    content: String,
     categoryID: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",
@@ -24,12 +24,16 @@ const CourseSchema = mongoose.Schema(
         ref: "Schedule",
       },
     ],
+    lecturer: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Teacher",
+    },
     studentList: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
-      }
-    ]
+        ref: "User",
+      },
+    ],
   },
   {
     timestamps: true,

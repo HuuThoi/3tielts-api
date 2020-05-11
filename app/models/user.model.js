@@ -35,6 +35,7 @@ const UserSchema = mongoose.Schema(
       default: EUserType.STUDENT,
     },
     gender: String,
+
     isBlock: {
       type: Boolean,
       default: false,

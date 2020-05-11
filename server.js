@@ -20,6 +20,9 @@ app.use(express.static(pathToSwaggerUi))
 var swaggerUi = require('swagger-ui-express'),
     swaggerDocument = require('./swagger.json');
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+// app.use('/admin', adminRouter);
+// app.use('/admin/student', studentRouter);
+// app.use('/admin/teacher', teacherRouter);
 
 //connecting to the database
 mongoose.Promise = global.Promise;
@@ -46,10 +49,15 @@ app.get("/", (req, res) => {
 app.use("/accounts", route.AccountRoute);
 app.use("/documents", route.DocumentRoute);
 app.use("/shfts", route.ShiftRoute);
+app.use('/user', route.userRouter);
+app.use('/category',route.categoryRouter)
+app.use('/comment', route.commentRouter)
+app.use('/course',route.courseRouter)
+app.use('/schedule',route.scheduleRouter)
 
 //running app 
-app.listen(parseInt(process.env.PORT) || 3000, () => {
-  console.log(`Server is listening at`, "localhost:3000");
-});
-
 module.exports = app;
+app.listen(parseInt(process.env.PORT) || 5000, () => {
+  console.log('Server is listening http://localhost:5000');
+});
+// module.exports = app;
