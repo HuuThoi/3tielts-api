@@ -1,11 +1,13 @@
 const express = require("express");
-const app = express();
-const userController = require("../controllers/user.controller");
+var router = express.Router();
+const controller = require("../controllers/user.controller");
 
-app.get("/", userController.findAll)
-app.get("/info/:_id", userController.getInforUser)
+router.use(function (req, res, next) {
+})
 
-app.post('/register', userController.register);
-app.post('/login', userController.login); //login with email and password
+router.get("/:limit/:offset", controller.findAll)
+// router.get("/:name", controller.fin)
+router.post('/register', controller.register);
+// router.put('/update', controller.);
 
-module.exports = app;
+module.exports = router;

@@ -4,10 +4,10 @@ const bcrypt = require('bcryptjs');
 const saltRounds = 10;
 
 const AdminSchema = mongoose.Schema({
-  email: String,
-  password: String,
-  passwordHash: String,
-  displayName: String,
+  userID: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
 },{
   timestamps: true
 });

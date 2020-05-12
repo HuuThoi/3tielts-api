@@ -1,73 +1,106 @@
-const Student = require("../models/student.model");
-const Teacher = require("../models/teacher.model");
-const Document = require("../models/document.model");
-const EUserTypes = require("../enums/EUserTypes");
-const passport = require("passport");
-const jwt = require("jsonwebtoken");
-const jwtSecretConfig = require("../../config/jwt-secret.config");
+const db = require("../models/index");
 
-exports.findAll = async (req, res) => {
-  try {
-    const documents = await Document.find();
+exports.findAll = async(req, res) => {
+    try {
+        let { limit, offset } = req.params;
 
-    if (documents) {
-      return res.status(200).json({ data: documents });
-    } else {
-      return res.status(400).json({ message: "Không tồn tại bài đăng." });
+        limit = parseInt(limit);
+        offset = parseInt(offset);
+        const length = await db.Document.find().countDocuments();
+
+        const data = await db.Document.find()
+            .limit(limit)
+            .skip((offset - 1) * limit);
+        return res.status(200).json({ data, length });
+
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Some error occurred while retrieving documents.",
+        });
     }
-  } catch (err) {
-    console.log("err: ", err);
-    return res.status(500).json({ message: "Đã có lỗi xảy ra" });
-  }
 };
 
-/**
- * User register
- * @param {String} body._id
- * _id is id of User not _id of Student or Teacher
- */
-exports.getInforDocument = async (req, res) => {
-  const { _id } = req.params;
-
-  try {
-    const document = await Document.findOne({ _id })
-      .populate({
-        path: "CategoryID",
-      })
-      .populate({
-        path: "AuthorID",
-      });
-
-    if (document) {
-      return res.status(200).json({ document });
-    } else {
-      return res.status(400).json({ message: "Không tìm thấy thông tin bài đăng" });
+exports.findAllNoPaging = async(req, res) => {
+    try {
+        db.Document.find()
+            .then((documents) => {
+                res.status(200).json(documents);
+            });
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Some error occurred while retrieving documents.",
+        });
     }
-  } catch (err) {
-    console.log("err: ", err);
-    return res.status(500).json({ message: "Đã có lỗi xảy ra" });
-  }
 };
 
-exports.create = async (req, res) => {
-  const { name } = req.body;
-
-  try {
-    const newDocument = new Document({
-      name,
-    });
-
-    const result = await newDocument.save();
-
-    if (result) {
-      return res
-        .status(200)
-        .json({ message: "Tạo bài đăng thành công.", data: result });
-    } else {
-      return res.status(400).json({ message: "Tạo bài đăng thất bại." });
+exports.findById = async(req, res) => {
+    try {
+        db.Document.findById(req.params.id)
+            .then((document) => {
+                if (!document) {
+                    return res.status(404).send({
+                        message: "Document not found with id " + req.params.id,
+                    });
+                }
+                res.json(document);
+            })
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Some error occurred while retrieving documents.",
+        });
     }
-  } catch (err) {
-    console.log("err: ", err);
-    return res.status(500).json({ message: "Đã có lỗi xảy ra." });
-  }
+};
+
+exports.create = async(req, res) => {
+    try {
+        db.Document.create(req.body, function(err, document) {
+            if (err) {
+                res.send("error saving document");
+            } else {
+                res.send(document);
+            }
+        });
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Some error occurred while retrieving documents.",
+        });
+    }
+};
+
+exports.update = async(req, res) => {
+    try {
+        db.Document.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true })
+            .then(document => {
+                if (!document) {
+                    return res.status(404).send({
+                        message: "Note not found with id " + req.params.id
+                    });
+                }
+                res.send(document);
+            })
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Some error occurred while retrieving documents.",
+        });
+    }
+};
+
+exports.delete = async(req, res) => {
+    try {
+        db.Document.findOneAndRemove({
+                _id: req.params.id,
+            },
+            function(err, document) {
+                if (err) {
+                    res.send("error removing");
+                } else {
+                    res.send({ message: "Document deleted successfully!" });
+                }
+            }
+        );
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Some error occurred while retrieving documents.",
+        });
+    }
 };

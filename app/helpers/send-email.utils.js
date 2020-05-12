@@ -1,4 +1,4 @@
-require('dotenv').config()
+//require('dotenv').config()
 // const sendGrid = require('sendgrid').mail;
 // //TODO: setup env to save SendGridApiKey
 // // const sg = require('sendgrid')(process.env.SendGridApiKey);

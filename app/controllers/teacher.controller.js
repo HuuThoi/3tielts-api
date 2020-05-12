@@ -1,42 +1,107 @@
-const ObjectId = require('mongodb').ObjectID;
-const Teacher = require('../models/teacher.model');
+const db = require("../models/index");
 
-// comment teacher
-//Get all teacher
-exports.findAll = async (req, res) => {
-  try {
-    let { limit, offset } = req.params;
+exports.findAll = async(req, res) => {
+    try {
+        let { limit, offset } = req.params;
 
-    limit = parseInt(limit);
-    offset = parseInt(offset);
+        limit = parseInt(limit);
+        offset = parseInt(offset);
+        const length = await db.Teacher.find().countDocuments();
 
-    const length = await Teacher.find().countDocuments();
+        const data = await db.Teacher.find()
+            .limit(limit)
+            .skip((offset - 1) * limit);
+        return res.status(200).json({ data, length });
 
-    const data = await Teacher.find()
-      .limit(limit)
-      .skip((offset - 1) * limit)
-      .populate({
-        path: 'userId',
-        // match: { isBlock: false },
-        select: ['-password', '-passwordHash']
-      })
-      .populate('tags._id');
-
-    //Get account with isBlock === false
-
-    // const users = data.filter((user) => user.userId !== null)
-    // if (users.length === 0) {
-    //   return res.status(400).json({ message: "Không tồn tại giáo viên trong database." });
-    // }
-    // return res.status(200).json({ users: users })
-
-    if (data.length > 0) {
-      return res.status(200).json({ data, length });
-    } else {
-      return res.status(400).json({ message: 'Không tìm thấy dữ liệu.' });
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Some error occurred while retrieving shifts.",
+        });
     }
-  } catch (err) {
-    console.log('err: ', err);
-    return res.status(500).json({ message: 'Có lỗi xảy ra' });
-  }
+};
+
+exports.findAllNoPaging = async(req, res) => {
+    try {
+        db.Teacher.find()
+            .then((shifts) => {
+                res.status(200).json(shifts);
+            });
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Some error occurred while retrieving shifts.",
+        });
+    }
+};
+
+exports.findById = async(req, res) => {
+    try {
+        db.Teacher.findById(req.params.id)
+            .then((teacher) => {
+                if (!teacher) {
+                    return res.status(404).send({
+                        message: "Teacher not found with id " + req.params.id,
+                    });
+                }
+                res.json(teacher);
+            })
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Some error occurred while retrieving shifts.",
+        });
+    }
+};
+
+exports.create = async(req, res) => {
+    try {
+        db.Teacher.create(req.body, function(err, teacher) {
+            if (err) {
+                res.send("error saving teacher");
+            } else {
+                res.send(teacher);
+            }
+        });
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Some error occurred while retrieving shifts.",
+        });
+    }
+};
+
+exports.update = async(req, res) => {
+    try {
+        db.Teacher.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true })
+            .then(teacher => {
+                if (!teacher) {
+                    return res.status(404).send({
+                        message: "Note not found with id " + req.params.id
+                    });
+                }
+                res.send(teacher);
+            })
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Some error occurred while retrieving shifts.",
+        });
+    }
+};
+
+
+exports.delete = async(req, res) => {
+    try {
+        db.Teacher.findOneAndRemove({
+                _id: req.params.id,
+            },
+            function(err, teacher) {
+                if (err) {
+                    res.send("error removing");
+                } else {
+                    res.send({ message: "Teacher deleted successfully!" });
+                }
+            }
+        );
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Some error occurred while retrieving shifts.",
+        });
+    }
 };

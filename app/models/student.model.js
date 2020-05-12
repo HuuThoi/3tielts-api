@@ -1,23 +1,21 @@
 const mongoose = require("mongoose");
 
-const StudentSchema = mongoose.Schema(
-  {
+const StudentSchema = mongoose.Schema({
     dateExpire: {
         type: Date,
         default: new Date(),
-      },
+    },
     userID: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User"
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
     },
     courses: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Course"
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Course"
     }]
-  },
-  {
+}, {
     timestamps: true,
-  }
-);
+});
 
-module.exports = mongoose.model("Student", StudentSchema);
+const Student = mongoose.model("Student", StudentSchema);
+module.exports = Student;

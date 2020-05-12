@@ -1,5 +1,4 @@
-const Student = require("../models/student.model");
-const User = require("../models/user.model");
+const db = require("../models/index");
 
 //Get all student
 exports.findAll = async (req, res) => {
@@ -8,9 +7,9 @@ exports.findAll = async (req, res) => {
 
     limit = parseInt(limit);
     offset = parseInt(offset);
-    const length = await Student.find().countDocuments();
+    const length = await db.Student.find().countDocuments();
 
-    const data = await Student.find()
+    const data = await db.Student.find()
       .limit(limit)
       .skip((offset - 1) * limit)
       .populate({

@@ -1,43 +1,37 @@
 const mongoose = require("mongoose");
 
-const CourseSchema = mongoose.Schema(
-  {
+const CourseSchema = mongoose.Schema({
     name: String,
     shortDesc: String,
     content: Number,
     categoryID: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Category",
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Category",
     },
     dateStart: {
-      type: Date,
-      default: Date,
+        type: Date,
+        default: Date,
     },
     dateEnd: {
-      type: Date,
-      default: Date,
+        type: Date,
+        default: Date,
     },
     tuition: String,
-    schedule: [
-      {
+    schedule: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Schedule",
-      },
-    ],
+    }, ],
     lecturer: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Teacher",
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Teacher",
     },
-    studentList: [
-      {
+    studentList: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
-      },
-    ],
-  },
-  {
+    }, ],
+}, {
     timestamps: true,
-  }
-);
+});
 
-module.exports = mongoose.model("Course", CourseSchema);
+const Course = mongoose.model("Course", CourseSchema);
+module.exports = Course;
