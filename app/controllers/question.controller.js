@@ -32,7 +32,6 @@ exports.findAll = async (req, res) => {
   }
 }
 
-
 exports.findByName = async (req, res) => {
   try {
     const {name} = req.params;
@@ -50,11 +49,10 @@ exports.findByName = async (req, res) => {
   }
 }
 
-
 /**
  * {body: {email, password, displayName}}
  */
-exports.register = async (req, res) => {
+exports.create = async (req, res) => {
   const { email, password, displayName } = req.body;
   if (!email || !password) {
     return res.status(400).send({
@@ -85,8 +83,6 @@ exports.register = async (req, res) => {
     return res.status(500).json({ message: "Đã có lỗi xảy ra, vui lòng thử lại." });
   }
 }
-
-
 
 /**
  * @param {String} body._id
@@ -148,6 +144,4 @@ exports.delete = async (req, res) => {
       console.log('err: ', err)
       return res.status(500).json({ message: "Đã có lỗi xảy ra." })
   }
-
 }
-

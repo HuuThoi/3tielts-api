@@ -14,12 +14,12 @@ app.use(bodyParser.json());
 app.use(logger("dev"));
 
 //swagger
-const pathToSwaggerUi = require('swagger-ui-dist').absolutePath();
-app.use(express.static(pathToSwaggerUi))
+// const pathToSwaggerUi = require('swagger-ui-dist').absolutePath();
+// app.use(express.static(pathToSwaggerUi))
 
-var swaggerUi = require('swagger-ui-express'),
-    swaggerDocument = require('./swagger.json');
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+// var swaggerUi = require('swagger-ui-express'),
+//     swaggerDocument = require('./swagger.json');
+// app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 //connecting to the database
 mongoose.Promise = global.Promise;
@@ -43,19 +43,18 @@ app.get("/", (req, res) => {
 });
 
 //route
-app.use("/accounts", route.AccountRoute);
-app.use('/categories',route.CategoryRouter)
-app.use('/comments', route.CommentRouter)
-app.use('/courses',route.CourseRouter)
-app.use("/documents", route.DocumentRoute);
-app.use("/questions", route.QuestionRoute);
-app.use('/schedules',route.scheduleRouter)
-app.use("/shifts", route.ShiftRoute);
-app.use('/users', route.UserRouter);
+//app.use("/accounts", route.AccountRoute);
+// app.use('/categories',route.CategoryRouter)
+// app.use('/comments', route.CommentRouter)
+// app.use('/courses',route.CourseRouter)
+// app.use("/documents", route.DocumentRoute);
+// app.use("/questions", route.QuestionRoute);
+// app.use('/schedules',route.scheduleRouter)
+// app.use("/shifts", route.ShiftRoute);
+// app.use('/users', route.UserRoute);
 
 //running app 
-module.exports = app;
 app.listen(parseInt(process.env.PORT) || 5000, () => {
   console.log('Server is listening http://localhost:5000');
 });
-// module.exports = app;
+ module.exports = app;

@@ -1,10 +1,13 @@
-// const express = require("express");
-// var router = express.Router();
-// const controller = require("../controllers/user.controller");
+const express = require("express");
+var router = express.Router();
+const controller = require("../controllers/user.controller");
 
-// router.get("/:limit/:offset", controller.findAll)
-// router.get("/:name", controller.findByName)
-// router.post('/register', controller.register);
-// router.post('/update', controller.update);
+router.use(function (req, res, next) {
+})
 
-// module.exports = router;
+router.get("/:limit/:offset", controller.findAll)
+// router.get("/:name", controller.fin)
+router.post('/register', controller.register);
+// router.put('/update', controller.);
+
+module.exports = router;
