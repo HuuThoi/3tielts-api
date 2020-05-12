@@ -1,7 +1,10 @@
-const userController = require("../controllers/user.controller");
+// const express = require("express");
+// var router = express.Router();
+// const controller = require("../controllers/user.controller");
 
-app.get("/:limit/:offset", userController.findAll)
-app.get("/:name", userController.findByName)
+// router.get("/:limit/:offset", controller.findAll)
+// router.get("/:name", controller.findByName)
+// router.post('/register', controller.register);
+// router.post('/update', controller.update);
 
-app.post('/register', userController.register);
-app.post('/update', userController.update);
+// module.exports = router;

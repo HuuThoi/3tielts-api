@@ -1,4 +1,4 @@
-const Schedule = require("../models/schedule.model");
+const db = require("../models/schedule.model");
 
 
 exports.findAll = async (req, res) => {
@@ -9,9 +9,9 @@ exports.findAll = async (req, res) => {
     limit = parseInt(limit)
     offset = parseInt(offset)
 
-    const length = await Schedule.find().countDocuments()
+    const length = await db.Schedule.find().countDocuments()
 
-    const data = await Schedule.find()
+    const data = await db.Schedule.find()
       .limit(limit)
       .skip((offset - 1) * limit)
     // .populate({
@@ -28,8 +28,6 @@ exports.findAll = async (req, res) => {
     else {
       return res.status(400).json({ message: "Không tìm thấy dữ liệu." })
     }
-
-
   }
   catch (err) {
     console.log("err: ", err)
@@ -37,12 +35,11 @@ exports.findAll = async (req, res) => {
   }
 }
 
-
 exports.findByID = async (req, res) => {
   try {
     const {id} = req.params;
     // const category = await Comment.find({_id:id}).populate({path:'CategpryID'})
-    const schedule = await Schedule.find({_id:id})
+    const schedule = await db.Schedule.find({_id:id})
     if (schedule) {
       return res.status(200).json({ data: schedule })
     }
@@ -56,7 +53,6 @@ exports.findByID = async (req, res) => {
   }
 }
 
-
 /**
  * {body: {email, password, displayName}}
  */
@@ -69,7 +65,7 @@ exports.create = async (req, res) => {
   }
   try {
       console.log("BODY", req.body)
-      const schedule = new Schedule(req.body)
+      const schedule = new db.Schedule(req.body)
       //Course.setPasswordHash(password)
       console.log(schedule);
       const result = await schedule.save();
@@ -79,13 +75,10 @@ exports.create = async (req, res) => {
       } else {
         return res.status(400).json({ message: "Tạo khóa học thất bại." });
       }
-    
   } catch {
     return res.status(500).json({ message: "Đã có lỗi xảy ra, vui lòng thử lại." });
   }
 }
-
-
 
 /**
  * @param {String} body._id
@@ -99,23 +92,17 @@ exports.update = async (req, res) => {
   if (!_id) {
     return res.status(400).json({ message: "Id không được rỗng" })
   }
-
-
   try {
-
-    const schedule = await Schedule.findOne({ _id })
-
+    const schedule = await db.Schedule.findOne({ _id })
       if (schedule) {
-        const result = await Schedule.findOneAndUpdate({ _id },
+        const result = await db.Schedule.findOneAndUpdate({ _id },
                                                       {
                                                         day: day || schedule.day,
                                                         timeOpen: timeOpen || schedule.timeOpen,
                                                         timeOut: timeOut || schedule.timeOut,
                                                         status: status || schedule.status                                                      })
         if (result) {
-          const data = await Schedule.findOne({ _id: result._id })
-
-
+          const data = await db.Schedule.findOne({ _id: result._id })
           if (data) {
             return res.status(200).json({ message: "Cập nhật TKB năng thành công.", data })
           }
@@ -124,7 +111,6 @@ exports.update = async (req, res) => {
       else {
         return res.status(400).json({ message: "Không tìm thấy TKB." })
       }
-   
   }
   catch (err) {
     console.log('err: ', err)
@@ -141,9 +127,8 @@ exports.delete = async (req, res) => {
   if (!_id) {
     return res.status(400).json({ message: "Id không được rỗng" })
   }
-
   try {
-    const result = await Schedule.findOneAndDelete({ _id })
+    const result = await db.Schedule.findOneAndDelete({ _id })
     if (result) {
       return res.status(200).json({ message: "Xóa TKB thành công.", data: result })
     }
@@ -155,6 +140,4 @@ exports.delete = async (req, res) => {
     console.log('err: ', err)
     return res.status(500).json({ message: "Đã có lỗi xảy ra." })
   }
-
 }
-

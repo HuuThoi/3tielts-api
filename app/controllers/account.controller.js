@@ -1,11 +1,10 @@
 const db = require("../models/index");
-const Account = db.Account;
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
 var ultil = require("../helpers/user.utils");
 
 exports.signup = (req, res) => {
-  const user = new User({
+  const user = new db.User({
     username: req.body.username,
     email: req.body.email,
     password: bcrypt.hashSync(req.body.password, 8)
@@ -23,7 +22,7 @@ exports.signup = (req, res) => {
 };
 
 exports.signin = (req, res) => {
-  User.findOne({
+  db.User.findOne({
     username: req.body.username
   })
     .exec((err, user) => {
@@ -49,7 +48,7 @@ exports.signin = (req, res) => {
       //   expiresIn: config.jwtExpiresIn
       // });
 
-      var token = ultil.createUserToken(user.id);
+      var token = ultil.createdb.UserToken(user.id);
 
       res.status(200).json({
         id: user._id,

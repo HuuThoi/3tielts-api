@@ -1,8 +1,7 @@
 const express = require("express");
-const accountController = require("../controllers/account.controller");
-const { verifySignUp, authJwt } = require("../middlewares/index");
-
 var router = express.Router();
+const controller = require("../controllers/account.controller");
+const { verifySignUp, authJwt } = require("../middlewares/index");
 
   router.use(function (req, res, next) {
     res.header(
@@ -15,16 +14,16 @@ var router = express.Router();
   router.get(
     "/signup",
     [authJwt.verifyToken],
-    accountController.signup
+    controller.signup
   );
 
-  router.post("/signin", accountController.signin);
+  router.post("/signin", controller.signin);
 
-//   app.get("/all",[authJwt.verifyToken], accountController.all);
+//   app.get("/all",[authJwt.verifyToken], controller.all);
 
 //   app.get("all2",
 //     [authJwt.verifyToken, authJwt.isModerator],
-//     accountController.all2
+//     controller.all2
 //   );
 
 module.exports = router;

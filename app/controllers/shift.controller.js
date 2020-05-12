@@ -67,7 +67,6 @@ exports.create = async (req, res) => {
   }
 };
 
-
 exports.update = async (req, res) => {
   try {
     db.Shift.findByIdAndUpdate(req.params.id, {$set:req.body}, {new: true})
@@ -107,4 +106,3 @@ exports.delete = async (req, res) => {
     });
   }
 };
-

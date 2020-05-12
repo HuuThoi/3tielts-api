@@ -1,6 +1,6 @@
 const express = require("express");
-const app = express();
-const Controller = require("../controllers/comment.controller");
+var router = express.Router();
+const controller = require("../controllers/question.controller");
 
 
 // 1 API tạo mới
@@ -9,12 +9,10 @@ const Controller = require("../controllers/comment.controller");
 // 4 API cập nhật
 // 5 API xóa
 
-app.get("/:limit/:offset", Controller.findAll)
-app.get("/:id", Controller.findByID)
+router.get("/:limit/:offset", controller.findAll)
+router.get("/:id", controller.findByID)
+router.post('/create', controller.create);
+router.put('/update', controller.update);
+router.delete('/', controller.delete)
 
-
-app.post('/create', Controller.create);
-app.post('/update', Controller.update);
-app.delete('/',Controller.delete)
-
-module.exports = app;
+module.exports = router;

@@ -1,16 +1,13 @@
-const Admin = require("../models/admin.model");
-const User = require("../models/user.model");
+const db = require("../models/index");
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
 const jwtSecretConfig = require("../config/jwt-secret.config");
 const EUserTypes = require("../enums/EUserTypes")
-const Student = require("../models/student.model");
-const Teacher = require("../models/teacher.model");
 
 // Retrieving and return all admins to the database
 exports.findAll = async(req, res) => {
     try {
-        const admin = await Admin.find();
+        const admin = await db.Admin.find();
         const data = admin.map((item) => {
             const { displayName, email } = item;
             return { displayName, email };
@@ -34,12 +31,12 @@ exports.createAdmin = async(req, res) => {
         })
     }
     try {
-        const data = await Admin.findOne({ email });
+        const data = await db.Admin.findOne({ email });
         console.log("data: ", data);
         if (data) {
             return res.status(400).json({ message: "Email đã tồn tại, vui lòng nhập email khác." });
         } else {
-            const admin = new Admin(req.body)
+            const admin = new db.Admin(req.body)
             admin.setPassword(password)
             const result = await admin.save();
             // console.log("result: ", result);
@@ -59,12 +56,11 @@ exports.createAdmin = async(req, res) => {
  * {body: {email, password}}
  */
 
-
 // login with email and password
 exports.login = async(req, res) => {
     const { email, password } = req.body
     try {
-        const admin = await Admin.findOne({ email });
+        const admin = await db.Admin.findOne({ email });
         if (admin) {
             if (admin.validatePassword(password)) {
                 const { email, displayName, _id } = admin;

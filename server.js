@@ -20,9 +20,6 @@ app.use(express.static(pathToSwaggerUi))
 var swaggerUi = require('swagger-ui-express'),
     swaggerDocument = require('./swagger.json');
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-// app.use('/admin', adminRouter);
-// app.use('/admin/student', studentRouter);
-// app.use('/admin/teacher', teacherRouter);
 
 //connecting to the database
 mongoose.Promise = global.Promise;
@@ -47,13 +44,14 @@ app.get("/", (req, res) => {
 
 //route
 app.use("/accounts", route.AccountRoute);
+app.use('/categories',route.CategoryRouter)
+app.use('/comments', route.CommentRouter)
+app.use('/courses',route.CourseRouter)
 app.use("/documents", route.DocumentRoute);
-app.use("/shfts", route.ShiftRoute);
-app.use('/user', route.userRouter);
-app.use('/category',route.categoryRouter)
-app.use('/comment', route.commentRouter)
-app.use('/course',route.courseRouter)
-app.use('/schedule',route.scheduleRouter)
+app.use("/questions", route.QuestionRoute);
+app.use('/schedules',route.scheduleRouter)
+app.use("/shifts", route.ShiftRoute);
+app.use('/users', route.UserRouter);
 
 //running app 
 module.exports = app;

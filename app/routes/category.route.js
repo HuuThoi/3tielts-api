@@ -1,7 +1,6 @@
 const express = require("express");
-const app = express();
+var router = express.Router();
 const controller = require("../controllers/category.controller");
-
 
 // 1 API tạo mới
 // 2 API lấy toàn bộ( có paging)
@@ -9,12 +8,11 @@ const controller = require("../controllers/category.controller");
 // 4 API cập nhật
 // 5 API xóa
 
-app.get("/:limit/:offset", controller.findAll)
-app.get("/:id", controller.findByID)
-// app.get("/info/:_id", userController.getInforUser)
+router.get("/:limit/:offset", controller.findAll)
+router.get("/:id", controller.findByID)
+// router.get("/info/:_id", userController.getInforUser)
+router.post('/create', controller.create);
+router.post('/update', controller.update);
+// router.post('/login', ususerControllerers.login); //login with email and password
 
-app.post('/create', controller.create);
-app.post('/update', controller.update);
-// app.post('/login', ususerControllerers.login); //login with email and password
-
-module.exports = app;
+module.exports = router;

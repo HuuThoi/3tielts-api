@@ -1,5 +1,6 @@
 module.exports = {
     Absence: require("./absence.model"),
+    Admin: require("./admin.model"),
     Assignment: require("./assignment.model"),
     Category: require("./category.model"),
     Class: require("./class.model"),
@@ -9,13 +10,13 @@ module.exports = {
     Feedback: require("./feedback.model"),
     FeedbackDetail: require("./feedbackdetail.model"),
     MockingTest: require("./mockingtest.model"),
+    Question: require("./question.model"),
     Response: require("./response.model"),
     Schedule: require("./schedule.model"),
     Shift: require("./shift.model"),
     Student: require("./student.model"),
     Submit: require("./submit.model"),
     TestList: require("./testlist.model"),
-    User: require("./user.model"),
-    Admin: require("./admin.model")
+    //User: require("./user.model"),
   };
   

@@ -1,4 +1,4 @@
-const Category = require("../models/category.model");
+const db = require("../models/index");
 
 
 exports.findAll = async (req, res) => {
@@ -7,9 +7,9 @@ exports.findAll = async (req, res) => {
 
     limit = parseInt(limit)
     offset = parseInt(offset)
-    const length = await Category.find().countDocuments()
+    const length = await db.Category.find().countDocuments()
 
-    const data = await Category.find()
+    const data = await db.Category.find()
       .limit(limit)
       .skip((offset - 1)*limit)
       // .populate({
@@ -37,7 +37,7 @@ exports.findAll = async (req, res) => {
 exports.findByID= async (req, res) => {
   try {
     const {id} = req.params;
-    const category = await Category.find({_id:id})
+    const category = await db.Category.find({_id:id})
     if (category) {
       return res.status(200).json({ data: category })
     }
@@ -64,8 +64,8 @@ exports.create = async (req, res) => {
   }
   try {
     // console.log("BODY",req.body)
-      const category = new Category(req.body)
-      //Category.setPasswordHash(password)
+      const category = new db.Category(req.body)
+      //category.setPasswordHash(password)
        console.log(category);
       const result = await category.save();
       console.log("result: ", result);
@@ -99,24 +99,23 @@ exports.update = async (req, res) => {
   }
 
   try {
-
-      const category = await Category.findOne({ _id })
+      const category = await db.Category.findOne({ _id })
 
       if(category) {
-          const result = await Category.findOneAndUpdate({ _id }, 
+          const result = await db.Category.findOneAndUpdate({ _id }, 
                                                         { name: name || category.name,
                                                           icon: icon || category.icon,
                                                           level: level || category.level,
                                                           status: status || category.status })
           if (result) {
-              const data = await Category.findOne({ _id: result._id })
+              const data = await db.Category.findOne({ _id: result._id })
               if (data) {
                   return res.status(200).json({ message: "Cập nhật category năng thành công.", data })
               }
           }
       }
       else {
-          return res.status(400).json({ message: "Không tìm thấy Category." })
+          return res.status(400).json({ message: "Không tìm thấy db.Category." })
       }
   }
   catch (err) {
@@ -136,18 +135,16 @@ exports.delete = async (req, res) => {
   }
 
   try {
-      const result = await Category.findOneAndDelete({ _id })
+      const result = await db.Category.findOneAndDelete({ _id })
       if (result) {
           return res.status(200).json({ message: "Xóa category thành công.", data: result })
       }
       else {
-          return res.status(400).json({ message: "Không tìm thấy Category." })
+          return res.status(400).json({ message: "Không tìm thấy db.Category." })
       }
   }
   catch (err) {
       console.log('err: ', err)
       return res.status(500).json({ message: "Đã có lỗi xảy ra." })
   }
-
 }
-

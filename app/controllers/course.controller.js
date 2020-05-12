@@ -1,4 +1,4 @@
-const Course = require("../models/course.model");
+const db = require("../models/index");
 
 
 exports.findAll = async (req, res) => {
@@ -7,13 +7,13 @@ exports.findAll = async (req, res) => {
 
     limit = parseInt(limit)
     offset = parseInt(offset)
-    const length = await Course.find().countDocuments()
+    const length = await db.Course.find().countDocuments()
 
-    const data = await Course.find()
+    const data = await db.Course.find()
       .limit(limit)
       .skip((offset - 1) * limit)
     // .populate({
-    //   path: 'CourseId',
+    //   path: 'db.CourseId',
     //   // match: { isBlock: false },
     //   select: ['-password', '-passwordHash'],
     // })
@@ -24,8 +24,6 @@ exports.findAll = async (req, res) => {
     else {
       return res.status(400).json({ message: "Không tìm thấy dữ liệu." })
     }
-
-
   }
   catch (err) {
     console.log("err: ", err)
@@ -33,12 +31,11 @@ exports.findAll = async (req, res) => {
   }
 }
 
-
 exports.findByID = async (req, res) => {
   try {
     const {id} = req.params;
     // const category = await Comment.find({_id:id}).populate({path:'CategpryID'})
-    const courses = await Course.find({_id:id}).populate({path:'categoryID'})
+    const courses = await db.Course.find({_id:id}).populate({path:'categoryID'})
     if (courses) {
       return res.status(200).json({ data: courses })
     }
@@ -52,7 +49,6 @@ exports.findByID = async (req, res) => {
   }
 }
 
-
 /**
  * {body: {email, password, displayName}}
  */
@@ -65,7 +61,7 @@ exports.create = async (req, res) => {
     })
   }
   try {
-    const data = await Course.findOne({ name });
+    const data = await db.Course.findOne({ name });
     console.log("data: ", data);
 
     if (data) {
@@ -73,13 +69,13 @@ exports.create = async (req, res) => {
     }
     else {
       console.log("BODY", req.body)
-      const course = new Course(req.body)
-      //Course.setPasswordHash(password)
+      const course = new db.Course(req.body)
+      //db.Course.setPasswordHash(password)
       console.log(course);
       const result = await course.save();
       console.log("result: ", result);
       if (result) {
-        return res.status(200).json({ message: "Tạo khóa học thành công.", Course: req.body });
+        return res.status(200).json({ message: "Tạo khóa học thành công.", course: req.body });
       } else {
         return res.status(400).json({ message: "Tạo khóa học thất bại." });
       }
@@ -88,8 +84,6 @@ exports.create = async (req, res) => {
     return res.status(500).json({ message: "Đã có lỗi xảy ra, vui lòng thử lại." });
   }
 }
-
-
 
 /**
  * @param {String} body._id
@@ -105,20 +99,16 @@ exports.update = async (req, res) => {
     return res.status(400).json({ message: "Id không được rỗng" })
   }
 
-
-
   try {
-
-    const course = await Course.findOne({ _id })
-    const data = await Course.findOne({ $and: [{ name }, { _id: { $ne: _id } }] });
+    const course = await db.Course.findOne({ _id })
+    const data = await db.Course.findOne({ $and: [{ name }, { _id: { $ne: _id } }] });
     // console.log("data: ", data);
-
     if (data) {
       return res.status(400).json({ message: "Ten khóa học đã tồn tại, nhập khóa học khác" });
     }
     else {
       if (course) {
-        const result = await Course.findOneAndUpdate({ _id },
+        const result = await db.Course.findOneAndUpdate({ _id },
                                                       {
                                                         name: name || course.name,
                                                         shortDesc: shortDesc || course.shortDesc,
@@ -126,16 +116,14 @@ exports.update = async (req, res) => {
                                                         categoryID: categoryID || course.categoryID
                                                       })
         if (result) {
-          const data = await Course.findOne({ _id: result._id })
-
-
+          const data = await db.Course.findOne({ _id: result._id })
           if (data) {
-            return res.status(200).json({ message: "Cập nhật Course năng thành công.", data })
+            return res.status(200).json({ message: "Cập nhật db.Course năng thành công.", data })
           }
         }
       }
       else {
-        return res.status(400).json({ message: "Không tìm thấy Course." })
+        return res.status(400).json({ message: "Không tìm thấy db.Course." })
       }
       // if (course) {
       // console.log("LALALAND")}
@@ -156,20 +144,17 @@ exports.delete = async (req, res) => {
   if (!_id) {
     return res.status(400).json({ message: "Id không được rỗng" })
   }
-
   try {
-    const result = await Course.findOneAndDelete({ _id })
+    const result = await db.Course.findOneAndDelete({ _id })
     if (result) {
-      return res.status(200).json({ message: "Xóa Course thành công.", data: result })
+      return res.status(200).json({ message: "Xóa db.Course thành công.", data: result })
     }
     else {
-      return res.status(400).json({ message: "Không tìm thấy Course." })
+      return res.status(400).json({ message: "Không tìm thấy db.Course." })
     }
   }
   catch (err) {
     console.log('err: ', err)
     return res.status(500).json({ message: "Đã có lỗi xảy ra." })
   }
-
 }
-

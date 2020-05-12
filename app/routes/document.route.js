@@ -1,5 +1,5 @@
 const express = require("express");
-const documentController = require("../controllers/document.controller");
+const controller = require("../controllers/document.controller");
 const {authJwt } = require("../middlewares/index");
 
 var router = express.Router();
@@ -12,11 +12,11 @@ var router = express.Router();
     next();
   });
 
-  router.get("/all",[authJwt.verifyToken],documentController.findAll);
-  router.get("/all-nopaging",[authJwt.verifyToken],documentController.findAllNoPaging);
-  router.post("/",[authJwt.verifyToken], documentController.create);
-  router.get("/:id",[authJwt.verifyToken], documentController.findById);
-  router.put("/:id",[authJwt.verifyToken], documentController.update);
-  router.delete("/:id",[authJwt.verifyToken], documentController.delete);
+  router.get("/all",[authJwt.verifyToken],controller.findAll);
+  router.get("/all-nopaging",[authJwt.verifyToken],controller.findAllNoPaging);
+  router.post("/",[authJwt.verifyToken], controller.create);
+  router.get("/:id",[authJwt.verifyToken], controller.findById);
+  router.put("/:id",[authJwt.verifyToken], controller.update);
+  router.delete("/:id",[authJwt.verifyToken], controller.delete);
 
 module.exports = router;
