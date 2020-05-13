@@ -44,16 +44,16 @@ app.get("/", (req, res) => {
 
 //route
 app.use("/accounts", route.AccountRoute);
-app.use('/categories', route.CategoryRouter)
-app.use('/comments', route.CommentRouter)
-app.use('/courses', route.CourseRouter)
+app.use('/categories', route.CategoryRoute);
+app.use('/comments', route.CommentRoute)
+app.use('/courses', route.CourseRoute)
 app.use("/documents", route.DocumentRoute);
 app.use("/questions", route.QuestionRoute);
-app.use('/schedules', route.scheduleRouter)
+app.use('/schedules', route.ScheduleRoute)
 app.use("/shifts", route.ShiftRoute);
 app.use('/users', route.UserRoute);
 app.use('/admins', route.AdminRoute);
-app.use('/students', route.StudentRoute);
+// app.use('/students', route.StudentRoute);
 app.use('/teachers', route.TeacherRoute);
 app.use('/classs', route.ClassRoute);
 

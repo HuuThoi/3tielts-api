@@ -4,7 +4,7 @@ const Class = require("../models/class.model");
 const EUserTypes = require("../enums/EUserTypes");
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
-const jwtSecretConfig = require("../../config/jwt-secret.config");
+// const jwtSecretConfig = require("../../config/jwt-secret.config");
 
 exports.findAll = async (req, res) => {
   try {

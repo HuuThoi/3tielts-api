@@ -14,7 +14,7 @@ module.exports = {
     ScheduleRoute: require("./schedule.route"),
     QuestionRoute: require("./question.route"),
     ShiftRoute: require("./shift.route"),
-    StudentRoute: require("./student.route"),
+    // StudentRoute: require("./student.route"),
     TeacherRoute: require("./teacher.route"),
     // SubmitRoute: require("./submit.route"),
     // TestListRoute: require("./testlist.route"),
