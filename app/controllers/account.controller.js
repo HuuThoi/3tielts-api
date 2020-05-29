@@ -7,7 +7,7 @@ exports.signup = (req, res) => {
   const user = new db.User({
     username: req.body.username,
     email: req.body.email,
-    password: bcrypt.hashSync(req.body.password, 8)
+    password: bcrypt.hashSync(req.body.password, 8),
   });
 
   user.save((err, user) => {
@@ -16,46 +16,46 @@ exports.signup = (req, res) => {
       return;
     }
     res.status(200).json({
-      userId: user._id
-    })
+      userId: user._id,
+    });
   });
 };
 
 exports.signin = (req, res) => {
   db.User.findOne({
-    username: req.body.username
-  })
-    .exec((err, user) => {
-      if (err) {
-        res.status(500).send({ message: err });
-        return;
-      }
+    username: req.body.username,
+  }).exec((err, user) => {
+    if (err) {
+      res.status(500).send({ message: err });
+      return;
+    }
 
-      if (!user) {
-        return res.status(404).send({ message: "User Not found." });
-      }
+    if (!user) {
+      return res.status(404).send({ message: "User Not found." });
+    }
 
-      var passwordIsValid = user.validatePassword(req.body.password);
+    var passwordIsValid = user.validatePassword(req.body.password);
 
-      if (!passwordIsValid) {
-        return res.status(401).send({
-          accessToken: null,
-          message: "Invalid Password!"
-        });
-      }
-
-      // var token = jwt.sign({ user: user.id }, config.jwtSecret, {
-      //   expiresIn: config.jwtExpiresIn
-      // });
-
-      var token = ultil.createdb.UserToken(user.id);
-
-      res.status(200).json({
-        id: user._id,
-        username: user.username,
-        email: user.email,
-        roles: authorities,
-        accessToken: token
+    if (!passwordIsValid) {
+      return res.status(401).send({
+        accessToken: null,
+        message: "Invalid Password!",
       });
+    }
+
+    // var token = jwt.sign({ user: user.id }, config.jwtSecret, {
+    //   expiresIn: config.jwtExpiresIn
+    // });
+
+    var token = ultil.createdb.UserToken(user.id);
+
+    res.status(200).json({
+      id: user._id,
+      username: user.username,
+      email: user.email,
+      auth: true,
+      roles: authorities,
+      accessToken: token,
     });
+  });
 };

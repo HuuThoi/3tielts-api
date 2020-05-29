@@ -15,6 +15,8 @@ verifyToken = (req, res, next) => {
       return res.status(401).send({ message: "Unauthorized!" });
     }
     req.userId = decoded.id;
+    // req.body.user_id = decoded.user_id;
+    // req.body.username = decoded.username;
     next();
   });
 };
@@ -27,7 +29,7 @@ isAdmin = (req, res, next) => {
       res.status(500).send({ message: err });
       return;
     }
-    if(user.typeID === EUserType.ADMIN) return true;
+    if (user.typeID === EUserType.ADMIN) return true;
     return false;
   });
 };
@@ -38,15 +40,15 @@ isTeacher = (req, res, next) => {
       res.status(500).send({ message: err });
       return;
     }
-    if(user.typeID === EUserType.TEACHER) return true;
+    if (user.typeID === EUserType.TEACHER) return true;
     return false;
   });
 };
 
 const authJwt = {
   verifyToken,
- isAdmin,
- isTeacher
+  isAdmin,
+  isTeacher,
 };
 
 module.exports = authJwt;
