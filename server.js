@@ -7,6 +7,7 @@ const route = require("./app/routes/index");
 const cors = require("cors");
 const app = express();
 const db = require("./app/models/index");
+var bcrypt = require("bcryptjs");
 
 app.use(cors());
 // require('./passport');   temp comment
@@ -15,38 +16,12 @@ app.use(bodyParser.json());
 app.use(logger("dev"));
 
 //swagger
-const pathToSwaggerUi = require("swagger-ui-dist").absolutePath();
-app.use(express.static(pathToSwaggerUi));
+//const pathToSwaggerUi = require("swagger-ui-dist").absolutePath();
+//app.use(express.static(pathToSwaggerUi));
 
-var swaggerUi = require("swagger-ui-express"),
-  swaggerDocument = require("./swagger.json");
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
-//add seed data
-app.use("/seed-data", () => {
-  db.User.countDocuments({}).exec((err, count) => {
-    if (err) {
-      console.error(err);
-      return;
-    }
-    if (count == 0) {
-      db.User.create(
-        {
-          email: "admin@test.com",
-          username: "admin",
-          password: "admin123",
-        },
-        (err, seedUser) => {
-          if (err) {
-            console.error(err);
-            return;
-          }
-          console.log("Seed superuser created");
-        }
-      );
-    }
-  });
-});
+//var swaggerUi = require("swagger-ui-express"),
+//swaggerDocument = require("./swagger.json");
+//app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 //connecting to the database
 mongoose.Promise = global.Promise;
@@ -64,9 +39,35 @@ mongoose
     process.exit();
   });
 
-//route default
 app.get("/", (req, res) => {
-  res.json({ message: "Ielts web " });
+  res.json({ message: "Ielts Web" });
+});
+
+//seed data
+app.get("/seed-data", (req, res) => {
+  const User = db.User;
+  User.countDocuments({}).exec((err, count) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+    if (count == 0) {
+      User.create(
+        {
+          email: "admin@test.com",
+          username: "admin",
+          password: bcrypt.hashSync("admin123", 8),
+        },
+        (err, seedUser) => {
+          if (err) {
+            console.error(err);
+            return;
+          }
+          res.json({ message: "Seed superuser created" });
+        }
+      );
+    }
+  });
 });
 
 //route
@@ -85,7 +86,7 @@ app.use("/teachers", route.TeacherRoute);
 app.use("/classs", route.ClassRoute);
 
 //running app
-app.listen(parseInt(process.env.PORT) || 3000, () => {
-  console.log("Server is listening http://localhost:3000");
+app.listen(parseInt(process.env.PORT) || 5000, () => {
+  console.log("Server is listening http://localhost:5000");
 });
 module.exports = app;

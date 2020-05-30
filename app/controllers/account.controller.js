@@ -22,8 +22,10 @@ exports.signup = (req, res) => {
 };
 
 exports.signin = (req, res) => {
+  console.log(req);
+
   db.User.findOne({
-    username: req.body.username,
+    email: req.body.email,
   }).exec((err, user) => {
     if (err) {
       res.status(500).send({ message: err });
@@ -47,14 +49,15 @@ exports.signin = (req, res) => {
     //   expiresIn: config.jwtExpiresIn
     // });
 
-    var token = ultil.createdb.UserToken(user.id);
+    const dataToSign = {
+      id: user._id,
+      email: user.email,
+      username: user.username,
+    };
+    var token = ultil.createUserToken(dataToSign);
 
     res.status(200).json({
-      id: user._id,
-      username: user.username,
-      email: user.email,
       auth: true,
-      roles: authorities,
       accessToken: token,
     });
   });

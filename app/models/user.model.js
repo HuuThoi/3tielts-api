@@ -1,6 +1,7 @@
 const EUserType = require("../enums/EUserTypes");
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
+var validator = require("validator");
 
 const saltRounds = 10;
 
@@ -8,7 +9,7 @@ const UserSchema = mongoose.Schema(
   {
     displayName: {
       type: String,
-      required: true,
+      // required: true,
       trim: true,
     },
     email: {
@@ -93,11 +94,7 @@ UserSchema.methods.setPasswordHash = function (password) {
 };
 
 UserSchema.methods.validatePassword = function (password) {
-  if (!this.passwordHash) {
-    return false;
-  }
-  return bcrypt.compareSync(password, this.passwordHash);
+  return bcrypt.compareSync(password, this.password);
 };
 
-const User = mongoose.model("Users", UserSchema);
-module.exports = User;
+module.exports = mongoose.model("Users", UserSchema);

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server"
+    "start": "nodemon server"
   },
   "author": "",
   "license": "ISC",
@@ -29,18 +29,18 @@
   },
   "devDependencies": {
     "@babel/cli": "^7.6.4",
+    "@babel/core": "^7.7.2",
     "@babel/node": "^7.6.3",
     "@babel/plugin-transform-runtime": "^7.6.2",
     "@babel/preset-env": "^7.6.3",
     "@babel/register": "^7.6.2",
     "@babel/runtime": "^7.6.3",
     "babel-loader": "^8.0.6",
+    "eslint": "^6.6.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.18.2",
-    "@babel/core": "^7.7.2",
-    "eslint": "^6.6.0",
     "mongoose": "^5.9.10",
     "morgan": "^1.10.0",
-    "nodemon": "^2.0.3"
+    "nodemon": "^2.0.4"
   }
 }
