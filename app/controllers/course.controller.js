@@ -2,7 +2,10 @@ const db = require("../models/index");
 
 
 exports.findAll = async (req, res) => {
+  console.log("tets");
   try {
+    console.log("hehehe");
+    
     let { limit, offset } = req.params
 
     limit = parseInt(limit)
@@ -49,10 +52,8 @@ exports.findByID = async (req, res) => {
   }
 }
 
-/**
- * {body: {email, password, displayName}}
- */
 exports.create = async (req, res) => {
+  console.log("tets")
   const { name, shortDesc, content, categoryID,
     dateStart, dateEnd, tuition, schedule, lecturer } = req.body;
   if (!name || !shortDesc || !content) {
@@ -84,11 +85,6 @@ exports.create = async (req, res) => {
     return res.status(500).json({ message: "Đã có lỗi xảy ra, vui lòng thử lại." });
   }
 }
-
-/**
- * @param {String} body._id
- * @param {String} body.name
- */
 
 exports.update = async (req, res) => {
   console.log(req.body)
@@ -135,9 +131,6 @@ exports.update = async (req, res) => {
   }
 }
 
-/**
-* @param {String} body._id
-*/
 
 exports.delete = async (req, res) => {
   const { _id } = req.body
@@ -156,5 +149,22 @@ exports.delete = async (req, res) => {
   catch (err) {
     console.log('err: ', err)
     return res.status(500).json({ message: "Đã có lỗi xảy ra." })
+  }
+}
+
+
+exports.findNewCoures = async (req, res) => {
+  try {
+    const courses = await db.Course.find({isNew:true}).limit(2).populate({path:'categoryID'})
+    if (courses) {
+      return res.status(200).json({ data: courses })
+    }
+    else {
+      return res.status(400).json({ message: "Không tồn tại khóa học mới" })
+    }
+  }
+  catch (err) {
+    console.log('err: ', err);
+    return res.status(500).json({ message: "Đã có lỗi xảy ra" })
   }
 }

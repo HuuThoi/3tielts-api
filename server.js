@@ -1,4 +1,5 @@
 const express = require("express");
+// require("express-async-errors");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const logger = require("morgan");
@@ -56,6 +57,18 @@ app.use('/admins', route.AdminRoute);
 // app.use('/students', route.StudentRoute);
 app.use('/teachers', route.TeacherRoute);
 app.use('/classs', route.ClassRoute);
+
+//caych error
+app.use((req, res, next) => {
+	res.status(404).send("NOT FOUND");
+});
+
+app.use(function (err, req, res, next) {
+	console.log(err.stack);
+	// console.log(err.status);
+	const statusCode = err.status || 500;
+	res.status(statusCode).send("View error log on console.");
+});
 
 //running app 
 app.listen(parseInt(process.env.PORT) || 5000, () => {

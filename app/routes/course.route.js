@@ -3,6 +3,7 @@ var router = express.Router();
 const controller = require("../controllers/course.controller");
 
 router.use(function (req, res, next) {
+    next();
 })
 
 // 1 API tạo mới
@@ -11,10 +12,13 @@ router.use(function (req, res, next) {
 // 4 API cập nhật
 // 5 API xóa
 
-router.get("/:limit/:offset", controller.findAll)
-router.get("/:id", controller.findByID)
-router.post('/create', controller.create);
-router.put('/update', controller.update);
-router.delete('/',controller.delete)
+//router.get("/:limit/:offset", controller.findAll)
+router.get("/all", controller.findAll)
+// router.get("/:id", controller.findByID)
+// router.post('/create', controller.create);
+// router.put('/update', controller.update);
+// router.delete('/',controller.delete)
+
+//router.get("/:id", controller.findByID)
 
 module.exports = router;
