@@ -1,9 +1,13 @@
 const express = require("express");
-const app = express();
+var router = express.Router();
 const classController = require("../controllers/class.controller");
 
-app.get("/", classController.findAll)
-app.get("/info/:_id", classController.getInforClass)
-app.post("/create",classController.create)
+router.use(function (req, res, next) {
+  next();
+});
 
-module.exports = app;
+router.get("/", classController.findAll);
+router.get("/info/:id", classController.getInforClass);
+router.post("/create", classController.create);
+
+module.exports = router;

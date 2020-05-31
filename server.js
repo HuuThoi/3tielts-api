@@ -68,6 +68,28 @@ app.get("/seed-data", (req, res) => {
       );
     }
   });
+  const Class = db.Class;
+  Class.countDocuments({}).exec((err, count) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+    if (count == 0) {
+      Class.create(
+        {
+          name: "Class 1",
+          status: 1,
+        },
+        (err, seedUser) => {
+          if (err) {
+            console.error(err);
+            return;
+          }
+          res.json({ message: "Seed class created" });
+        }
+      );
+    }
+  });
 });
 
 //route
