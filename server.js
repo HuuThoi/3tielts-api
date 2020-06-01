@@ -105,7 +105,7 @@ app.use("/users", route.UserRoute);
 app.use("/admins", route.AdminRoute);
 // app.use('/students', route.StudentRoute);
 app.use("/teachers", route.TeacherRoute);
-app.use("/classs", route.ClassRoute);
+app.use("/classes", route.ClassRoute);
 
 //running app
 app.listen(parseInt(process.env.PORT) || 5000, () => {

@@ -6,7 +6,7 @@ router.use(function (req, res, next) {
   next();
 });
 
-router.get("/", classController.findAll);
+router.get("/all", classController.findAll);
 router.get("/info/:id", classController.getInforClass);
 router.post("/create", classController.create);
 
