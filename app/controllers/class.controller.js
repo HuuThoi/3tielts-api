@@ -68,6 +68,24 @@ exports.create = async (req, res) => {
   }
 };
 
+exports.findById = async (req, res) => {
+  try {
+    Class.findById(req.params.id)
+    .then((shift) => {
+      if (!shift) {
+        return res.status(404).send({
+          message: "Class not found with id " + req.params.id,
+        });
+      }
+      res.json(shift);
+    })
+  } catch (err) {
+    res.status(500).send({
+      message: err.message || "Some error occurred while retrieving class.",
+    });
+  }
+};
+
 exports.update = async (req, res) => {
   const { name } = req.body;
 
@@ -75,4 +93,25 @@ exports.update = async (req, res) => {
     return res.status().json({message:""});
   }
   const user = User.findOne()
+};
+
+exports.delete = async (req, res) => {
+  try {
+    Class.findOneAndRemove(
+      {
+        _id: req.params.id,
+      },
+      function (err, shift) {
+        if (err) {
+          res.send("error removing");
+        } else {
+          res.send({ message: "Class deleted successfully!" });
+        }
+      }
+    );
+  } catch (err) {
+    res.status(500).send({
+      message: err.message || "Some error occurred while retrieving class.",
+    });
+  }
 };

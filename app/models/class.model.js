@@ -4,12 +4,16 @@ const ClassSchema = mongoose.Schema({
     name: String,
     lecturer: {},
     status: Number,
-    content: Number,
+    content: String,
     categoryID: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Category",
     },
     dateOpening: {
+        type: Date,
+        default: new Date(),
+    },
+    dateClosed: {
         type: Date,
         default: new Date(),
     },
