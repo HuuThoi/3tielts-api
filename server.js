@@ -45,51 +45,73 @@ app.get("/", (req, res) => {
 
 //seed data
 app.get("/seed-data", (req, res) => {
-  const User = db.User;
-  User.countDocuments({}).exec((err, count) => {
-    if (err) {
-      console.error(err);
-      return;
-    }
-    if (count == 0) {
-      User.create(
-        {
-          email: "admin@test.com",
-          username: "admin",
-          password: bcrypt.hashSync("admin123", 8),
-        },
-        (err, seedUser) => {
-          if (err) {
-            console.error(err);
-            return;
-          }
-          res.json({ message: "Seed superuser created" });
-        }
-      );
-    }
-  });
-  const Class = db.Class;
-  Class.countDocuments({}).exec((err, count) => {
-    if (err) {
-      console.error(err);
-      return;
-    }
-    if (count == 0) {
-      Class.create(
-        {
-          name: "Class 1",
-          status: 1,
-        },
-        (err, seedUser) => {
-          if (err) {
-            console.error(err);
-            return;
-          }
-          res.json({ message: "Seed class created" });
-        }
-      );
-    }
-  });
+  // const User = db.User;
+  // User.countDocuments({}).exec((err, count) => {
+  //   if (err) {
+  //     console.error(err);
+  //     return;
+  //   }
+  //   if (count == 0) {
+  //     User.create(
+  //       {
+  //         email: "admin@test.com",
+  //         username: "admin",
+  //         password: bcrypt.hashSync("admin123", 8),
+  //       },
+  //       (err, seedUser) => {
+  //         if (err) {
+  //           console.error(err);
+  //           return;
+  //         }
+  //       }
+  //     );
+  //   }
+  // });
+  // const Class = db.Class;
+  // Class.create(
+  //   {
+  //     name: "Class 1",
+  //     status: 1,
+  //   },
+  //   (err, seedUser) => {
+  //     if (err) {
+  //       console.error(err);
+  //       return;
+  //     }
+  //     res.statusCode = 200;
+  //   }
+  // );
+  // let Category = db.Category;
+
+  // for (var i = 10; i < 15; i++) {
+  //   let num = i + 1;
+  //   Category.create(
+  //     {
+  //       name: "Category " + num,
+  //       icons: "Icon " + num,
+  //       level: num,
+  //       status: 1,
+  //       typeID: num,
+  //     },
+  //     (err, seedUser) => {}
+  //   );
+  // }
+  let Course = db.Course;
+  for (var i = 10; i < 15; i++) {
+    let num = i + 1;
+    Course.create(
+      {
+        name: "Course " + num,
+        shortDesc: "Description " + num,
+        content: "Content of Course " + num,
+        dateStart: "3/6/2020",
+        dateEnd: "3/12/2020",
+        tuition: "Tuition " + num,
+      },
+      (err, seedUser) => {}
+    );
+  }
+  res.json({ message: "Seed data created" });
 });
 
 //route

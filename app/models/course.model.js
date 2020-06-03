@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const CourseSchema = mongoose.Schema({
     name: String,
     shortDesc: String,
-    content: Number,
+    content: String,
     categoryID: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Category",
