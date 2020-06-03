@@ -187,10 +187,10 @@ exports.delete = async (req, res) => {
 
 exports.getDropdown = async (req, res) => {
   try {
-    const courses = await db.Class.find();
+    let courses = await db.Course.find().select({ _id: 1, name: 1 });
     return res.status(200).json({ data: courses });
   } catch (err) {
     console.log("err: ", err);
-    return res.status(500).json({ message: "Đã có lỗi xảy ra" });
+    return res.status(500).json({ message: err });
   }
 };

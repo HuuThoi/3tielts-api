@@ -2,7 +2,9 @@ const express = require("express");
 var router = express.Router();
 const controller = require("../controllers/course.controller");
 
-router.use(function (req, res, next) {});
+router.use(function (req, res, next) {
+  next();
+});
 
 // 1 API tạo mới
 // 2 API lấy toàn bộ( có paging)
@@ -12,10 +14,10 @@ router.use(function (req, res, next) {});
 
 router.get("/:limit/:offset", controller.findAll);
 router.get("/:id", controller.findByID);
-router.post("/create", controller.create);
-router.put("/update", controller.update);
+router.post("/", controller.create);
+router.put("/update/:id", controller.update);
 router.delete("/", controller.delete);
 
-router.get("/all/dropdown/a", controller.getDropdown);
+router.get("/support/dropdown", controller.getDropdown);
 
 module.exports = router;
