@@ -3,6 +3,7 @@ var router = express.Router();
 const controller = require("../controllers/category.controller");
 
 router.use(function (req, res, next) {
+    next();
 })
 // 1 API tạo mới
 // 2 API lấy toàn bộ( có paging)

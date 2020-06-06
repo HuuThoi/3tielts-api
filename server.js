@@ -14,15 +14,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(logger("dev"));
 
-//swagger
-// const pathToSwaggerUi = require('swagger-ui-dist').absolutePath();
-// app.use(express.static(pathToSwaggerUi))
 
-// var swaggerUi = require('swagger-ui-express'),
-//     swaggerDocument = require('./swagger.json');
-// app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
-//connecting to the database
+//connecting to the database + để tránh warning các deprecate thì thêm 3 dòng .set vào
+mongoose.set('useNewUrlParser', true);
+mongoose.set('useFindAndModify', false);
+mongoose.set('useCreateIndex', true);
 mongoose.Promise = global.Promise;
 mongoose
     .connect(dbConfig.url, {

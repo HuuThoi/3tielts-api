@@ -8,7 +8,6 @@ exports.findAll = async (req, res) => {
     limit = parseInt(limit)
     offset = parseInt(offset)
     const length = await db.Category.find().countDocuments()
-
     const data = await db.Category.find()
       .limit(limit)
       .skip((offset - 1)*limit)

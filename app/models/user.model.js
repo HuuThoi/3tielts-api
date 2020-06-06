@@ -1,6 +1,7 @@
 const EUserType = require("../enums/EUserTypes");
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
+var validator = require("validator");
 
 const saltRounds = 10;
 

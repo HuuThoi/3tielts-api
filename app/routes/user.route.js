@@ -3,6 +3,7 @@ var router = express.Router();
 const controller = require("../controllers/user.controller");
 
 router.use(function (req, res, next) {
+    next();
 })
 
 router.get("/:limit/:offset", controller.findAll)
