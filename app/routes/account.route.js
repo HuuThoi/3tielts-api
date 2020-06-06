@@ -22,4 +22,13 @@ router.post("/signin", controller.signin);
 //     controller.all2
 //   );
 
+router.get("/me", [authJwt.verifyToken], async (req, res) => {
+  console.log("get profile");
+  console.log("req", req.userData);
+})
+
+router.post('/forgot_password', controller.forgotPassword);
+router.post('/verify_reset_password', controller.verifyResetPassword);
+router.post('/update_password', [authJwt.verifyToken], controller.resetPassword)
+
 module.exports = router;

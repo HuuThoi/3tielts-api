@@ -31,8 +31,8 @@ const UserSchema = mongoose.Schema(
     googleID: String,
     facebookID: String,
     adress: String,
-    typeID: {
-      type: Number,
+    role: {
+      type: String,
       default: EUserType.STUDENT,
     },
     gender: String,
@@ -83,6 +83,13 @@ const UserSchema = mongoose.Schema(
         },
       },
     ],
+    resetLink: {
+      type: String
+    },
+    resetLink: {
+      data:String,
+      default:''
+    }
   },
   {
     timestamps: true,

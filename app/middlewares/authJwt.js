@@ -7,17 +7,23 @@ verifyToken = (req, res, next) => {
   let token = req.headers["x-access-token"];
 
   if (!token) {
-    return res.status(403).send({ message: "No token provided!" });
+    return res.status(403).send({ message: "Forbidden!" });
   }
 
   jwt.verify(token, config.jwtSecret, (err, decoded) => {
     if (err) {
       return res.status(401).send({ message: "Unauthorized!" });
     }
-    req.userId = decoded.id;
-    // req.body.user_id = decoded.user_id;
-    // req.body.username = decoded.username;
-    next();
+
+    db.User.findOne({ _id: decoded.id }, function (err, user) {
+      if (err) return handleError(err);
+      userData = {
+        id: decoded.id,
+        role: user.role
+      }
+      req.userData = userData;
+      next();
+    });
   });
 };
 
