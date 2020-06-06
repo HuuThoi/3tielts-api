@@ -117,13 +117,8 @@ exports.delete = async (req, res) => {
 
 exports.getDropdown = async (req, res) => {
   try {
-    const classes = await Class.find();
-
-    if (classes) {
-      return res.status(200).json({ data: classes });
-    } else {
-      return res.status(400).json({ message: "Không tồn tại lớp." });
-    }
+    const classes = await Class.find().select({ _id: 1, name: 1 });
+    return res.status(200).json({ data: classes });
   } catch (err) {
     console.log("err: ", err);
     return res.status(500).json({ message: "Đã có lỗi xảy ra" });

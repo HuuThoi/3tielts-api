@@ -12,4 +12,6 @@ router.get("/:id", controller.findById);
 router.put("/:id", controller.update);
 router.delete("/:id", controller.delete);
 
+router.get("/support/dropdown", controller.getDropdown);
+
 module.exports = router;
