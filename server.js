@@ -67,20 +67,27 @@ app.get("/seed-data", (req, res) => {
   //     );
   //   }
   // });
-  // const Class = db.Class;
-  // Class.create(
-  //   {
-  //     name: "Class 1",
-  //     status: 1,
-  //   },
-  //   (err, seedUser) => {
-  //     if (err) {
-  //       console.error(err);
-  //       return;
-  //     }
-  //     res.statusCode = 200;
-  //   }
-  // );
+  const Class = db.Class;
+  for (var i = 27; i < 30; i++) {
+    let num = i + 1;
+  Class.create(
+    {
+      name: "Class " + num,
+      status: 1,
+     courseID:'5ed72fc0699d0c2cf453b7be',
+     categoryID:'5ed72fc0699d0c2cf453b7b9'
+    },
+    (err, seedUser) => {
+      if (err) {
+        console.error(err);
+        return;
+      }
+      res.statusCode = 200;
+    }
+  );
+
+}
+ 
   // let Category = db.Category;
 
   // for (var i = 10; i < 15; i++) {

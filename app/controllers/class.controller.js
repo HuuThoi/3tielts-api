@@ -6,15 +6,40 @@ const passport = require("passport");
 const jwt = require("jsonwebtoken");
 // const jwtSecretConfig = require("../../config/jwt-secret.config");
 
+// admin will see all, teacher and student will see class they take/taked part in
 exports.findAll = async (req, res) => {
-  try {
-    const classes = await Class.find();
+  const userData = req.userData;
 
-    if (classes) {
-      return res.status(200).json({ data: classes });
-    } else {
-      return res.status(400).json({ message: "Không tồn tại lớp." });
+  try {
+    const classes = [];
+    if(userData.role == EUserTypes.ADMIN){
+     classes = await Class.find().populate({
+        path: 'categoryID',
+        // match: { isBlock: false },
+      }).populate({
+        path: 'courseID',
+        // match: { isBlock: false },
+      })
+    }else if (userData.role == EUserTypes.Teacher){
+      classes = await Class.find().populate({
+        path: 'categoryID',
+      }).populate({
+        path: 'courseID',
+        // match: { isBlock: false },
+      })
+    }else if(userData.role == EUserTypes.STUDENT){
+      classes = await Class.find().populate({
+        path: 'categoryID',
+        // match: { isBlock: false },
+      }).populate({
+        path: 'courseID',
+        // match: { isBlock: false },
+      })
     }
+    
+
+    if (classes) 
+      return res.status(200).json({ data: classes });
   } catch (err) {
     console.log("err: ", err);
     return res.status(500).json({ message: "Đã có lỗi xảy ra" });

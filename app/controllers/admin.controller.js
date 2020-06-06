@@ -23,7 +23,7 @@ exports.findAll = async(req, res) => {
 /**
  * {body: {email, password, displayName}}
  */
-exports.createAdmin = async(req, res) => {
+exports.create = async(req, res) => {
     const { email, password, displayName } = req.body;
     if (!email || !password) {
         return res.status(400).send({
@@ -31,7 +31,7 @@ exports.createAdmin = async(req, res) => {
         })
     }
     try {
-        const data = await db.Admin.findOne({ email });
+        const data = await db.User.findOne({ email });
         console.log("data: ", data);
         if (data) {
             return res.status(400).json({ message: "Email đã tồn tại, vui lòng nhập email khác." });
