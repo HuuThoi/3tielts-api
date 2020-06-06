@@ -4,7 +4,7 @@ const Class = require("../models/class.model");
 const EUserTypes = require("../enums/EUserTypes");
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
-// const jwtSecretConfig = require("../../config/jwt-secret.config");
+const db = require("../models/index");
 
 // admin will see all, teacher and student will see class they take/taked part in
 exports.findAll = async (req, res) => {
@@ -12,34 +12,35 @@ exports.findAll = async (req, res) => {
 
   try {
     const classes = [];
-    if(userData.role == EUserTypes.ADMIN){
-     classes = await Class.find().populate({
-        path: 'categoryID',
-        // match: { isBlock: false },
-      }).populate({
-        path: 'courseID',
-        // match: { isBlock: false },
-      })
-    }else if (userData.role == EUserTypes.Teacher){
-      classes = await Class.find().populate({
-        path: 'categoryID',
-      }).populate({
-        path: 'courseID',
-        // match: { isBlock: false },
-      })
-    }else if(userData.role == EUserTypes.STUDENT){
-      classes = await Class.find().populate({
-        path: 'categoryID',
-        // match: { isBlock: false },
-      }).populate({
-        path: 'courseID',
-        // match: { isBlock: false },
-      })
+    if (userData.role == EUserTypes.ADMIN) {
+      classes = await Class.find()
+        .populate({
+          path: "categoryID",
+          // match: { isBlock: false },
+        })
+        .populate({
+          path: "courseID",
+          // match: { isBlock: false },
+        });
+    } else if (userData.role == EUserTypes.Teacher) {
+      classes = await Class.find({ lecturer: { $in: userData.id } })
+        .populate({
+          path: "categoryID",
+        })
+        .populate({
+          path: "courseID",
+        });
+    } else if (userData.role == EUserTypes.STUDENT) {
+      classes = await Class.find({ studentList: { $in: userData.id } })
+        .populate({
+          path: "categoryID",
+        })
+        .populate({
+          path: "courseID",
+        });
     }
-    
 
-    if (classes) 
-      return res.status(200).json({ data: classes });
+    if (classes) return res.status(200).json({ data: classes });
   } catch (err) {
     console.log("err: ", err);
     return res.status(500).json({ message: "Đã có lỗi xảy ra" });
@@ -55,9 +56,7 @@ exports.getInforClass = async (req, res) => {
   const { _id } = req.params;
 
   try {
-    const _class = await Class.findOne({ _id }).populate({
-      path: "CourseID",
-    });
+    const _class = await Class.findOne({ _id });
 
     if (_class) {
       return res.status(200).json({ _class });
@@ -71,24 +70,15 @@ exports.getInforClass = async (req, res) => {
 };
 
 exports.create = async (req, res) => {
-  const { name } = req.body;
-
   try {
-    const newClass = new Class({
-      name,
+    db.Class.create(req.body, function (err, document) {
+      if (err) {
+        return res.json({ message: "Tạo lớp học thành công.", data: result });
+      } else {
+        res.send(document);
+      }
     });
-
-    const result = await newClass.save();
-
-    if (result) {
-      return res
-        .status(200)
-        .json({ message: "Tạo lớp học thành công.", data: result });
-    } else {
-      return res.status(400).json({ message: "Tạo lớp học thất bại." });
-    }
   } catch (err) {
-    console.log("err: ", err);
     return res.status(500).json({ message: "Đã có lỗi xảy ra." });
   }
 };
@@ -111,12 +101,24 @@ exports.findById = async (req, res) => {
 };
 
 exports.update = async (req, res) => {
-  const { name } = req.body;
-
-  if (!name) {
-    return res.status().json({ message: "" });
+  try {
+    db.Class.findByIdAndUpdate(
+      req.params.id,
+      { $set: req.body },
+      { new: true }
+    ).then((data) => {
+      if (!data) {
+        return res.status(404).send({
+          message: "Note not found with id " + req.params.id,
+        });
+      }
+      res.send(data);
+    });
+  } catch (err) {
+    res.status(500).send({
+      message: err.message || "Some error occurred while retrieving documents.",
+    });
   }
-  const user = User.findOne();
 };
 
 exports.delete = async (req, res) => {
