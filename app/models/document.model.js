@@ -12,6 +12,7 @@ const DocumentSchema = mongoose.Schema({
     name: String,
     shortDesc: String,
     contents: String,
+    image : String,
     categoryId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Category",
