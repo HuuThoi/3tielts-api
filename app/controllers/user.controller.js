@@ -55,7 +55,7 @@ exports.findByName = async (req, res) => {
         console.log('err: ', err);
         return res.status(500).json({ message: "Đã có lỗi xảy ra" })
     }
-}
+};
 
 /**
  * {body: {email, password, displayName}}

@@ -7,6 +7,8 @@ const dbConfig = require("./app/config/database.config");
 const route = require("./app/routes/index");
 const cors = require("cors");
 const app = express();
+const db = require("./app/models/index");
+var bcrypt = require("bcryptjs");
 
 app.use(cors());
 // require('./passport');   temp comment
@@ -21,38 +23,108 @@ mongoose.set('useFindAndModify', false);
 mongoose.set('useCreateIndex', true);
 mongoose.Promise = global.Promise;
 mongoose
-    .connect(dbConfig.url, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        useFindAndModify: false,
-    })
-    .then(() => {
-        console.log("Successfully connected to the database");
-    })
-    .catch((err) => {
-        console.log("Could not connected to the database. Exiting now...", err);
-        process.exit();
-    });
+  .connect(dbConfig.url, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false,
+  })
+  .then(() => {
+    console.log("Successfully connected to the database");
+  })
+  .catch((err) => {
+    console.log("Could not connected to the database. Exiting now...", err);
+    process.exit();
+  });
 
-//route default
 app.get("/", (req, res) => {
-    res.json({ message: "Ielts web " });
+  res.json({ message: "Ielts Web" });
+});
+
+//seed data
+app.get("/seed-data", (req, res) => {
+  // const User = db.User;
+  // User.countDocuments({}).exec((err, count) => {
+  //   if (err) {
+  //     console.error(err);
+  //     return;
+  //   }
+  //   if (count == 0) {
+  //     User.create(
+  //       {
+  //         email: "admin@test.com",
+  //         username: "admin",
+  //         password: bcrypt.hashSync("admin123", 8),
+  //       },
+  //       (err, seedUser) => {
+  //         if (err) {
+  //           console.error(err);
+  //           return;
+  //         }
+  //       }
+  //     );
+  //   }
+  // });
+  // const Class = db.Class;
+  // Class.create(
+  //   {
+  //     name: "Class 1",
+  //     status: 1,
+  //   },
+  //   (err, seedUser) => {
+  //     if (err) {
+  //       console.error(err);
+  //       return;
+  //     }
+  //     res.statusCode = 200;
+  //   }
+  // );
+  // let Category = db.Category;
+
+  // for (var i = 10; i < 15; i++) {
+  //   let num = i + 1;
+  //   Category.create(
+  //     {
+  //       name: "Category " + num,
+  //       icons: "Icon " + num,
+  //       level: num,
+  //       status: 1,
+  //       typeID: num,
+  //     },
+  //     (err, seedUser) => {}
+  //   );
+  // }
+  let Course = db.Course;
+  for (var i = 10; i < 15; i++) {
+    let num = i + 1;
+    Course.create(
+      {
+        name: "Course " + num,
+        shortDesc: "Description " + num,
+        content: "Content of Course " + num,
+        dateStart: "3/6/2020",
+        dateEnd: "3/12/2020",
+        tuition: "Tuition " + num,
+      },
+      (err, seedUser) => {}
+    );
+  }
+  res.json({ message: "Seed data created" });
 });
 
 //route
 app.use("/accounts", route.AccountRoute);
-app.use('/categories', route.CategoryRoute);
-app.use('/comments', route.CommentRoute)
-app.use('/courses', route.CourseRoute)
+app.use("/categories", route.CategoryRoute);
+app.use("/comments", route.CommentRoute);
+app.use("/courses", route.CourseRoute);
 app.use("/documents", route.DocumentRoute);
 app.use("/questions", route.QuestionRoute);
-app.use('/schedules', route.ScheduleRoute)
+app.use("/schedules", route.ScheduleRoute);
 app.use("/shifts", route.ShiftRoute);
-app.use('/users', route.UserRoute);
-app.use('/admins', route.AdminRoute);
+app.use("/users", route.UserRoute);
+app.use("/admins", route.AdminRoute);
 // app.use('/students', route.StudentRoute);
-app.use('/teachers', route.TeacherRoute);
-app.use('/classs', route.ClassRoute);
+app.use("/teachers", route.TeacherRoute);
+app.use("/classes", route.ClassRoute);
 
 //caych error
 app.use((req, res, next) => {
@@ -68,6 +140,6 @@ app.use(function (err, req, res, next) {
 
 //running app 
 app.listen(parseInt(process.env.PORT) || 5000, () => {
-    console.log('Server is listening http://localhost:5000');
+  console.log("Server is listening http://localhost:5000");
 });
 module.exports = app;

@@ -147,3 +147,13 @@ exports.delete = async (req, res) => {
       return res.status(500).json({ message: "Đã có lỗi xảy ra." })
   }
 }
+
+exports.getDropdown = async (req, res) => {
+  try {
+    let data = await db.Category.find().select({ _id: 1, name: 1 });
+    return res.status(200).json({ data: data });
+  } catch (err) {
+    console.log("err: ", err);
+    return res.status(500).json({ message: err });
+  }
+};

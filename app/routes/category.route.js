@@ -11,11 +11,11 @@ router.use(function (req, res, next) {
 // 4 API cập nhật
 // 5 API xóa
 
-router.get("/:limit/:offset", controller.findAll)
-router.get("/:id", controller.findByID)
+router.get("/:limit/:offset", controller.findAll);
+router.get("/:id", controller.findByID);
 // router.get("/info/:_id", userController.getInforUser)
-router.post('/create', controller.create);
-router.put('/update', controller.update);
-// router.post('/login', ususerControllerers.login); //login with email and password
+router.post("", controller.create);
+router.put("/update/:id", controller.update);
+router.get("/support/dropdown", controller.getDropdown);
 
 module.exports = router;

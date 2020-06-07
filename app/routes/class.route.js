@@ -1,9 +1,17 @@
 const express = require("express");
-const app = express();
-const classController = require("../controllers/class.controller");
+var router = express.Router();
+const controller = require("../controllers/class.controller");
 
-app.get("/", classController.findAll)
-app.get("/info/:_id", classController.getInforClass)
-app.post("/create",classController.create)
+router.use(function (req, res, next) {
+  next();
+});
 
-module.exports = app;
+router.get("/all", controller.findAll);
+router.post("/", controller.create);
+router.get("/:id", controller.findById);
+router.put("/:id", controller.update);
+router.delete("/:id", controller.delete);
+
+router.get("/support/dropdown", controller.getDropdown);
+
+module.exports = router;

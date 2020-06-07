@@ -7,15 +7,23 @@ verifyToken = (req, res, next) => {
   let token = req.headers["x-access-token"];
 
   if (!token) {
-    return res.status(403).send({ message: "No token provided!" });
+    return res.status(403).send({ message: "Forbidden!" });
   }
 
   jwt.verify(token, config.jwtSecret, (err, decoded) => {
     if (err) {
       return res.status(401).send({ message: "Unauthorized!" });
     }
-    req.userId = decoded.id;
-    next();
+
+    db.User.findOne({ _id: decoded.id }, function (err, user) {
+      if (err) return handleError(err);
+      userData = {
+        id: decoded.id,
+        role: user.role
+      }
+      req.userData = userData;
+      next();
+    });
   });
 };
 
@@ -27,7 +35,7 @@ isAdmin = (req, res, next) => {
       res.status(500).send({ message: err });
       return;
     }
-    if(user.typeID === EUserType.ADMIN) return true;
+    if (user.typeID === EUserType.ADMIN) return true;
     return false;
   });
 };
@@ -38,15 +46,15 @@ isTeacher = (req, res, next) => {
       res.status(500).send({ message: err });
       return;
     }
-    if(user.typeID === EUserType.TEACHER) return true;
+    if (user.typeID === EUserType.TEACHER) return true;
     return false;
   });
 };
 
 const authJwt = {
   verifyToken,
- isAdmin,
- isTeacher
+  isAdmin,
+  isTeacher,
 };
 
 module.exports = authJwt;

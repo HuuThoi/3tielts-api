@@ -68,11 +68,59 @@ exports.create = async (req, res) => {
   }
 };
 
+exports.findById = async (req, res) => {
+  try {
+    Class.findById(req.params.id).then((shift) => {
+      if (!shift) {
+        return res.status(404).send({
+          message: "Class not found with id " + req.params.id,
+        });
+      }
+      res.json(shift);
+    });
+  } catch (err) {
+    res.status(500).send({
+      message: err.message || "Some error occurred while retrieving class.",
+    });
+  }
+};
+
 exports.update = async (req, res) => {
   const { name } = req.body;
 
   if (!name) {
-    return res.status().json({message:""});
+    return res.status().json({ message: "" });
   }
-  const user = User.findOne()
+  const user = User.findOne();
+};
+
+exports.delete = async (req, res) => {
+  try {
+    Class.findOneAndRemove(
+      {
+        _id: req.params.id,
+      },
+      function (err, shift) {
+        if (err) {
+          res.send("error removing");
+        } else {
+          res.send({ message: "Class deleted successfully!" });
+        }
+      }
+    );
+  } catch (err) {
+    res.status(500).send({
+      message: err.message || "Some error occurred while retrieving class.",
+    });
+  }
+};
+
+exports.getDropdown = async (req, res) => {
+  try {
+    const classes = await Class.find().select({ _id: 1, name: 1 });
+    return res.status(200).json({ data: classes });
+  } catch (err) {
+    console.log("err: ", err);
+    return res.status(500).json({ message: "Đã có lỗi xảy ra" });
+  }
 };
