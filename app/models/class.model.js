@@ -5,7 +5,7 @@ const ClassSchema = mongoose.Schema({
     lecturer: [
         {type:mongoose.Schema.Types.ObjectId, ref:'Teacher'},
     ],
-    status: Number,
+    status: Boolean,
     content: String,
     categoryID: {
         type: mongoose.Schema.Types.ObjectId,
