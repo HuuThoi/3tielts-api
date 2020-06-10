@@ -1,9 +1,22 @@
 const mongoose = require("mongoose");
 
 const CourseSchema = mongoose.Schema({
+
+    // "name": "IELTS UNLIMITED",
+    // "shortDesc": "Học tương tác không giới hạn",
+    // "content": "PLA PLA PLA",
+    // "new": true,
+    // "categoryID": 1 ,
+    // "dateStart": "2019-01-01",
+    // "dateEnd": "2019-03-01",
+    // "tuition": 1000000,
+   
+
+
     name: String,
     shortDesc: String,
     content: String,
+    new: Boolean,
     categoryID: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Category",
@@ -16,7 +29,7 @@ const CourseSchema = mongoose.Schema({
         type: Date,
         default: Date,
     },
-    tuition: String,
+    tuition: Number,
     schedule: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Schedule",

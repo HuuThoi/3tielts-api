@@ -1,4 +1,5 @@
 const express = require("express");
+// require("express-async-errors");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const logger = require("morgan");
@@ -15,15 +16,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(logger("dev"));
 
-//swagger
-//const pathToSwaggerUi = require("swagger-ui-dist").absolutePath();
-//app.use(express.static(pathToSwaggerUi));
 
-//var swaggerUi = require("swagger-ui-express"),
-//swaggerDocument = require("./swagger.json");
-//app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
-//connecting to the database
+//connecting to the database + để tránh warning các deprecate thì thêm 3 dòng .set vào
+mongoose.set('useNewUrlParser', true);
+mongoose.set('useFindAndModify', false);
+mongoose.set('useCreateIndex', true);
 mongoose.Promise = global.Promise;
 mongoose
   .connect(dbConfig.url, {
@@ -136,7 +133,19 @@ app.use("/admins", route.AdminRoute);
 app.use("/teachers", route.TeacherRoute);
 app.use("/classes", route.ClassRoute);
 
-//running app
+//caych error
+app.use((req, res, next) => {
+	res.status(404).send("NOT FOUND");
+});
+
+app.use(function (err, req, res, next) {
+	console.log(err.stack);
+	// console.log(err.status);
+	const statusCode = err.status || 500;
+	res.status(statusCode).send("View error log on console.");
+});
+
+//running app 
 app.listen(parseInt(process.env.PORT) || 5000, () => {
   console.log("Server is listening http://localhost:5000");
 });
