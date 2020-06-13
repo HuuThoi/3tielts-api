@@ -4,20 +4,100 @@ const Class = require("../models/class.model");
 const EUserTypes = require("../enums/EUserTypes");
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
-// const jwtSecretConfig = require("../../config/jwt-secret.config");
+const db = require("../models/index");
 
+// admin will see all, teacher and student will see class they take/taked part in
 exports.findAll = async (req, res) => {
-  try {
-    const classes = await Class.find();
+  const userData = req.userData;
 
-    if (classes) {
-      return res.status(200).json({ data: classes });
-    } else {
-      return res.status(400).json({ message: "Không tồn tại lớp." });
-    }
+  const classes=[];
+  try {
+    if (userData.role == EUserTypes.ADMIN) {
+      await Class.find()
+        .populate({
+          path: "categoryID",
+          select: 'name'
+          // match: { isBlock: false },
+        })
+        .populate({
+          path: "courseID",
+          select: 'name'
+          // match: { isBlock: false },
+        }).exec(function (err, result) {
+          if (err) {
+            res.status(500).json({ message: err })
+          }
+          for(let i=0;i< result.length;i++){
+            let obj = {
+              id: result[i]._id,
+              name: result[i].name,
+              status: result[i].status == true ? "Active" : "InActive",
+              categoryName: result[i].categoryID != null?result[i].categoryID.name:null,
+              dateOpening: result[i].dateOpening,
+              dateClosed: result[i].dateClosed,
+              courseName: result[i].courseID != null?result[i].courseID.name:null
+            }
+            classes.push(obj);
+          }
+          return res.status(200).json({ data: classes });
+        });
+    } 
+    else if (userData.role == EUserTypes.Teacher) {
+      classes = await Class.find({ lecturer: { $in: userData.id } })
+        .populate({
+          path: "categoryID",
+        })
+        .populate({
+          path: "courseID",
+        }).exec(function (err, result) {
+          if (err) {
+            res.status(500).json({ message: err })
+          }
+          for(let i=0;i< result.length;i++){
+            let obj = {
+              id: result[i]._id,
+              name: result[i].name,
+              status: result[i].status == true ? "Active" : "InActive",
+              categoryName: result[i].categoryID != null?result[i].categoryID.name:null,
+              dateOpening: result[i].dateOpening,
+              dateClosed: result[i].dateClosed,
+              courseName: result[i].courseID != null?result[i].courseID.name:null
+            }
+            classes.push(obj);
+          }
+          return res.status(200).json({ data: classes });
+        });
+    } else if (userData.role == EUserTypes.STUDENT) {
+      classes = await Class.find({ studentList: { $in: userData.id } })
+        .populate({
+          path: "categoryID",
+          select: "name"
+        })
+        .populate({
+          path: "courseID",
+        }).exec(function (err, result) {
+          if (err) {
+            res.status(500).json({ message: err })
+          }
+          for(let i=0;i< result.length;i++){
+            let obj = {
+              id: result[i]._id,
+              name: result[i].name,
+              status: result[i].status == true ? "Active" : "InActive",
+              categoryName: result[i].categoryID != null?result[i].categoryID.name:null,
+              dateOpening: result[i].dateOpening,
+              dateClosed: result[i].dateClosed,
+              courseName: result[i].courseID != null?result[i].courseID.name:null
+            }
+            classes.push(obj);
+          }
+          return res.status(200).json({ data: classes });
+        });
+      }
+    // return res.status(200).json({ data: classes });
   } catch (err) {
     console.log("err: ", err);
-    return res.status(500).json({ message: "Đã có lỗi xảy ra" });
+    return res.status(500).json({ message: err });
   }
 };
 
@@ -30,9 +110,7 @@ exports.getInforClass = async (req, res) => {
   const { _id } = req.params;
 
   try {
-    const _class = await Class.findOne({ _id }).populate({
-      path: "CourseID",
-    });
+    const _class = await Class.findOne({ _id });
 
     if (_class) {
       return res.status(200).json({ _class });
@@ -46,24 +124,15 @@ exports.getInforClass = async (req, res) => {
 };
 
 exports.create = async (req, res) => {
-  const { name } = req.body;
-
   try {
-    const newClass = new Class({
-      name,
+    db.Class.create(req.body, function (err, document) {
+      if (err) {
+        return res.json({ message: "Tạo lớp học thành công.", data: result });
+      } else {
+        res.send(document);
+      }
     });
-
-    const result = await newClass.save();
-
-    if (result) {
-      return res
-        .status(200)
-        .json({ message: "Tạo lớp học thành công.", data: result });
-    } else {
-      return res.status(400).json({ message: "Tạo lớp học thất bại." });
-    }
   } catch (err) {
-    console.log("err: ", err);
     return res.status(500).json({ message: "Đã có lỗi xảy ra." });
   }
 };
@@ -86,12 +155,24 @@ exports.findById = async (req, res) => {
 };
 
 exports.update = async (req, res) => {
-  const { name } = req.body;
-
-  if (!name) {
-    return res.status().json({ message: "" });
+  try {
+    db.Class.findByIdAndUpdate(
+      req.params.id,
+      { $set: req.body },
+      { new: true }
+    ).then((data) => {
+      if (!data) {
+        return res.status(404).send({
+          message: "Note not found with id " + req.params.id,
+        });
+      }
+      res.send(data);
+    });
+  } catch (err) {
+    res.status(500).send({
+      message: err.message || "Some error occurred while retrieving documents.",
+    });
   }
-  const user = User.findOne();
 };
 
 exports.delete = async (req, res) => {

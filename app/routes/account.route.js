@@ -2,6 +2,8 @@ const express = require("express");
 var router = express.Router();
 const controller = require("../controllers/account.controller");
 const { verifySignUp, authJwt } = require("../middlewares/index");
+const jwt = require("jsonwebtoken");
+const config = require("../config/jwt-secret.config");
 
 router.use(function (req, res, next) {
   res.header(
@@ -25,6 +27,25 @@ router.post("/signin", controller.signin);
 router.get("/me", [authJwt.verifyToken], async (req, res) => {
   console.log("get profile");
   console.log("req", req.userData);
+})
+
+router.post("/verify-me", async (req, res) => {
+  if(!req.body.token) 
+  return res.status(200).json({
+    isValid: false
+  });
+  
+  jwt.verify(req.body.token, config.jwtSecret, (err, decoded) => {
+    if (!err) {
+    return res.status(200).json({
+        isValid: true
+      });
+    }else{
+      return res.status(200).json({
+        isValid: false
+      });
+    }
+  })
 })
 
 router.post('/forgot_password', controller.forgotPassword);

@@ -13,7 +13,10 @@ const ShiftSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Class",
     },
-    status: Boolean
+    status: {
+        type: Boolean,
+        default: false
+    }
 }, {
     timestamps: true,
 });
