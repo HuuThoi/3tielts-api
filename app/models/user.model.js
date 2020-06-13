@@ -23,14 +23,14 @@ const UserSchema = mongoose.Schema(
         }
       },
     },
-    password: { type: String, required: true, minLength: 7 },
+    password: { type: String, required: true, minLength: 7, trim: true },
     passwordHash: String,
     avatar: String,
     phone: String,
     birthdate: Date,
     googleID: String,
     facebookID: String,
-    adress: String,
+    address: String,
     role: {
       type: String,
       default: EUserType.STUDENT,
@@ -84,12 +84,9 @@ const UserSchema = mongoose.Schema(
       },
     ],
     resetLink: {
-      type: String
+      data: String,
+      default: "",
     },
-    resetLink: {
-      data:String,
-      default:''
-    }
   },
   {
     timestamps: true,
