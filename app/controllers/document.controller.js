@@ -5,14 +5,15 @@ exports.findAll = async(req, res) => {
     try {
         const length = await db.Document.find().countDocuments();
 
-        await db.Document.find() .populate({
+        await db.Document.find().populate({
             path: "categoryId",
             select: 'name'
           })
-          .populate({
+        .populate({
             path: "authorID",
-            select: 'displayName'
-          }).exec(function (err, result) {
+           select: 'username'
+        })
+          .exec(function (err, result) {
                 if (err) res.status(500).json({ message: err })
                 else {
                   for (let i = 0; i < result.length; i++) {
@@ -22,7 +23,7 @@ exports.findAll = async(req, res) => {
                         isRecommend: result[i].status == true ? "Có/True" : "Không/False",
                         categoryName: result[i].categoryId.name != null?result[i].categoryId.name:null,
                         shortDesc: result[i].shortDesc,
-                        userName: (result[i].authorID && result[i].authorID.displayName!=null)?result[i].authorID.displayName:null,
+                      userName: (result[i].authorID && result[i].authorID.username!=null)?result[i].authorID.username:null,
                     }
                     data.push(obj);
                   }
