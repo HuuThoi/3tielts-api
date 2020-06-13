@@ -7,15 +7,15 @@ const saltRounds = 10;
 
 const UserSchema = mongoose.Schema(
   {
-    displayName: {
+    username: {
       type: String,
-      // required: true,
+      required: true,
       trim: true,
     },
     email: {
       type: String,
       required: true,
-      unique: true,
+      // unique: true,
       lowercase: true,
       validate: (value) => {
         if (!validator.isEmail(value)) {

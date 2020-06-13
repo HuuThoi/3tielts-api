@@ -69,7 +69,7 @@ exports.create = async (req, res) => {
       const result = await category.save();
       console.log("result: ", result);
       if (result) {
-        return res.status(200).json({ message: "Tạo cate thành công.", category: req.body });
+        return res.status(200).json({ message: "Tạo cate thành công.", category: result });
       } else {
         return res.status(400).json({ message: "Tạo cate thất bại." });
       }
