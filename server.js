@@ -115,6 +115,19 @@ app.get("/seed-data", (req, res) => {
       (err, seedUser) => {}
     );
   }
+  let Assignment = db.Assignment;
+  for (var i = 10; i < 15; i++) {
+    let num = i + 1;
+    Assignment.create(
+      {
+        name: "Assignment " + num,
+        status: true,
+        content: "Content of Course " + num,
+
+      },
+      (err, seedUser) => {}
+    );
+  }
   res.json({ message: "Seed data created" });
 });
 
@@ -132,6 +145,7 @@ app.use("/admins", route.AdminRoute);
 // app.use('/students', route.StudentRoute);
 app.use("/teachers", route.TeacherRoute);
 app.use("/classes", route.ClassRoute);
+app.use("/assignments", route.AssignmentRoute);
 
 //caych error
 app.use((req, res, next) => {
@@ -146,7 +160,8 @@ app.use(function (err, req, res, next) {
 });
 
 //running app 
-app.listen(parseInt(process.env.PORT) || 5000, () => {
-  console.log("Server is listening http://localhost:5000");
+const PORT = 8080;
+app.listen(parseInt(process.env.PORT) || PORT, () => {
+  console.log("Server is listening http://localhost:" + PORT);
 });
 module.exports = app;
