@@ -1,13 +1,14 @@
 const express = require("express");
 var router = express.Router();
 const controller = require("../controllers/admin.controller");
+const { authJwt } = require("../middlewares/index");
 
-router.use(function (req, res, next) {});
+router.use(function (req, res, next) {
+    next();
+});
 
-router.get("/:limit/:offset", controller.findAll);
-router.get("/:id", controller.getById)
-router.post("", controller.create);
-router.put('/:id', controller.update);
-router.delete("/:id", controller.delete);
+router.get("/all", [authJwt.verifyToken,  authJwt.isAdmin],  controller.findAll);
+router.get("/:id",  [authJwt.verifyToken], controller.updateBlockStatus)
+router.post("/",  [authJwt.verifyToken], controller.create);
 
 module.exports = router;

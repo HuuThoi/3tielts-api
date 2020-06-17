@@ -13,7 +13,7 @@ router.use(function (req, res, next) {
   next();
 });
 
-router.post("/signup", [authJwt.verifyToken], controller.signup);
+router.post("/signup", controller.signup);
 
 router.post("/signin", controller.signin);
 

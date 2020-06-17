@@ -3,28 +3,38 @@ const passport = require("passport");
 const jwt = require("jsonwebtoken");
 const jwtSecretConfig = require("../config/jwt-secret.config");
 const EUserTypes = require("../enums/EUserTypes")
+var bcrypt = require("bcryptjs");
 
 // Retrieving and return all admins to the database
-exports.findAll = async(req, res) => {
+exports.findAll = async (req, res) => {
     try {
-        const admin = await db.Admin.find();
+        const admin = await db.User.find({role:"Admin"});
         const data = admin.map((item) => {
-            const { displayName, email } = item;
-            return { displayName, email };
+            const v=
+             { 
+                 id:item._id,
+                 displayName:item.displayName,
+                 email:item.email,
+                 phone : item.phone,
+                 birthdate : item.birthdate, 
+                 gender:item.gender, 
+                 isBlock:item.isBlock?"Bị khóa":"Không" 
+                }
+
+            return v;
         })
-        res.status(200).json({ admin: data })
+        res.status(200).json({ data: data })
     } catch (err) {
         console.log("err: ", err)
         res.status(500).send({ message: "Có lỗi xảy ra" })
-
     };
 }
 
 /**
  * {body: {email, password, displayName}}
  */
-exports.create = async(req, res) => {
-    const { email, password, displayName } = req.body;
+exports.create = async (req, res) => {
+    const { email, password, displayName, birthdate, gender, address} = req.body;
     if (!email || !password) {
         return res.status(400).send({
             message: "email and password not empty."
@@ -32,49 +42,43 @@ exports.create = async(req, res) => {
     }
     try {
         const data = await db.User.findOne({ email });
-        console.log("data: ", data);
         if (data) {
             return res.status(400).json({ message: "Email đã tồn tại, vui lòng nhập email khác." });
         } else {
-            const admin = new db.Admin(req.body)
-            admin.setPassword(password)
-            const result = await admin.save();
-            // console.log("result: ", result);
-            if (result) {
-                return res.status(200).json({ message: "Tạo tài khoản thành công.", user: req.body });
-            } else {
-                return res.status(400).json({ message: "Tạo tài khoản thất bại." });
-            }
+                db.User.create(
+                    {
+                      displayName: displayName,
+                      email: email,
+                      birthdate:birthdate,
+                      gender: gender,
+                      address: address,
+                      password:bcrypt.hashSync(password, 8),
+                      role:"Admin"
+                    },
+                    (err, result) => {
+                        if (err) {
+                            res.status(400).json({message: err});
+                        } else {
+                            res.json({result: result});
+                        }
+                    }
+                  );
         }
     } catch {
         return res.status(500).json({ message: "Đã có lỗi xảy ra, vui lòng thử lại." });
     }
 }
 
-/**
- * login with email and password
- * {body: {email, password}}
- */
+exports.updateBlockStatus = async (req, res) => {
+    var user = db.User.findById(req.params.id);
+    if (!user) return res.status(404).json({ message: "Không tìm thấy admin" })
 
-// login with email and password
-exports.login = async(req, res) => {
-    const { email, password } = req.body
-    try {
-        const admin = await db.Admin.findOne({ email });
-        if (admin) {
-            if (admin.validatePassword(password)) {
-                const { email, displayName, _id } = admin;
-                const token = await jwt.sign({ email, displayName, _id },
-                    jwtSecretConfig.jwtSecret
-                );
-                return res.status(200).json({ user: { email, displayName, _id, token } });
-            }
-            return res.status(400).json({ message: "Email hoặc mật khẩu sai." });
-        } else {
-            return res.status(400).json({ message: "Tài khoản không tồn tại" });
+    user.updateOne({ isBlock: !user.isBlock }, (err, success) => {
+        if (err) {
+            return res.status(400).json({ message: err });
         }
-    } catch (err) {
-        console.log("err: ", err)
-        return res.status(500).json({ message: "Có lỗi xảy ra" });
-    }
-};
+        else {
+            return res.status(200).json({ message: "success" })
+        }
+    })
+}

@@ -146,7 +146,7 @@ app.use(function (err, req, res, next) {
 });
 
 //running app 
-app.listen(parseInt(process.env.PORT) || 5000, () => {
+app.listen(parseInt(process.env.PORT) || 8080, () => {
   console.log("Server is listening http://localhost:5000");
 });
 module.exports = app;

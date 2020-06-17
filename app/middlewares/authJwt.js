@@ -30,24 +30,46 @@ if (!token) {
 ///! warning
 //need to test
 isAdmin = (req, res, next) => {
-  db.User.findById(req.userId).exec((err, user) => {
-    if (err) {
-      res.status(500).send({ message: err });
-      return;
+  db.User.findById(req.userData.id).exec((err, user) => {
+    if (err || user.role != EUserType.ADMIN) {
+      return res.status(403).send({ message: "Forbidden!" });
     }
-    if (user.typeID === EUserType.ADMIN) return true;
-    return false;
+    req.isAdmin = true;
+    next();
   });
 };
 
 isTeacher = (req, res, next) => {
-  db.User.findById(req.userId).exec((err, user) => {
-    if (err) {
-      res.status(500).send({ message: err });
-      return;
+  db.User.findById(req.userData.id).exec((err, user) => {
+    if (err || user.role != EUserType.TEACHER) {
+      return res.status(403).send({ message: "Forbidden!" });
     }
-    if (user.typeID === EUserType.TEACHER) return true;
-    return false;
+    req.isTeacher = true;
+    next();
+  });
+};
+
+isStudent = (req, res, next) => {
+  db.User.findById(req.userData.id).exec((err, user) => {
+    if (err || user.role != EUserType.STUDENT) {
+      return res.status(403).send({ message: "Forbidden!" });
+    }
+    req.isStudent = true;
+    next();
+  });
+};
+
+isManagePermission = (req, res, next) => {
+  db.User.findById(req.userData.id).exec((err, user) => {
+    if (err ) {
+      return res.status(403).send({ message: "Forbidden!" });
+    }
+    if(user.role != EUserType.ADMIN && user.role != EUserType.TEACHER){
+      return res.status(403).send({ message: "Forbidden!" });
+    }else{
+      req.isManagePermission = true;
+      next();
+    }
   });
 };
 
@@ -55,6 +77,8 @@ const authJwt = {
   verifyToken,
   isAdmin,
   isTeacher,
+  isStudent,
+  isManagePermission
 };
 
 module.exports = authJwt;

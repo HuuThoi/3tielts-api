@@ -1,6 +1,6 @@
 module.exports = {
     AccountRoute: require("./account.route"),
-    AdminRoute: require("./user.route"),
+    AdminRoute: require("./admin.route"),
     // AssignmentRoute: require("./assignment.route"),
     CategoryRoute: require("./category.route"),
     ClassRoute: require("./class.route"),
