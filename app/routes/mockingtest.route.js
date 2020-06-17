@@ -1,6 +1,6 @@
 const express = require("express");
 var router = express.Router();
-const controller = require("../controllers/assignment.controller");
+const controller = require("../controllers/mockingtest.controller");
 
 router.use(function (req, res, next) {next()});
 

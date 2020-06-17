@@ -9,7 +9,7 @@ module.exports = {
     DocumentRoute: require("./document.route"),
     // FeedbackRoute: require("./feedback.route"),
     // FeedbackDetailRoute: require("./feedbackdetail.route"),
-    // MockingTestRoute: require("./mockingtest.route"),
+    MockingTestRoute: require("./mockingtest.route"),
     // ResponseRoute: require("./response.route"),
     ScheduleRoute: require("./schedule.route"),
     QuestionRoute: require("./question.route"),

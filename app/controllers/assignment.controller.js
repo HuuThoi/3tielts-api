@@ -18,12 +18,19 @@ exports.findAll = async (req, res) => {
     //     return { displayName, email };
     // })
     if (data) {
-      return res.status(200).json({ data, length });
+      return res.status(200).json({
+        data,
+        length,
+      });
     }
-    return res.status(400).json({ message: "Không có bài tập nào." });
+    return res.status(400).json({
+      message: "Không có bài tập nào.",
+    });
   } catch (err) {
     console.log("err: ", err);
-    res.status(500).send({ message: "Có lỗi xảy ra" });
+    res.status(500).send({
+      message: "Có lỗi xảy ra",
+    });
   }
 };
 
@@ -35,76 +42,109 @@ exports.create = async (req, res) => {
   assignment.save((err, result) => {
     if (err) {
       console.log("err ", err);
-      return res.status(500).json({ message: "Đã có lỗi xảy ra." });
+      return res.status(500).json({
+        message: "Đã có lỗi xảy ra.",
+      });
     }
     if (result) {
       // const data = await Assignment.find
       console.log(result);
-      return res
-        .status(200)
-        .json({ message: "Tạo bài tập thành công.", data: result });
+      return res.status(200).json({
+        message: "Tạo bài tập thành công.",
+        data: result,
+      });
     } else {
-      return res.status(400).json({ message: "Tạo bài tập thất bại." });
+      return res.status(400).json({
+        message: "Tạo bài tập thất bại.",
+      });
     }
   });
 };
 
 exports.update = async (req, res) => {
-    console.log(req.body)
-    const { _id, name, content } = req.body
+  console.log(req.body);
+  const { _id, name, content } = req.body;
 
-    if (!_id) {
-        return res.status(400).json({ message: "Id không được rỗng" })
-    }
+  if (!_id) {
+    return res.status(400).json({
+      message: "Id không được rỗng",
+    });
+  }
 
-    // if (!name && !majorId) {
-    //     return res.status(400).json({ message: "Tên tag hoặc ngành học không được rỗng" })
-    // }
+  // if (!name && !majorId) {
+  //     return res.status(400).json({ message: "Tên tag hoặc ngành học không được rỗng" })
+  // }
 
-    try {
-        const Assignment = db.Assignment;
-        const assignment = await Assignment.findOne({ _id })
+  try {
+    const Assignment = db.Assignment;
+    const assignment = await Assignment.findOne({
+      _id,
+    });
 
-        if (assignment) {
-
-            const result = await Assignment.findOneAndUpdate({ _id }, { name: name || assignment.name, content: content || assignment.content })
-            if (result) {
-                const data = await Assignment.findOne({ _id: result._id })
-                    // .populate('majorId')
-
-                if (data) {
-                    return res.status(200).json({ message: "Cập nhật bài tập thành công.", data })
-                }
-            }
+    if (assignment) {
+      const result = await Assignment.findOneAndUpdate(
+        {
+          _id,
+        },
+        {
+          name: name || assignment.name,
+          content: content || assignment.content,
         }
-        else {
-            return res.status(400).json({ message: "Không tìm thấy bài tập." })
+      );
+      if (result) {
+        const data = await Assignment.findOne({
+          _id: result._id,
+        });
+        // .populate('majorId')
+
+        if (data) {
+          return res.status(200).json({
+            message: "Cập nhật bài tập thành công.",
+            data,
+          });
         }
+      }
+    } else {
+      return res.status(400).json({
+        message: "Không tìm thấy bài tập.",
+      });
     }
-    catch (err) {
-        console.log('err: ', err)
-        return res.status(500).json({ message: "Đã có lỗi xảy ra." })
-    }
-}
+  } catch (err) {
+    console.log("err: ", err);
+    return res.status(500).json({
+      message: "Đã có lỗi xảy ra.",
+    });
+  }
+};
 
 exports.delete = async (req, res) => {
-    const { _id } = req.body
-    if (!_id) {
-        return res.status(400).json({ message: "Id không được rỗng" })
-    }
+  const { _id } = req.body;
+  console.log(req.body);
+  if (!_id) {
+    return res.status(400).json({
+      message: "Id không được rỗng",
+    });
+  }
 
-    try {
-        const result = await Assignment.findOneAndDelete({ _id })
-        if (result) {
-            return res.status(200).json({ message: "Xóa bài tập thành công.", data: result })
-        }
-        else {
-            return res.status(400).json({ message: "Không tìm thấy bài tập." })
-        }
+  try {
+    const Assignment = db.Assignment;
+    const result = await Assignment.findOneAndDelete({
+      _id,
+    });
+    if (result) {
+      return res.status(200).json({
+        message: "Xóa bài tập thành công.",
+        data: result,
+      });
+    } else {
+      return res.status(400).json({
+        message: "Không tìm thấy bài tập.",
+      });
     }
-    catch (err) {
-        console.log('err: ', err)
-        return res.status(500).json({ message: "Đã có lỗi xảy ra." })
-    }
-
-}
+  } catch (err) {
+    console.log("err: ", err);
+    return res.status(500).json({
+      message: "Đã có lỗi xảy ra.",
+    });
+  }
+};

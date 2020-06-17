@@ -115,14 +115,27 @@ app.get("/seed-data", (req, res) => {
       (err, seedUser) => {}
     );
   }
-  let Assignment = db.Assignment;
-  for (var i = 10; i < 15; i++) {
+  // let Assignment = db.Assignment;
+  // for (var i = 10; i < 15; i++) {
+  //   let num = i + 1;
+  //   Assignment.create(
+  //     {
+  //       name: "Assignment " + num,
+  //       status: true,
+  //       content: "Content of Course " + num,
+
+  //     },
+  //     (err, seedUser) => {}
+  //   );
+  // }
+
+  let MockingTest = db.MockingTest;
+  for (var i = 5; i < 15; i++) {
     let num = i + 1;
-    Assignment.create(
+    MockingTest.create(
       {
-        name: "Assignment " + num,
-        status: true,
-        content: "Content of Course " + num,
+        name: "MockingTest " + num,
+        contents: "Content of MockingTest " + num,
 
       },
       (err, seedUser) => {}
@@ -146,6 +159,8 @@ app.use("/admins", route.AdminRoute);
 app.use("/teachers", route.TeacherRoute);
 app.use("/classes", route.ClassRoute);
 app.use("/assignments", route.AssignmentRoute);
+app.use("/mocking-tests", route.MockingTestRoute);
+
 
 //caych error
 app.use((req, res, next) => {
