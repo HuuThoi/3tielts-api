@@ -8,7 +8,10 @@ const AssignmentSchema = mongoose.Schema({
         type: Date,
         default: new Date(),
     },
-    status: Boolean,
+    status:  {
+        type: Boolean,
+        default: false,
+    },
     categoryID: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Category",
