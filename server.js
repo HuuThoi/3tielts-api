@@ -142,6 +142,20 @@ app.get("/seed-data", (req, res) => {
     );
   }
   res.json({ message: "Seed data created" });
+
+  let Response = db.Response;
+  for (var i = 5; i < 15; i++) {
+    let num = i + 1;
+    Response.create(
+      {
+        content: "Content of Response " + num,
+        title: "Title of Response " + num,
+
+      },
+      (err, seedUser) => {}
+    );
+  }
+  res.json({ message: "Seed data created" });
 });
 
 //route
@@ -160,6 +174,7 @@ app.use("/teachers", route.TeacherRoute);
 app.use("/classes", route.ClassRoute);
 app.use("/assignments", route.AssignmentRoute);
 app.use("/mocking-tests", route.MockingTestRoute);
+app.use("/responses", route.ResponseRoute);
 
 
 //caych error
