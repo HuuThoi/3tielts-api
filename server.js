@@ -8,7 +8,17 @@ const route = require("./app/routes/index");
 const cors = require("cors");
 const app = express();
 const db = require("./app/models/index");
-var bcrypt = require("bcryptjs");
+const bcrypt = require("bcryptjs");
+const http = require("http").createServer(app);
+const io = require("socket.io")(http);
+
+io.on("connection", (socket) => {
+  console.log("connected socket");
+  socket.on("message", ({ name, message }) => {
+    console.log({ name, message });
+    io.emit("message", { name, message });
+  });
+});
 
 app.use(cors());
 // require('./passport');   temp comment
@@ -16,11 +26,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(logger("dev"));
 
+//socket io
 
 //connecting to the database + để tránh warning các deprecate thì thêm 3 dòng .set vào
-mongoose.set('useNewUrlParser', true);
-mongoose.set('useFindAndModify', false);
-mongoose.set('useCreateIndex', true);
+mongoose.set("useNewUrlParser", true);
+mongoose.set("useFindAndModify", false);
+mongoose.set("useCreateIndex", true);
 mongoose.Promise = global.Promise;
 mongoose
   .connect(dbConfig.url, {
@@ -67,24 +78,23 @@ app.get("/seed-data", (req, res) => {
   const Class = db.Class;
   for (var i = 27; i < 30; i++) {
     let num = i + 1;
-  Class.create(
-    {
-      name: "Class " + num,
-      status: 1,
-     courseID:'5ed72fc0699d0c2cf453b7be',
-     categoryID:'5ed72fc0699d0c2cf453b7b9'
-    },
-    (err, seedUser) => {
-      if (err) {
-        console.error(err);
-        return;
+    Class.create(
+      {
+        name: "Class " + num,
+        status: 1,
+        courseID: "5ed72fc0699d0c2cf453b7be",
+        categoryID: "5ed72fc0699d0c2cf453b7b9",
+      },
+      (err, seedUser) => {
+        if (err) {
+          console.error(err);
+          return;
+        }
+        res.statusCode = 200;
       }
-      res.statusCode = 200;
-    }
-  );
+    );
+  }
 
-}
- 
   // let Category = db.Category;
 
   // for (var i = 10; i < 15; i++) {
@@ -112,7 +122,7 @@ app.get("/seed-data", (req, res) => {
         dateEnd: "3/12/2020",
         tuition: "Tuition " + num,
       },
-      (err, seedUser) => {}
+      (err, seedUser) => { }
     );
   }
   res.json({ message: "Seed data created" });
@@ -135,18 +145,18 @@ app.use("/classes", route.ClassRoute);
 
 //caych error
 app.use((req, res, next) => {
-	res.status(404).send("NOT FOUND");
+  res.status(404).send("NOT FOUND");
 });
 
 app.use(function (err, req, res, next) {
-	console.log(err.stack);
-	// console.log(err.status);
-	const statusCode = err.status || 500;
-	res.status(statusCode).send("View error log on console.");
+  console.log(err.stack);
+  // console.log(err.status);
+  const statusCode = err.status || 500;
+  res.status(statusCode).send("View error log on console.");
 });
 
-//running app 
-app.listen(parseInt(process.env.PORT) || 8080, () => {
-  console.log("Server is listening http://localhost:5000");
+//running app
+http.listen(parseInt(process.env.PORT) || 8080, () => {
+  console.log("Server is listening http://localhost:8080");
 });
 module.exports = app;
