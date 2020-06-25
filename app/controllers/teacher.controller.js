@@ -1,26 +1,57 @@
 const db = require("../models/index");
+const bcrypt = require("bcryptjs");
+const EUserTypes = require("../enums/EUserTypes")
 
-exports.findAll = async(req, res) => {
+// exports.findAll = async (req, res) => {
+//     try {
+//         let { limit, offset } = req.params;
+
+//         limit = parseInt(limit);
+//         offset = parseInt(offset);
+//         const length = await db.Teacher.find().countDocuments();
+
+//         const data = await db.Teacher.find()
+//             .limit(limit)
+//             .skip((offset - 1) * limit);
+//         return res.status(200).json({ data, length });
+
+//     } catch (err) {
+//         res.status(500).send({
+//             message: err.message || "Some error occurred while retrieving shifts.",
+//         });
+//     }
+// };
+
+exports.findAll = async (req, res) => {
+    const teachers = [];
     try {
-        let { limit, offset } = req.params;
+        await db.User.find({ role: EUserTypes.TEACHER })
+            .exec(function (err, result) {
+                if (err) {
+                    res.status(500).json({ message: err })
+                }
+                for (let i = 0; i < result.length; i++) {
+                    let obj = {
+                        id: result[i]._id,
+                        displayName: result[i].displayName,
+                        isBlocked: result[i].isBlock == true ? "True" : "False",
+                        phone: result[i].phone,
+                        email: result[i].email,
+                        gender: result[i].gender,
+                        address: result[i].address,
 
-        limit = parseInt(limit);
-        offset = parseInt(offset);
-        const length = await db.Teacher.find().countDocuments();
-
-        const data = await db.Teacher.find()
-            .limit(limit)
-            .skip((offset - 1) * limit);
-        return res.status(200).json({ data, length });
-
+                    }
+                    teachers.push(obj);
+                }
+                return res.status(200).json({ data: teachers });
+            });
     } catch (err) {
-        res.status(500).send({
-            message: err.message || "Some error occurred while retrieving shifts.",
-        });
+        console.log("err: ", err);
+        return res.status(500).json({ message: err });
     }
 };
 
-exports.findAllNoPaging = async(req, res) => {
+exports.findAllNoPaging = async (req, res) => {
     try {
         db.Teacher.find()
             .then((shifts) => {
@@ -33,16 +64,24 @@ exports.findAllNoPaging = async(req, res) => {
     }
 };
 
-exports.findById = async(req, res) => {
+exports.findById = async (req, res) => {
     try {
-        db.Teacher.findById(req.params.id)
+        db.User.findById(req.params.id)
             .then((teacher) => {
                 if (!teacher) {
                     return res.status(404).send({
                         message: "Teacher not found with id " + req.params.id,
                     });
                 }
-                res.json(teacher);
+                const data = {
+                    address: teacher.address,
+                    birthdate: teacher.birthdate,
+                    gender: teacher.gender,
+                    email: teacher.email,
+                    displayName: teacher.displayName,
+                    isBlock: teacher.isBlock
+                }
+                res.json(data);
             })
     } catch (err) {
         res.status(500).send({
@@ -51,13 +90,31 @@ exports.findById = async(req, res) => {
     }
 };
 
-exports.create = async(req, res) => {
+exports.create = async (req, res) => {
+    const { address, birthdate, password, gender, email, displayName } = req.body;
     try {
-        db.Teacher.create(req.body, function(err, teacher) {
+        // db.User.findOne({ email: email }, function (err, result) {
+        //     if (result) {
+        //         res.status(400).json({ message: "Email is existed" })
+        //     }
+        // });
+
+        db.User.create({
+            address: address,
+            birthdate: birthdate,
+            password: bcrypt.hashSync(password, 8),
+            gender: gender,
+            email: email,
+            displayName: displayName,
+            role: EUserTypes.TEACHER
+        }, function (err, user) {
             if (err) {
-                res.send("error saving teacher");
+                //return res.send("error saving teacher");
             } else {
-                res.send(teacher);
+                db.Teacher.create({
+                    userID: user._id
+                });
+                //return res.send("Success");
             }
         });
     } catch (err) {
@@ -67,9 +124,18 @@ exports.create = async(req, res) => {
     }
 };
 
-exports.update = async(req, res) => {
+exports.update = async (req, res) => {
+    const { address, birthdate, gender, isBlock } = req.body;
+
     try {
-        db.Teacher.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true })
+        db.User.findByIdAndUpdate(req.params.id, {
+            $set: {
+                address: address,
+                birthdate: birthdate,
+                gender: gender,
+                isBlock: isBlock
+            }
+        }, { new: true })
             .then(teacher => {
                 if (!teacher) {
                     return res.status(404).send({
@@ -86,12 +152,12 @@ exports.update = async(req, res) => {
 };
 
 
-exports.delete = async(req, res) => {
+exports.delete = async (req, res) => {
     try {
-        db.Teacher.findOneAndRemove({
-                _id: req.params.id,
-            },
-            function(err, teacher) {
+        db.User.findOneAndRemove({
+            _id: req.params.id,
+        },
+            function (err, teacher) {
                 if (err) {
                     res.send("error removing");
                 } else {
@@ -105,3 +171,26 @@ exports.delete = async(req, res) => {
         });
     }
 };
+
+exports.blockTeacher = async (req, res) => {
+    try {
+        db.User.findByIdAndUpdate(req.params.id, {
+            $set: {
+                isBlock: true,
+            }
+        })
+            .then(teacher => {
+                if (!teacher) {
+                    return res.status(404).send({
+                        message: "Note not found with id " + req.params.id
+                    });
+                }
+                res.json({ message: "Block teacher successfully" });
+            })
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Some error occurred while retrieving shifts.",
+
+        })
+    }
+}

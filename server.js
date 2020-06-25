@@ -139,7 +139,7 @@ app.use("/schedules", route.ScheduleRoute);
 app.use("/shifts", route.ShiftRoute);
 app.use("/users", route.UserRoute);
 app.use("/admins", route.AdminRoute);
-// app.use('/students', route.StudentRoute);
+app.use('/students', route.StudentRoute);
 app.use("/teachers", route.TeacherRoute);
 app.use("/classes", route.ClassRoute);
 
