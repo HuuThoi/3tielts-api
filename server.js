@@ -15,7 +15,7 @@ const io = require("socket.io")(http);
 io.on("connection", (socket) => {
   console.log("connected socket");
   socket.on("message", ({ name, message }) => {
-    console.log({name, message});
+    console.log({ name, message });
     io.emit("message", { name, message });
   });
 });
@@ -122,7 +122,7 @@ app.get("/seed-data", (req, res) => {
         dateEnd: "3/12/2020",
         tuition: "Tuition " + num,
       },
-      (err, seedUser) => {}
+      (err, seedUser) => { }
     );
   }
   res.json({ message: "Seed data created" });
@@ -139,7 +139,7 @@ app.use("/schedules", route.ScheduleRoute);
 app.use("/shifts", route.ShiftRoute);
 app.use("/users", route.UserRoute);
 app.use("/admins", route.AdminRoute);
-// app.use('/students', route.StudentRoute);
+app.use('/students', route.StudentRoute);
 app.use("/teachers", route.TeacherRoute);
 app.use("/classes", route.ClassRoute);
 

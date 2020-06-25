@@ -1,21 +1,16 @@
 const express = require("express");
 var router = express.Router();
 const controller = require("../controllers/category.controller");
+const { verifySignUp, authJwt } = require("../middlewares/index");
 
 router.use(function (req, res, next) {
     next();
 })
-// 1 API tạo mới
-// 2 API lấy toàn bộ( có paging)
-// 3 API lấy chi tiết theo ID
-// 4 API cập nhật
-// 5 API xóa
 
-router.get("/:limit/:offset", controller.findAll);
-router.get("/:id", controller.findByID);
-// router.get("/info/:_id", userController.getInforUser)
-router.post("", controller.create);
-router.put("/update/:id", controller.update);
+router.get("all", [authJwt.verifyToken, authJwt.isManagePermission], controller.findAll);
+router.get("/:id",[authJwt.verifyToken, authJwt.isManagePermission], controller.findByID);
+router.post("/", [authJwt.verifyToken, authJwt.isManagePermission], controller.create);
+router.put("/update/:id", [authJwt.verifyToken, authJwt.isManagePermission], controller.update);
 router.get("/support/dropdown", controller.getDropdown);
 
 module.exports = router;
