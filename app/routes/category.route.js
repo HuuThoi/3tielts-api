@@ -7,10 +7,11 @@ router.use(function (req, res, next) {
     next();
 })
 
-router.get("all", [authJwt.verifyToken, authJwt.isManagePermission], controller.findAll);
-router.get("/:id",[authJwt.verifyToken, authJwt.isManagePermission], controller.findByID);
+router.get("/all", [authJwt.verifyToken, authJwt.isManagePermission], controller.findAll);
+router.get("/:id", [authJwt.verifyToken, authJwt.isManagePermission], controller.findByID);
 router.post("/", [authJwt.verifyToken, authJwt.isManagePermission], controller.create);
-router.put("/update/:id", [authJwt.verifyToken, authJwt.isManagePermission], controller.update);
+router.put("/:id", [authJwt.verifyToken, authJwt.isManagePermission], controller.update);
 router.get("/support/dropdown", controller.getDropdown);
+router.delete("/:id", controller.delete);
 
 module.exports = router;
