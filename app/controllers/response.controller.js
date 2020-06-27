@@ -24,7 +24,7 @@ exports.findAll = async (req, res) => {
       });
     }
     return res.status(400).json({
-      message: "Không có bài tập nào.",
+      message: "Không có phản hồi nào.",
     });
   } catch (err) {
     console.log("err: ", err);
@@ -50,12 +50,12 @@ exports.create = async (req, res) => {
       // const data = await Assignment.find
       console.log(result);
       return res.status(200).json({
-        message: "Tạo bài tập thành công.",
+        message: "Tạo phản hồi thành công.",
         data: result,
       });
     } else {
       return res.status(400).json({
-        message: "Tạo bài tập thất bại.",
+        message: "Tạo phản hồi thất bại.",
       });
     }
   });
@@ -99,14 +99,14 @@ exports.update = async (req, res) => {
 
         if (data) {
           return res.status(200).json({
-            message: "Cập nhật bài tập thành công.",
+            message: "Cập nhật phản hồi thành công.",
             data,
           });
         }
       }
     } else {
       return res.status(400).json({
-        message: "Không tìm thấy bài tập.",
+        message: "Không tìm thấy phản hồi.",
       });
     }
   } catch (err) {
@@ -133,12 +133,12 @@ exports.delete = async (req, res) => {
     });
     if (result) {
       return res.status(200).json({
-        message: "Xóa bài tập thành công.",
+        message: "Xóa phản hồi thành công.",
         data: result,
       });
     } else {
       return res.status(400).json({
-        message: "Không tìm thấy bài tập.",
+        message: "Không tìm thấy phản hồi.",
       });
     }
   } catch (err) {
