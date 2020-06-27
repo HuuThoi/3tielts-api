@@ -142,6 +142,7 @@ app.use("/admins", route.AdminRoute);
 app.use('/students', route.StudentRoute);
 app.use("/teachers", route.TeacherRoute);
 app.use("/classes", route.ClassRoute);
+app.use("/absences", route.AbsenceRoute);
 
 //caych error
 app.use((req, res, next) => {

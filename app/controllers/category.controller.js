@@ -42,14 +42,12 @@ exports.create = async (req, res) => {
     })
   }
   try {
-    // console.log("BODY",req.body)
     const category = new db.Category(req.body)
-    //category.setPasswordHash(password)
     console.log(category);
     const result = await category.save();
     console.log("result: ", result);
     if (result) {
-      return res.status(200).json({ message: "Tạo cate thành công.", category: req.body });
+      return res.status(200).json({ message: "Tạo cate thành công." });
     } else {
       return res.status(400).json({ message: "Tạo cate thất bại." });
     }
@@ -87,10 +85,10 @@ exports.delete = async (req, res) => {
   try {
     const result = await db.Category.findOneAndDelete({ _id: id })
     if (result) {
-      return res.status(200).json({ message: "Xóa category thành công.", data: result })
+      return res.status(200).json({ message: "Xóa category thành công." })
     }
     else {
-      return res.status(400).json({ message: "Không tìm thấy db.Category." })
+      return res.status(400).json({ message: "Không tìm thấy Category." })
     }
   }
   catch (err) {

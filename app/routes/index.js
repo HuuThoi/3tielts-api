@@ -19,4 +19,5 @@ module.exports = {
     // SubmitRoute: require("./submit.route"),
     // TestListRoute: require("./testlist.route"),
     UserRoute: require("./user.route"),
+    AbsenceRoute: require("./absence.route"),
 };
