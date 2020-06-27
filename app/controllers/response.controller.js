@@ -63,7 +63,7 @@ exports.create = async (req, res) => {
 
 exports.update = async (req, res) => {
   console.log(req.body);
-  const { _id, name, contents } = req.body;
+  const { _id, content, title } = req.body;
 
   if (!_id) {
     return res.status(400).json({
@@ -87,8 +87,8 @@ exports.update = async (req, res) => {
           _id,
         },
         {
-          name: name || assignment.name,
-          contents: contents || assignment.contents,
+          content: content || assignment.content,
+          title: title || assignment.title,
         }
       );
       if (result) {
