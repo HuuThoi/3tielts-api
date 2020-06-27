@@ -10,7 +10,7 @@ const db = require("../models/index");
 exports.findAll = async (req, res) => {
   const userData = req.userData;
 
-  const classes=[];
+  const classes = [];
   try {
     if (userData.role == EUserTypes.ADMIN) {
       await Class.find()
@@ -27,21 +27,21 @@ exports.findAll = async (req, res) => {
           if (err) {
             res.status(500).json({ message: err })
           }
-          for(let i=0;i< result.length;i++){
+          for (let i = 0; i < result.length; i++) {
             let obj = {
               id: result[i]._id,
               name: result[i].name,
               status: result[i].status == true ? "Active" : "InActive",
-              categoryName: result[i].categoryID != null?result[i].categoryID.name:null,
+              categoryName: result[i].categoryID != null ? result[i].categoryID.name : null,
               dateOpening: result[i].dateOpening,
               dateClosed: result[i].dateClosed,
-              courseName: result[i].courseID != null?result[i].courseID.name:null
+              courseName: result[i].courseID != null ? result[i].courseID.name : null
             }
             classes.push(obj);
           }
           return res.status(200).json({ data: classes });
         });
-    } 
+    }
     else if (userData.role == EUserTypes.Teacher) {
       classes = await Class.find({ lecturer: { $in: userData.id } })
         .populate({
@@ -53,15 +53,15 @@ exports.findAll = async (req, res) => {
           if (err) {
             res.status(500).json({ message: err })
           }
-          for(let i=0;i< result.length;i++){
+          for (let i = 0; i < result.length; i++) {
             let obj = {
               id: result[i]._id,
               name: result[i].name,
               status: result[i].status == true ? "Active" : "InActive",
-              categoryName: result[i].categoryID != null?result[i].categoryID.name:null,
+              categoryName: result[i].categoryID != null ? result[i].categoryID.name : null,
               dateOpening: result[i].dateOpening,
               dateClosed: result[i].dateClosed,
-              courseName: result[i].courseID != null?result[i].courseID.name:null
+              courseName: result[i].courseID != null ? result[i].courseID.name : null
             }
             classes.push(obj);
           }
@@ -79,21 +79,21 @@ exports.findAll = async (req, res) => {
           if (err) {
             res.status(500).json({ message: err })
           }
-          for(let i=0;i< result.length;i++){
+          for (let i = 0; i < result.length; i++) {
             let obj = {
               id: result[i]._id,
               name: result[i].name,
               status: result[i].status == true ? "Active" : "InActive",
-              categoryName: result[i].categoryID != null?result[i].categoryID.name:null,
+              categoryName: result[i].categoryID != null ? result[i].categoryID.name : null,
               dateOpening: result[i].dateOpening,
               dateClosed: result[i].dateClosed,
-              courseName: result[i].courseID != null?result[i].courseID.name:null
+              courseName: result[i].courseID != null ? result[i].courseID.name : null
             }
             classes.push(obj);
           }
           return res.status(200).json({ data: classes });
         });
-      }
+    }
     // return res.status(200).json({ data: classes });
   } catch (err) {
     console.log("err: ", err);
@@ -203,5 +203,139 @@ exports.getDropdown = async (req, res) => {
   } catch (err) {
     console.log("err: ", err);
     return res.status(500).json({ message: "Đã có lỗi xảy ra" });
+  }
+};
+
+exports.getAllClassesInDayForStudent = async (req, res) => {
+  const classes = [];
+  let start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 1, 0, 0);
+
+  let end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 59, 59);
+
+  let query = { createdAt: { $gte: start, $lt: end } };
+
+  try {
+
+    classes = await Class.find({ studentList: { $in: userData.id }, query })
+      .populate({
+        path: "categoryID",
+        select: "name"
+      })
+      .populate({
+        path: "courseID",
+      }).exec(function (err, result) {
+        if (err) {
+          res.status(500).json({ message: err })
+        }
+        for (let i = 0; i < result.length; i++) {
+          let obj = {
+            id: result[i]._id,
+            name: result[i].name,
+            categoryType: result[i].categoryID.type,
+            dateOpening: result[i].dateOpening,
+          }
+          classes.push(obj);
+        }
+
+        // return data {classes in Cate 1, classé in cate 2}
+        return res.status(200).json({ data: classes });
+      });
+  } catch (err) {
+    console.log("err: ", err);
+    return res.status(500).json({ message: err });
+  }
+};
+
+exports.getAllClassesInDayForTeacher = async (req, res) => {
+  const userData = req.userData;
+
+  const classes = [];
+  try {
+    if (userData.role == EUserTypes.ADMIN) {
+      await Class.find()
+        .populate({
+          path: "categoryID",
+          select: 'name'
+          // match: { isBlock: false },
+        })
+        .populate({
+          path: "courseID",
+          select: 'name'
+          // match: { isBlock: false },
+        }).exec(function (err, result) {
+          if (err) {
+            res.status(500).json({ message: err })
+          }
+          for (let i = 0; i < result.length; i++) {
+            let obj = {
+              id: result[i]._id,
+              name: result[i].name,
+              status: result[i].status == true ? "Active" : "InActive",
+              categoryName: result[i].categoryID != null ? result[i].categoryID.name : null,
+              dateOpening: result[i].dateOpening,
+              dateClosed: result[i].dateClosed,
+              courseName: result[i].courseID != null ? result[i].courseID.name : null
+            }
+            classes.push(obj);
+          }
+          return res.status(200).json({ data: classes });
+        });
+    }
+    else if (userData.role == EUserTypes.Teacher) {
+      classes = await Class.find({ lecturer: { $in: userData.id } })
+        .populate({
+          path: "categoryID",
+        })
+        .populate({
+          path: "courseID",
+        }).exec(function (err, result) {
+          if (err) {
+            res.status(500).json({ message: err })
+          }
+          for (let i = 0; i < result.length; i++) {
+            let obj = {
+              id: result[i]._id,
+              name: result[i].name,
+              status: result[i].status == true ? "Active" : "InActive",
+              categoryName: result[i].categoryID != null ? result[i].categoryID.name : null,
+              dateOpening: result[i].dateOpening,
+              dateClosed: result[i].dateClosed,
+              courseName: result[i].courseID != null ? result[i].courseID.name : null
+            }
+            classes.push(obj);
+          }
+          return res.status(200).json({ data: classes });
+        });
+    } else if (userData.role == EUserTypes.STUDENT) {
+      classes = await Class.find({ studentList: { $in: userData.id } })
+        .populate({
+          path: "categoryID",
+          select: "name"
+        })
+        .populate({
+          path: "courseID",
+        }).exec(function (err, result) {
+          if (err) {
+            res.status(500).json({ message: err })
+          }
+          for (let i = 0; i < result.length; i++) {
+            let obj = {
+              id: result[i]._id,
+              name: result[i].name,
+              status: result[i].status == true ? "Active" : "InActive",
+              categoryName: result[i].categoryID != null ? result[i].categoryID.name : null,
+              dateOpening: result[i].dateOpening,
+              dateClosed: result[i].dateClosed,
+              courseName: result[i].courseID != null ? result[i].courseID.name : null
+            }
+            classes.push(obj);
+          }
+          return res.status(200).json({ data: classes });
+        });
+    }
+    // return res.status(200).json({ data: classes });
+  } catch (err) {
+    console.log("err: ", err);
+    return res.status(500).json({ message: err });
   }
 };

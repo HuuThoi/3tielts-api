@@ -10,7 +10,7 @@ const CourseSchema = mongoose.Schema({
     // "dateStart": "2019-01-01",
     // "dateEnd": "2019-03-01",
     // "tuition": 1000000,
-   
+
 
 
     name: String,
@@ -33,7 +33,7 @@ const CourseSchema = mongoose.Schema({
     schedule: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Schedule",
-    }, ],
+    },],
     lecturer: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Teacher",
@@ -41,7 +41,8 @@ const CourseSchema = mongoose.Schema({
     studentList: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
-    }, ],
+    },],
+    type: Number
 }, {
     timestamps: true,
 });

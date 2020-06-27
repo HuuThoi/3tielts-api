@@ -23,7 +23,7 @@ exports.findAll = async (req, res) => {
               status: result[i].status == true ? "Active" : "InActive",
               timeOut: result[i].timeOut,
               timeIn: result[i].timeIn,
-              className: result[i].classID.name,
+              className: result[i].classID != null ? result[i].classID.name : null,
             }
             data.push(obj);
           }
