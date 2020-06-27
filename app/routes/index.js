@@ -7,7 +7,7 @@ module.exports = {
     CommentRoute: require("./comment.route"),
     CourseRoute: require("./course.route"),
     DocumentRoute: require("./document.route"),
-    // FeedbackRoute: require("./feedback.route"),
+    FeedbackRoute: require("./feedback.route"),
     // FeedbackDetailRoute: require("./feedbackdetail.route"),
     // MockingTestRoute: require("./mockingtest.route"),
     // ResponseRoute: require("./response.route"),
