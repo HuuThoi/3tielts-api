@@ -10,79 +10,92 @@ const UserSchema = mongoose.Schema(
     username: {
       type: String,
       required: true,
+      unique: true,
       trim: true,
-    },
-    email: {
+  },
+  email: {
       type: String,
-      required: true,
-      // unique: true,
-      lowercase: true,
-      validate: (value) => {
-        if (!validator.isEmail(value)) {
-          throw new Error({ error: "Invalid Email address" });
-        }
-      },
-    },
-    password: { type: String, required: true, minLength: 7, trim: true },
-    passwordHash: String,
-    avatar: String,
-    phone: String,
-    birthdate: Date,
-    googleID: String,
-    facebookID: String,
-    address: String,
-    role: {
+      // required: true,
+      // unique: false,
+      // lowercase: true,
+      // validate: (value) => {
+      //     if (!validator.isEmail(value)) {
+      //         throw new Error({ error: "Invalid Email address" });
+      //     }
+      // },
+  },
+  password: { type: String, required: true, minLength: 7 },
+  passwordHash: String,
+  avatar: String,
+  phone: String,
+  birthdate: Date,
+  googleID: String,
+  facebookID: String,
+  adress: String,
+  role: {
       type: String,
-      default: EUserType.STUDENT,
-    },
-    gender: String,
-    isBlock: {
+      default: EUserType.STANDARD,
+  },
+  gender: String,
+  isBlock: {
       type: Boolean,
       default: false,
-    },
-    isActive: {
+  },
+  isActive: {
       type: Boolean,
       default: false,
-    },
-    city: {
+  },
+  wantToUpgrade: {
+      type: Boolean,
+      default: false,
+  },
+  city: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "City",
-    },
-    number: {
+  },
+  number: {
       type: Number,
       default: 0,
-    },
-    district: {
+  },
+  district: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "District",
-    },
-    tests: [
-      {
-        _id: {
+  },
+  tests: [{
+      _id: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "MockingTest",
-        },
-        timein: {
-          type: Date,
-          default: new Date(),
-        },
-        timeout: {
-          type: Date,
-        },
-        isDone: {
-          type: Boolean,
-          default: false,
-        },
       },
-    ],
-    interestedItems: [
-      {
-        _id: {
+      grades: {
+          type: Number,
+          default: 0
+      },
+      timeLeft: {
+          type: Number,
+          default: 3600,
+      },
+      status: {
+          type: Number,
+          default: 0,
+      },
+      answerKeys: {
+          type: Array,
+          default: [],
+      }
+    
+  }, ],
+  interestedItems: [{
+      _id: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "Document",
-        },
       },
-    ],
+  }, ],
+  courseList: [{
+      _id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Course",
+      },
+  },],
     resetLink: {
       data: String,
       default: "",
