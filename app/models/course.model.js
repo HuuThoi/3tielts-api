@@ -10,13 +10,7 @@ const CourseSchema = mongoose.Schema({
     // "dateStart": "2019-01-01",
     // "dateEnd": "2019-03-01",
     // "tuition": 1000000,
-<<<<<<< HEAD
    
-=======
-
-
-
->>>>>>> development
     name: String,
     shortDesc: String,
     content: String,
@@ -38,15 +32,12 @@ const CourseSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Schedule",
     },],
-<<<<<<< HEAD
     curriculums: [
         {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Curriculum",
         }
     ],
-=======
->>>>>>> development
     lecturer: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
@@ -56,10 +47,6 @@ const CourseSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
     },],
-<<<<<<< HEAD
-=======
-    type: Number
->>>>>>> development
 }, {
     timestamps: true,
 });
