@@ -13,7 +13,7 @@ router.use(function (req, res, next) {
   next();
 });
 
-router.post("/signup", [authJwt.verifyToken], controller.signup);
+router.post("/signup", controller.signup);
 
 router.post("/signin", controller.signin);
 
@@ -24,10 +24,7 @@ router.post("/signin", controller.signin);
 //     controller.all2
 //   );
 
-router.get("/me", [authJwt.verifyToken], async (req, res) => {
-  console.log("get profile");
-  console.log("req", req.userData);
-})
+router.get("/me", [authJwt.verifyToken], controller.getCurrentUser);
 
 router.post("/verify-me", async (req, res) => {
   if(!req.body.token) 

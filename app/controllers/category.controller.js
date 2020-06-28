@@ -3,40 +3,20 @@ const db = require("../models/index");
 
 exports.findAll = async (req, res) => {
   try {
-    let { limit, offset } = req.params
 
-    limit = parseInt(limit)
-    offset = parseInt(offset)
-    const length = await db.Category.find().countDocuments()
-    const data = await db.Category.find()
-      .limit(limit)
-      .skip((offset - 1)*limit)
-      // .populate({
-      //   path: 'userId',
-      //   // match: { isBlock: false },
-      //   select: ['-password', '-passwordHash'],
-      // })
-
-    if (data.length > 0) {
-      return res.status(200).json({ data, length })
-    }
-    else {
-      return res.status(400).json({ message: "Không tìm thấy dữ liệu." })
-    }
-
-
+    const data = await db.Category.find();
+    return res.status(200).json({ data })
   }
   catch (err) {
     console.log("err: ", err)
-    return res.status(500).json({ message: "Có lỗi xảy ra" });
+    return res.status(500).json({ message: err });
   }
 }
 
-
-exports.findByID= async (req, res) => {
+exports.findByID = async (req, res) => {
   try {
-    const {id} = req.params;
-    const category = await db.Category.find({_id:id})
+    const { id } = req.params;
+    const category = await db.Category.findById({ _id: id })
     if (category) {
       return res.status(200).json({ data: category })
     }
@@ -55,8 +35,8 @@ exports.findByID= async (req, res) => {
  * {body: {email, password, displayName}}
  */
 exports.create = async (req, res) => {
-  const { name,icon,level,status } = req.body;
-  if (!name ) {
+  const { name, icon, level, status } = req.body;
+  if (!name) {
     return res.status(400).send({
       message: "name not empty."
     })
@@ -78,73 +58,44 @@ exports.create = async (req, res) => {
   }
 }
 
-
-
-/**
- * @param {String} body._id
- * @param {String} body.name
- */
-
 exports.update = async (req, res) => {
-  console.log(req.body)
-  const { _id, name, icon, level, status} = req.body
-
-  if (!_id) {
-      return res.status(400).json({ message: "Id không được rỗng" })
-  }
-
-  if (!name) {
-      return res.status(400).json({ message: "Tên tag hoặc ngành học không được rỗng" })
-  }
-
   try {
-      const category = await db.Category.findOne({ _id })
-
-      if(category) {
-          const result = await db.Category.findOneAndUpdate({ _id }, 
-                                                        { name: name || category.name,
-                                                          icon: icon || category.icon,
-                                                          level: level || category.level,
-                                                          status: status || category.status })
-          if (result) {
-              const data = await db.Category.findOne({ _id: result._id })
-              if (data) {
-                  return res.status(200).json({ message: "Cập nhật category năng thành công.", data })
-              }
-          }
+    db.Category.findByIdAndUpdate(
+      req.params.id,
+      { $set: req.body },
+    ).then((data) => {
+      if (!data) {
+        return res.status(404).send({
+          message: "Note not found with id " + req.params.id,
+        });
       }
-      else {
-          return res.status(400).json({ message: "Không tìm thấy db.Category." })
-      }
-  }
-  catch (err) {
-      console.log('err: ', err)
-      return res.status(500).json({ message: "Đã có lỗi xảy ra." })
+      res.send(data);
+    });
+  } catch (err) {
+    res.status(500).send({
+      message: err.message || "Some error occurred while retrieving documents.",
+    });
   }
 }
 
-/**
-* @param {String} body._id
-*/
-
 exports.delete = async (req, res) => {
-  const { _id } = req.body
-  if (!_id) {
-      return res.status(400).json({ message: "Id không được rỗng" })
+  const { id } = req.params
+  if (!id) {
+    return res.status(400).json({ message: "Id không được rỗng" })
   }
 
   try {
-      const result = await db.Category.findOneAndDelete({ _id })
-      if (result) {
-          return res.status(200).json({ message: "Xóa category thành công.", data: result })
-      }
-      else {
-          return res.status(400).json({ message: "Không tìm thấy db.Category." })
-      }
+    const result = await db.Category.findOneAndDelete({ _id: id })
+    if (result) {
+      return res.status(200).json({ message: "Xóa category thành công." })
+    }
+    else {
+      return res.status(400).json({ message: "Không tìm thấy Category." })
+    }
   }
   catch (err) {
-      console.log('err: ', err)
-      return res.status(500).json({ message: "Đã có lỗi xảy ra." })
+    console.log('err: ', err)
+    return res.status(500).json({ message: "Đã có lỗi xảy ra." })
   }
 }
 

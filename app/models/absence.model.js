@@ -1,7 +1,11 @@
 const mongoose = require("mongoose");
 
 const AbsenceSchema = mongoose.Schema({
-    reason: String,
+    reason: {
+        type: String,
+        require: true
+    }
+    ,
     dateFrom: {
         type: Date,
         default: new Date(),
@@ -18,7 +22,10 @@ const AbsenceSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Class",
     },
-    status: Boolean
+    status: {
+        type: Boolean,
+        default: false
+    }
 }, {
     timestamps: true,
 });
