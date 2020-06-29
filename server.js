@@ -187,6 +187,7 @@ app.use("/mocking-tests", route.MockingTestRoute);
 app.use("/responses", route.ResponseRoute);
 app.use("/absences", route.AbsenceRoute);
 app.use("/feedbacks", route.FeedbackRoute);
+app.use("/video", route.VideoRoute);
 
 //caych error
 app.use((req, res, next) => {

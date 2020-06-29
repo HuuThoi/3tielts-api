@@ -1,12 +1,12 @@
 const express = require("express");
 const { parseUpload } = require("../middlewares/multer");
-const { uploadVideo, uploadFromBuffer } = require("./cloudinary");
+const { uploadVideo, uploadFromBuffer } = require("../middlewares/cloudinary");
 const controller = require("../controllers/video.controller");
 
 const router = express.Router();
 
 /* Handling image upload */
-router.post("/image", parseUpload(), (req, res) => {
+router.post("/upload", parseUpload() , (req, res) => {
   if (!req.file) {
     return res.status(400).json({
       /* Send back a failure message */ 
@@ -16,7 +16,7 @@ router.post("/image", parseUpload(), (req, res) => {
   } 
   /* Check if there is an image */
   const { originalname } = req.file;
-  uploadImage(originalname) /* If there is an image, upload it */
+  uploadVideo(originalname) /* If there is an image, upload it */
     .then((result) => {
       /* If the upload is successful */
       res.status(201).json({
@@ -36,4 +36,4 @@ router.post("/image", parseUpload(), (req, res) => {
     });
 });
 
-export default router;
+module.exports = router;
