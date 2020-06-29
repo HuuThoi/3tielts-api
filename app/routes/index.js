@@ -20,4 +20,5 @@ module.exports = {
     // TestListRoute: require("./testlist.route"),
     UserRoute: require("./user.route"),
     AbsenceRoute: require("./absence.route"),
+    VideoRoute: require("./video.route")
 };
