@@ -58,10 +58,10 @@ exports.findByName = async (req, res) => {
 };
 
 /**
- * {body: {email, password, displayName}}
+ * {body: {email, password, username}}
  */
 exports.register = async (req, res) => {
-    const { email, password, displayName } = req.body;
+    const { email, password, username } = req.body;
     if (!email || !password) {
         return res.status(400).send({
             message: "email and password not empty."
@@ -103,20 +103,20 @@ exports.register = async (req, res) => {
 
 exports.update = async (req, res) => {
     console.log(req.body)
-    const { _id, displayName } = req.body
+    const { _id, username } = req.body
 
     if (!_id) {
         return res.status(400).json({ message: "Id không được rỗng" })
     }
 
-    if (!displayName) {
+    if (!username) {
         return res.status(400).json({ message: "Tên tag hoặc ngành học không được rỗng" })
     }
 
     try {
         const user = await User.findOne({ _id })
         if (user) {
-            const result = await User.findOneAndUpdate({ _id }, { displayName: displayName || user.displayName })
+            const result = await User.findOneAndUpdate({ _id }, { username: username || user.username })
             if (result) {
                 const data = await User.findOne({ _id: result._id })
 
