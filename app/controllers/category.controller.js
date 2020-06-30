@@ -32,7 +32,7 @@ exports.findByID = async (req, res) => {
 
 
 /**
- * {body: {email, password, displayName}}
+ * {body: {email, password, username}}
  */
 exports.create = async (req, res) => {
   const { name, icon, level, status } = req.body;
@@ -43,16 +43,16 @@ exports.create = async (req, res) => {
   }
   try {
     // console.log("BODY",req.body)
-      const category = new db.Category(req.body)
-      //category.setPasswordHash(password)
-       console.log(category);
-      const result = await category.save();
-      console.log("result: ", result);
-      if (result) {
-        return res.status(200).json({ message: "Tạo cate thành công.", category: result });
-      } else {
-        return res.status(400).json({ message: "Tạo cate thất bại." });
-      }
+    const category = new db.Category(req.body)
+    //category.setPasswordHash(password)
+    console.log(category);
+    const result = await category.save();
+    console.log("result: ", result);
+    if (result) {
+      return res.status(200).json({ message: "Tạo cate thành công.", category: result });
+    } else {
+      return res.status(400).json({ message: "Tạo cate thất bại." });
+    }
   } catch {
     return res.status(500).json({ message: "Đã có lỗi xảy ra, vui lòng thử lại." });
   }

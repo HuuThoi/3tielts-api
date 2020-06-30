@@ -21,6 +21,6 @@ router.post("/", [authJwt.verifyToken], controller.create);
 router.get("/:id", [authJwt.verifyToken], controller.findById);
 router.put("/:id", [authJwt.verifyToken], controller.update);
 router.delete("/:id", [authJwt.verifyToken], controller.delete);
-router.get("/block/:id", [authJwt.verifyToken], controller.blockStudent);
+router.get("/upgrade/:id", [authJwt.verifyToken], controller.upgradeStudent);
 
 module.exports = router;
