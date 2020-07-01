@@ -1,17 +1,16 @@
-const db = require("../models/schedule.model");
+const db = require("../models/index");
 const { uploadVideo, uploadFromBuffer } = require("../middlewares/cloudinary");
 
 exports.findAll = async (req, res) => {
   try {
     let { limit, offset } = req.params;
 
-    // console.log("LOG",limit,offset)
     limit = parseInt(limit);
     offset = parseInt(offset);
 
-    const length = await db.Schedule.find().countDocuments();
+    const length = await db.Video.find().countDocuments();
 
-    const data = await db.Schedule.find()
+    const data = await db.Video.find()
       .limit(limit)
       .skip((offset - 1) * limit);
     // .populate({
@@ -36,43 +35,83 @@ exports.findAll = async (req, res) => {
 /**
  * {body: {email, password, displayName}}
  */
-exports.create = async (req, res) => {
-  const { day, timeOpen, timeOut, status } = req.body;
+exports.upload = (req, res) => {
+  console.log(req.file)
+  /* Check if there is an image */
   if (!req.file) {
     return res.status(400).json({
-      /* Send back a failure message */
+      /* Send back a failure message */ 
+      message: "Không tìm thấy file",
+    });
+  } 
 
-      status: "failed",
-      message: "No image file was uploaded",
+  const {path } = req.file;
+  // console.log(path)
+  uploadVideo(path) /* If there is an image, upload it */
+    .then((result) => {
+      /* If the upload is successful */
+      console.log(result)
+      const video = new db.Video({
+        url: result.url,
+        originalName: result.original_filename,
+        resourceType: result.resource_type,
+        desc: ""
+      });
+      video.save((err, result) => {
+        if (err) {
+          console.log("err ", err);
+          return res.status(500).json({
+            message: "Đã có lỗi xảy ra (upload thành công).",
+          });
+        }
+        if (result) {
+          // const data = await Assignment.find
+          console.log(result);
+          return res.status(200).json({
+            message: "Upload thành công.",
+            data: result,
+          });
+        } 
+      })
+      
+    })
+    .catch((error) => {
+      /* If there is an error uploading the image */
+      console.log(error.message);
+      return res.status(400).json({
+        /* Send back an error response */ 
+        message: error.message,
+      });
+    });
+};
+
+exports.delete = async (req, res) => {
+  const { _id } = req.body;
+  console.log(req.body);
+  if (!_id) {
+    return res.status(400).json({
+      message: "Id không được rỗng",
     });
   }
 
   try {
-    /* Check if there is an image */
-    const { originalname } = req.file;
-    uploadVideo(originalname) /* If there is an image, upload it */
-      .then((result) => {
-        /* If the upload is successful */
-        res.status(201).json({
-          /* Send back a success response */
-
-          status: "success",
-          imageCloudData: result,
-        });
-      })
-      .catch((error) => {
-        /* If there is an error uploading the image */
-        console.log(error.message);
-        return res.status(400).json({
-          /* Send back an error response */
-
-          status: "error",
-          message: error.message,
-        });
+    const result = await db.Video.findOneAndDelete({
+      _id,
+    });
+    if (result) {
+      return res.status(200).json({
+        message: "Xóa file thành công.",
+        data: result,
       });
-  } catch {
-    return res
-      .status(500)
-      .json({ message: "Đã có lỗi xảy ra, vui lòng thử lại." });
+    } else {
+      return res.status(400).json({
+        message: "Không tìm thấy file.",
+      });
+    }
+  } catch (err) {
+    console.log("err: ", err);
+    return res.status(500).json({
+      message: "Đã có lỗi xảy ra.",
+    });
   }
 };
