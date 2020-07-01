@@ -57,7 +57,8 @@ exports.findAll = async (req, res) => {
             email: result[i].email,
             gender: result[i].gender,
             address: result[i].address,
-            dateExpire: result[i].dateExpire
+            dateExpire: result[i].dateExpire,
+            wantToUpgrade: result[i].wantToUpgrade
           }
           students.push(obj);
         }

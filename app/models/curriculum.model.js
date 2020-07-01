@@ -4,13 +4,14 @@ const CurriculumSchema = mongoose.Schema({
     name: String,
     status: Number,
     linkVideo: String,
-    linkDoc : String,
+    length: String,
+    linkDoc: String,
     linkHomework: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Mocktest",
     },
     isDoneHomework: {
-        type : Boolean,
+        type: Boolean,
         default: false
     }
 

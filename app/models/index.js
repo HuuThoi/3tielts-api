@@ -19,4 +19,5 @@ module.exports = {
     Submit: require("./submit.model"),
     TestList: require("./testlist.model"),
     User: require("./user.model"),
+    Curriculum: require("./curriculum.model"),
 };
