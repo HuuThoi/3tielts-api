@@ -111,7 +111,7 @@ UserSchema.methods.setPasswordHash = function (password) {
 };
 
 UserSchema.methods.validatePassword = function (password) {
-    return bcrypt.compareSync(password, this.password);
+    return bcrypt.compareSync(password, this.passwordHash);
 };
 
 module.exports = mongoose.model("Users", UserSchema);
