@@ -12,10 +12,10 @@ router.use(function (req, res, next) {
 // 4 API cập nhật
 // 5 API xóa
 
-router.get("/", controller.findAll);
+router.get("/all", controller.findAll);
 router.get("/:id", controller.findByID);
 router.post("/", controller.create);
-router.put("/update/:id", controller.update);
+router.put("/:id", controller.update);
 router.delete("/", controller.delete);
 
 router.get("/support/dropdown", controller.getDropdown);

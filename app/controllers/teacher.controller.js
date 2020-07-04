@@ -194,3 +194,13 @@ exports.blockTeacher = async (req, res) => {
         })
     }
 }
+
+exports.getDropdown = async (req, res) => {
+    try {
+      let data = await db.User.find({role: EUserTypes.TEACHER}).select({ _id: 1, username: 1 });
+      return res.status(200).json({ data: data });
+    } catch (err) {
+      console.log("err: ", err);
+      return res.status(500).json({ message: err });
+    }
+  };

@@ -1,5 +1,5 @@
 const db = require("../models/index");
-
+const ECategory = require("../enums/ECategory");
 
 exports.findAll = async (req, res) => {
   try {
@@ -42,10 +42,7 @@ exports.create = async (req, res) => {
     })
   }
   try {
-    // console.log("BODY",req.body)
     const category = new db.Category(req.body)
-    //category.setPasswordHash(password)
-    console.log(category);
     const result = await category.save();
     console.log("result: ", result);
     if (result) {
@@ -100,8 +97,8 @@ exports.delete = async (req, res) => {
 }
 
 exports.getDropdown = async (req, res) => {
+  const data = Object.values(ECategory)
   try {
-    let data = await db.Category.find().select({ _id: 1, name: 1 });
     return res.status(200).json({ data: data });
   } catch (err) {
     console.log("err: ", err);

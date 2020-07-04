@@ -1,12 +1,38 @@
 const db = require("../models/index");
 
 exports.findAll = async (req, res) => {
+  const courses = [];
   try {
-    const data = await db.Course.find();
-    return res.status(200).json({ data: data });
+    await db.Course.find({
+    })
+      .populate({
+        path: "lecturer",
+        select: "username"
+      })
+      .exec(function (err, result) {
+        if (err) {
+          res.status(500).json({ message: err })
+        }
+        for (let i = 0; i < result.length; i++) {
+          let obj = {
+            id: result[i]._id,
+            name: result[i].name,
+            shortDesc: result[i].shortDesc,
+            content: result[i].content,
+            new: result[i].new == true ? "Lớp mới" : "",
+            tuition: result[i].tuition,
+            lecturer: result[i].lecturer ? result[i].lecturer.username : null,
+            category: result[i].category,
+            dateStart: result[i].dateStart,
+            dateEnd: result[i].dateEnd
+          }
+          courses.push(obj);
+        }
+        return res.status(200).json({ data: courses });
+      });
   } catch (err) {
     console.log("err: ", err);
-    return res.status(500).json({ message: "Có lỗi xảy ra" });
+    return res.status(500).json({ message: err });
   }
 };
 
@@ -29,7 +55,7 @@ exports.findByID = async (req, res) => {
 };
 
 exports.create = async (req, res) => {
-  const { name, shortDesc, content, categoryID, tuition, lecturer } = req.body;
+  const { name, shortDesc, content, categoryID, tuition, lecturer, dateStart, dateEnd } = req.body;
   if (!name || !shortDesc || !content) {
     return res.status(400).send({
       message: "name anf content not empty.",
@@ -63,32 +89,23 @@ exports.create = async (req, res) => {
 
 exports.update = async (req, res) => {
   const { id } = req.params;
-  const { shortDesc, content, categoryID, tuition, lecture } = req.body;
+  const { shortDesc, content, categoryID, tuition, lecture, dateStart, dateEnd } = req.body;
 
   try {
     const course = await db.Course.findById({ _id: id });
     if (course == null) {
       return res.status(404).json({ message: "Not found course" + id });
     } else {
-      if (course.name === name) {
-        return res.status(400).json({ message: "Name is dupplicate" });
-      } else {
-        const result = await db.Course.findOneAndUpdate(
-          { _id: id },
-          {
-            name: name || course.name,
-            shortDesc: shortDesc || course.shortDesc,
-            content: content || course.content,
-            categoryID: categoryID || course.categoryID,
-          }
-        );
-        if (result) {
-          const data = await db.Course.findOne({ _id: result._id });
-          if (data) {
-            return res
-              .status(200)
-              .json({ message: "Cập nhật course năng thành công.", data });
-          }
+      const result = await db.Course.findOneAndUpdate(
+        { _id: id },
+        { $set: req.body },
+      );
+      if (result) {
+        const data = await db.Course.findOne({ _id: result._id });
+        if (data) {
+          return res
+            .status(200)
+            .json({ message: "Cập nhật course năng thành công.", data });
         }
       }
     }
