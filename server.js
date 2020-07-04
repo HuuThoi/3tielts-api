@@ -144,6 +144,7 @@ app.use("/teachers", route.TeacherRoute);
 app.use("/classes", route.ClassRoute);
 app.use("/absences", route.AbsenceRoute);
 app.use("/feedbacks", route.FeedbackRoute);
+app.use("/courseRequests", route.CourseRequest);
 
 //caych error
 app.use((req, res, next) => {

@@ -9,13 +9,13 @@ const RegisterCourseRequestSchema = mongoose.Schema({
     },
     userID: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
+        ref: "Users",
     },
     status: {
         type: String,
         default: enumStatus.PENDING
     }
-   
+
 
 }, {
     timestamps: true,
