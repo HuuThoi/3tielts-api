@@ -2,9 +2,7 @@ const db = require("../models/index");
 
 exports.findAll = async (req, res) => {
   try {
-    const length = await db.Course.find().countDocuments();
-
-    const data = await db.Course.find()
+    const data = await db.Course.find();
     return res.status(200).json({ data: data });
   } catch (err) {
     console.log("err: ", err);
@@ -18,7 +16,6 @@ exports.findByID = async (req, res) => {
     const courses = await db.Course.findById({ _id: id }).populate({
       path: "categoryID",
     });
-    console.log(courses);
 
     if (courses) {
       return res.status(200).json({ data: courses });
@@ -32,8 +29,7 @@ exports.findByID = async (req, res) => {
 };
 
 exports.create = async (req, res) => {
-  const { name, shortDesc, content, categoryID,
-    dateStart, dateEnd, tuition, schedule, lecturer } = req.body;
+  const { name, shortDesc, content, categoryID, tuition, lecturer } = req.body;
   if (!name || !shortDesc || !content) {
     return res.status(400).send({
       message: "name anf content not empty.",
@@ -66,37 +62,19 @@ exports.create = async (req, res) => {
 };
 
 exports.update = async (req, res) => {
-  console.log(req.body);
-  const {
-    _id,
-    name,
-    shortDesc,
-    content,
-    categoryID,
-    dateStart,
-    dateEnd,
-    tuition,
-    schedule,
-    lecture,
-  } = req.body;
-
-  if (!_id) {
-    return res.status(400).json({ message: "Id không được rỗng" });
-  }
+  const { id } = req.params;
+  const { shortDesc, content, categoryID, tuition, lecture } = req.body;
 
   try {
-    const course = await db.Course.findOne({ _id });
-    const data = await db.Course.findOne({
-      $and: [{ name }, { _id: { $ne: _id } }],
-    });
-    if (data) {
-      return res
-        .status(400)
-        .json({ message: "Ten khóa học đã tồn tại, nhập khóa học khác" });
+    const course = await db.Course.findById({ _id: id });
+    if (course == null) {
+      return res.status(404).json({ message: "Not found course" + id });
     } else {
-      if (course) {
+      if (course.name === name) {
+        return res.status(400).json({ message: "Name is dupplicate" });
+      } else {
         const result = await db.Course.findOneAndUpdate(
-          { _id },
+          { _id: id },
           {
             name: name || course.name,
             shortDesc: shortDesc || course.shortDesc,
@@ -109,37 +87,33 @@ exports.update = async (req, res) => {
           if (data) {
             return res
               .status(200)
-              .json({ message: "Cập nhật db.Course năng thành công.", data });
+              .json({ message: "Cập nhật course năng thành công.", data });
           }
         }
-      } else {
-        return res.status(400).json({ message: "Không tìm thấy db.Course." });
       }
     }
   } catch (err) {
-    console.log("err: ", err);
-    return res.status(500).json({ message: "Đã có lỗi xảy ra." });
+    return res.status(500).json({ message: "Đã có lỗi xảy ra.", err });
   }
 };
 
-
 exports.delete = async (req, res) => {
-  const { _id } = req.body;
-  if (!_id) {
-    return res.status(400).json({ message: "Id không được rỗng" });
+  const { id } = req.params;
+  const course = await db.Course.findById({ _id: id });
+  if (course == null) {
+    return res.status(404).json({ message: "Not found course" + id });
   }
   try {
     const result = await db.Course.findOneAndDelete({ _id });
     if (result) {
       return res
         .status(200)
-        .json({ message: "Xóa db.Course thành công.", data: result });
+        .json({ message: "Xóa course thành công.", data: result });
     } else {
-      return res.status(400).json({ message: "Không tìm thấy db.Course." });
+      return res.status(400).json({ message: "Không tìm thấy course." });
     }
   } catch (err) {
-    console.log("err: ", err);
-    return res.status(500).json({ message: "Đã có lỗi xảy ra." });
+    return res.status(500).json({ message: "Đã có lỗi xảy ra." + err });
   }
 };
 
@@ -151,30 +125,36 @@ exports.getDropdown = async (req, res) => {
     console.log("err: ", err);
     return res.status(500).json({ message: err });
   }
-}
-
+};
 
 exports.findNewCoures = async (req, res) => {
   try {
-    const courses = await db.Course.find({ isNew: true }).limit(2).populate({ path: 'categoryID' })
+    const courses = await db.Course.find({ isNew: true })
+      .limit(2)
+      .populate({ path: "categoryID" });
     if (courses) {
-      return res.status(200).json({ data: courses })
+      return res.status(200).json({ data: courses });
+    } else {
+      return res.status(400).json({ message: "Không tồn tại khóa học mới" });
     }
-    else {
-      return res.status(400).json({ message: "Không tồn tại khóa học mới" })
-    }
+  } catch (err) {
+    console.log("err: ", err);
+    return res.status(500).json({ message: "Đã có lỗi xảy ra" });
   }
-  catch (err) {
-    console.log('err: ', err);
-    return res.status(500).json({ message: "Đã có lỗi xảy ra" })
-  }
-}
+};
 
 //get all temp
 exports.getAllCurriculumByCourseId = async (req, res) => {
+  const { idCourse } = req.params.id;
   try {
-    const data = await db.Curriculum.find()
-    return res.status(200).json({ data: data });
+    const course = await db.Course.findById({ _id: idCourse });
+    if (course == null) {
+      return res.status(404).json({ message: "Not found course " + idCourse });
+    }
+
+    const curriculumsByCourseId = course.curriculums;
+    // const data = await db.Curriculum.find()
+    return res.status(200).json({ data: curriculumsByCourseId });
   } catch (err) {
     console.log("err: ", err);
     return res.status(500).json({ message: "Có lỗi xảy ra" });
