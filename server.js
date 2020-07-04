@@ -34,7 +34,7 @@ mongoose.set("useFindAndModify", false);
 mongoose.set("useCreateIndex", true);
 mongoose.Promise = global.Promise;
 mongoose
-  .connect(dbConfig.url, {
+  .connect(dbConfig.urlCluster, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useFindAndModify: false,
@@ -188,6 +188,7 @@ app.use("/responses", route.ResponseRoute);
 app.use("/absences", route.AbsenceRoute);
 app.use("/feedbacks", route.FeedbackRoute);
 app.use("/video", route.VideoRoute);
+app.use("/courseRequests", route.CourseRequest);
 
 //caych error
 app.use((req, res, next) => {

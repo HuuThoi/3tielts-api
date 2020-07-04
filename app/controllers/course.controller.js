@@ -1,30 +1,11 @@
 const db = require("../models/index");
 
 exports.findAll = async (req, res) => {
-  console.log("tets");
   try {
-    console.log("hehehe");
-    
-    let { limit, offset } = req.params
-
-    limit = parseInt(limit);
-    offset = parseInt(offset);
     const length = await db.Course.find().countDocuments();
 
     const data = await db.Course.find()
-      .limit(limit)
-      .skip((offset - 1) * limit);
-    // .populate({
-    //   path: 'db.CourseId',
-    //   // match: { isBlock: false },
-    //   select: ['-password', '-passwordHash'],
-    // })
-
-    if (data.length > 0) {
-      return res.status(200).json({ data, length });
-    } else {
-      return res.status(400).json({ message: "Không tìm thấy dữ liệu." });
-    }
+    return res.status(200).json({ data: data });
   } catch (err) {
     console.log("err: ", err);
     return res.status(500).json({ message: "Có lỗi xảy ra" });
@@ -34,10 +15,11 @@ exports.findAll = async (req, res) => {
 exports.findByID = async (req, res) => {
   try {
     const { id } = req.params;
-    // const category = await Comment.find({_id:id}).populate({path:'CategpryID'})
-    const courses = await db.Course.find({ _id: id }).populate({
+    const courses = await db.Course.findById({ _id: id }).populate({
       path: "categoryID",
     });
+    console.log(courses);
+
     if (courses) {
       return res.status(200).json({ data: courses });
     } else {
@@ -50,7 +32,6 @@ exports.findByID = async (req, res) => {
 };
 
 exports.create = async (req, res) => {
-  console.log("tets")
   const { name, shortDesc, content, categoryID,
     dateStart, dateEnd, tuition, schedule, lecturer } = req.body;
   if (!name || !shortDesc || !content) {
@@ -60,7 +41,6 @@ exports.create = async (req, res) => {
   }
   try {
     const data = await db.Course.findOne({ name });
-    console.log("data: ", data);
 
     if (data) {
       return res
@@ -69,10 +49,7 @@ exports.create = async (req, res) => {
     } else {
       console.log("BODY", req.body);
       const course = new db.Course(req.body);
-      //db.Course.setPasswordHash(password)
-      console.log(course);
       const result = await course.save();
-      console.log("result: ", result);
       if (result) {
         return res
           .status(200)
@@ -112,7 +89,6 @@ exports.update = async (req, res) => {
     const data = await db.Course.findOne({
       $and: [{ name }, { _id: { $ne: _id } }],
     });
-    // console.log("data: ", data);
     if (data) {
       return res
         .status(400)
@@ -139,8 +115,6 @@ exports.update = async (req, res) => {
       } else {
         return res.status(400).json({ message: "Không tìm thấy db.Course." });
       }
-      // if (course) {
-      // console.log("LALALAND")}
     }
   } catch (err) {
     console.log("err: ", err);
@@ -182,7 +156,7 @@ exports.getDropdown = async (req, res) => {
 
 exports.findNewCoures = async (req, res) => {
   try {
-    const courses = await db.Course.find({isNew:true}).limit(2).populate({path:'categoryID'})
+    const courses = await db.Course.find({ isNew: true }).limit(2).populate({ path: 'categoryID' })
     if (courses) {
       return res.status(200).json({ data: courses })
     }
@@ -195,3 +169,29 @@ exports.findNewCoures = async (req, res) => {
     return res.status(500).json({ message: "Đã có lỗi xảy ra" })
   }
 }
+
+//get all temp
+exports.getAllCurriculumByCourseId = async (req, res) => {
+  try {
+    const data = await db.Curriculum.find()
+    return res.status(200).json({ data: data });
+  } catch (err) {
+    console.log("err: ", err);
+    return res.status(500).json({ message: "Có lỗi xảy ra" });
+  }
+};
+
+exports.getVideoById = async (req, res) => {
+  try {
+    const { id } = req.body;
+    const data = await db.Curriculum.findById({ _id: id });
+    if (data) {
+      return res.status(200).json({ data: data });
+    } else {
+      return res.status(400).json({ message: "Không tồn tại tài khoản." });
+    }
+  } catch (err) {
+    console.log("err: ", err);
+    return res.status(500).json({ message: "Đã có lỗi xảy ra" });
+  }
+};

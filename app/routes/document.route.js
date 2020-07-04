@@ -14,7 +14,7 @@ router.use(function(req, res, next) {
 
 router.get("/all", [authJwt.verifyToken], controller.findAll);
 router.get("/all-nopaging", [authJwt.verifyToken], controller.findAllNoPaging);
-router.post("/",  [authJwt.verifyToken],controller.create);
+router.post("/", [authJwt.verifyToken], controller.create);
 router.get("/:id", [authJwt.verifyToken], controller.findById);
 router.put("/:id", [authJwt.verifyToken], controller.update);
 router.delete("/:id", [authJwt.verifyToken], controller.delete);

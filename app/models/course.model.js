@@ -6,20 +6,18 @@ const CourseSchema = mongoose.Schema({
     // "shortDesc": "Học tương tác không giới hạn",
     // "content": "PLA PLA PLA",
     // "new": true,
-    // "categoryID": 1 ,
+    // "category": "vở lòng" ,
     // "dateStart": "2019-01-01",
     // "dateEnd": "2019-03-01",
     // "tuition": 1000000,
-
-
-
+   
     name: String,
     shortDesc: String,
     content: String,
     new: Boolean,
-    categoryID: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Category",
+    category: {
+        type: String,
+        default: "vỡ lòng",//vỡ lòng/ sơ cấp/ trung cấp/ thượng cấp
     },
     dateStart: {
         type: Date,
@@ -34,15 +32,21 @@ const CourseSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Schedule",
     },],
+    curriculums: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Curriculum",
+        }
+    ],
     lecturer: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Teacher",
+        ref: "User",
     },
-    studentList: [{
+    studentList: [
+        {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
     },],
-    type: Number
 }, {
     timestamps: true,
 });

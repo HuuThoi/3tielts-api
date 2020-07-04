@@ -11,7 +11,7 @@ exports.findAll = async (req, res) => {
         })
             .populate({
                 path: "authorID",
-                select: 'displayName'
+                select: 'username'
             }).exec(function (err, result) {
                 if (err) res.status(500).json({ message: err })
                 else {
@@ -22,7 +22,7 @@ exports.findAll = async (req, res) => {
                             isRecommend: result[i].status == true ? "Có/True" : "Không/False",
                             // categoryName: result[i].categoryId.name != null ? result[i].categoryId.name : null,
                             // shortDesc: result[i].shortDesc,
-                            // userName: (result[i].authorID && result[i].authorID.displayName != null) ? result[i].authorID.displayName : null,
+                            // userName: (result[i].authorID && result[i].authorID.username != null) ? result[i].authorID.username : null,
                         }
                         data.push(obj);
                     }

@@ -33,7 +33,7 @@ exports.findAll = async (req, res) => {
                 for (let i = 0; i < result.length; i++) {
                     let obj = {
                         id: result[i]._id,
-                        displayName: result[i].displayName,
+                        username: result[i].username,
                         isBlocked: result[i].isBlock == true ? "True" : "False",
                         phone: result[i].phone,
                         email: result[i].email,
@@ -78,7 +78,7 @@ exports.findById = async (req, res) => {
                     birthdate: teacher.birthdate,
                     gender: teacher.gender,
                     email: teacher.email,
-                    displayName: teacher.displayName,
+                    username: teacher.username,
                     isBlock: teacher.isBlock
                 }
                 res.json(data);
@@ -91,7 +91,7 @@ exports.findById = async (req, res) => {
 };
 
 exports.create = async (req, res) => {
-    const { address, birthdate, password, gender, email, displayName } = req.body;
+    const { address, birthdate, password, gender, email, username } = req.body;
     try {
         // db.User.findOne({ email: email }, function (err, result) {
         //     if (result) {
@@ -105,7 +105,7 @@ exports.create = async (req, res) => {
             password: bcrypt.hashSync(password, 8),
             gender: gender,
             email: email,
-            displayName: displayName,
+            username: username,
             role: EUserTypes.TEACHER
         }, function (err, user) {
             if (err) {

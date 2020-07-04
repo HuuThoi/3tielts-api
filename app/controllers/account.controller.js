@@ -7,8 +7,8 @@ const config = require("../config/jwt-secret.config");
 var smtpTransport = require("nodemailer-smtp-transport");
 
 exports.signup = (req, res) => {
-  var userx = db.User.findOne({email: req.body.email});
-    if (userx) return res.status(400).json({ message: "Email is existed" })
+  var userx = db.User.findOne({ email: req.body.email });
+  if (userx) return res.status(400).json({ message: "Email is existed" })
 
   const user = new db.User({
     username: req.body.username,
@@ -229,7 +229,7 @@ exports.getCurrentUser = (req, res) => {
       return res.status(404).send({ message: "User Not found." });
     }
     var dataRes = {
-      displayName: user.displayName,
+      username: user.username,
       email: user.email,
     };
     return res.json({ data: dataRes });
