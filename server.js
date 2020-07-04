@@ -125,6 +125,46 @@ app.get("/seed-data", (req, res) => {
       (err, seedUser) => { }
     );
   }
+  // let Assignment = db.Assignment;
+  // for (var i = 10; i < 15; i++) {
+  //   let num = i + 1;
+  //   Assignment.create(
+  //     {
+  //       name: "Assignment " + num,
+  //       status: true,
+  //       content: "Content of Course " + num,
+
+  //     },
+  //     (err, seedUser) => {}
+  //   );
+  // }
+
+  let MockingTest = db.MockingTest;
+  for (var i = 5; i < 15; i++) {
+    let num = i + 1;
+    MockingTest.create(
+      {
+        name: "MockingTest " + num,
+        contents: "Content of MockingTest " + num,
+
+      },
+      (err, seedUser) => {}
+    );
+  }
+  res.json({ message: "Seed data created" });
+
+  let Response = db.Response;
+  for (var i = 5; i < 15; i++) {
+    let num = i + 1;
+    Response.create(
+      {
+        content: "Content of Response " + num,
+        title: "Title of Response " + num,
+
+      },
+      (err, seedUser) => {}
+    );
+  }
   res.json({ message: "Seed data created" });
 });
 
@@ -142,8 +182,12 @@ app.use("/admins", route.AdminRoute);
 app.use('/students', route.StudentRoute);
 app.use("/teachers", route.TeacherRoute);
 app.use("/classes", route.ClassRoute);
+app.use("/assignments", route.AssignmentRoute);
+app.use("/mocking-tests", route.MockingTestRoute);
+app.use("/responses", route.ResponseRoute);
 app.use("/absences", route.AbsenceRoute);
 app.use("/feedbacks", route.FeedbackRoute);
+app.use("/video", route.VideoRoute);
 app.use("/courseRequests", route.CourseRequest);
 
 //caych error
@@ -158,8 +202,9 @@ app.use(function (err, req, res, next) {
   res.status(statusCode).send("View error log on console.");
 });
 
-//running app
-http.listen(parseInt(process.env.PORT) || 8080, () => {
-  console.log("Server is listening http://localhost:8080");
+//running app 
+const PORT = 8080;
+app.listen(parseInt(process.env.PORT) || PORT, () => {
+  console.log("Server is listening http://localhost:" + PORT);
 });
 module.exports = app;
