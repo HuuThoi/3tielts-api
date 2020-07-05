@@ -162,19 +162,20 @@ exports.findNewCoures = async (req, res) => {
 
 //get all temp
 exports.getAllCurriculumByCourseId = async (req, res) => {
-  const { idCourse } = req.params.id;
+  const id = req.params.id;
   try {
-    const course = await db.Course.findById({ _id: idCourse });
+    const course = await db.Course.findById({ _id: id });
     if (course == null) {
-      return res.status(404).json({ message: "Not found course " + idCourse });
+      return res.status(404).json({ message: "Not found course " + id });
     }
 
     const curriculumsByCourseId = course.curriculums;
-    // const data = await db.Curriculum.find()
-    return res.status(200).json({ data: curriculumsByCourseId });
+    const data = await db.Curriculum.find()
+
+    return res.status(200).json({ data: data });
   } catch (err) {
     console.log("err: ", err);
-    return res.status(500).json({ message: "Có lỗi xảy ra" });
+    return res.status(500).json({ message: err });
   }
 };
 
@@ -190,5 +191,38 @@ exports.getVideoById = async (req, res) => {
   } catch (err) {
     console.log("err: ", err);
     return res.status(500).json({ message: "Đã có lỗi xảy ra" });
+  }
+};
+
+exports.getMyCourse = async (req, res) => {
+  const courses = [];
+  try {
+    await db.Course.find({ studentList: { $in: req.userData.id } })
+      .populate({
+        path: "lecturer",
+        select: "username"
+      })
+      .exec(function (err, result) {
+        if (err) {
+          res.status(500).json({ message: err })
+        }
+        for (let i = 0; i < result.length; i++) {
+          let obj = {
+            id: result[i]._id,
+            name: result[i].name,
+            shortDesc: result[i].shortDesc,
+            tuition: result[i].tuition,
+            lecturer: result[i].lecturer ? result[i].lecturer.username : null,
+            category: result[i].category,
+            dateStart: result[i].dateStart,
+            dateEnd: result[i].dateEnd
+          }
+          courses.push(obj);
+        }
+        return res.status(200).json({ data: courses });
+      });
+  } catch (err) {
+    console.log("err: ", err);
+    return res.status(500).json({ message: err });
   }
 };

@@ -1,4 +1,5 @@
 const db = require("../models/index");
+const EUserTypes = require("../enums/EUserTypes");
 
 
 exports.findAll = async (req, res) => {
@@ -62,6 +63,12 @@ exports.update = async (req, res) => {
           course.studentList.push(item.userID);
           await course.save();
         }
+
+        db.User.findByIdAndUpdate({ _id: item.userID, role: EUserTypes.STANDARD }, {
+          $set: {
+            role: EUserTypes.STUDENT,
+          }
+        })
 
 
         const data = await db.Request.findById({ _id: result._id })
