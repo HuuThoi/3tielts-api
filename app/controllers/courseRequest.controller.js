@@ -78,9 +78,9 @@ exports.update = async (req, res) => {
         }
 
         var object = {
-          userId =  item.userID,
-          courseId = item.courseID,
-          listDateLearning = listDateLearning
+          userId: item.userID,
+          courseId: item.courseID,
+          listDateLearning: listDateLearning
         }
 
         const x = new db.StudentCourseDiligence(object);
