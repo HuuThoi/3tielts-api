@@ -48,7 +48,7 @@ exports.update = async (req, res) => {
     if (item) {
       const result = await db.Request.findOneAndUpdate({ _id: id },
         {
-          status: status
+          $set: { status: status }
         })
       if (result) {
         const course = await db.Course.findById({ _id: result.courseID });
@@ -74,23 +74,22 @@ exports.update = async (req, res) => {
 
         var listDateLearning = [];
         for (let i = 0; i < 7; i++) { //7 in in week(Sunday -> Saturday: 0->6)
+
           listDateLearning.push(false);
         }
 
-        var object = {
+        const x = new db.StudentCourseDiligence({
           userId: item.userID,
           courseId: item.courseID,
-          listDateLearning: listDateLearning
-        }
-
-        const x = new db.StudentCourseDiligence(object);
-        const result = await x.save();
-        if (result) {
+          listDateLearning
+        });
+        const result2 = await x.save();
+        if (result2) {
         } else {
           return res.status(400).json({ message: "Tạo diligence thất bại." });
         }
 
-        const data = await db.Request.findById({ _id: result._id })
+        const data = await db.Request.findById({ _id: result2._id })
         if (data) {
           return res.status(200).json({ message: "Cập nhật thành công.", data })
         }

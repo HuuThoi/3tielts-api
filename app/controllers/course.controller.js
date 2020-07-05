@@ -189,14 +189,16 @@ exports.getAllCurriculumByCourseId = async (req, res) => {
 
     var diligence = await db.StudentCourseDiligence.findOne({
       userId: req.userData.id,
-      courseId: data._id,
+      courseId: course._id,
     });
 
     var list = diligence.listDateLearning;
+
+    //will be tested in future
     const curriculumsByCourseId = course.curriculums;
     const data = await db.Curriculum.find()
 
-    return res.status(200).json({ data: data });
+    return res.status(200).json({ data: data, diligence: diligence });
   } catch (err) {
     console.log("err: ", err);
     return res.status(500).json({ message: err });

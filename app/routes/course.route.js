@@ -21,7 +21,7 @@ router.delete("/", controller.delete);
 
 router.get("/support/dropdown", controller.getDropdown);
 router.get("/mycourses/all", [authJwt.verifyToken], controller.getMyCourse);
-router.get("/:id/curriculum", controller.getAllCurriculumByCourseId);
-router.post("/curriculums/video/detail", controller.getVideoById);
+router.get("/:id/curriculum", [authJwt.verifyToken], controller.getAllCurriculumByCourseId);
+router.post("/curriculums/video/detail", [authJwt.verifyToken], controller.getVideoById);
 
 module.exports = router;
