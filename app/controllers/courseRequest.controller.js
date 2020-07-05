@@ -70,6 +70,25 @@ exports.update = async (req, res) => {
           }
         })
 
+        //add to studentCourseDiligence
+
+        var listDateLearning = [];
+        for (let i = 0; i < 7; i++) { //7 in in week(Sunday -> Saturday: 0->6)
+          listDateLearning.push(false);
+        }
+
+        var object = {
+          userId =  item.userID,
+          courseId = item.courseID,
+          listDateLearning = listDateLearning
+        }
+
+        const x = new db.StudentCourseDiligence(object);
+        const result = await x.save();
+        if (result) {
+        } else {
+          return res.status(400).json({ message: "Tạo diligence thất bại." });
+        }
 
         const data = await db.Request.findById({ _id: result._id })
         if (data) {

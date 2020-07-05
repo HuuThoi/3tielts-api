@@ -3,15 +3,14 @@ const db = require("../models/index");
 exports.findAll = async (req, res) => {
   const courses = [];
   try {
-    await db.Course.find({
-    })
+    await db.Course.find({})
       .populate({
         path: "lecturer",
-        select: "username"
+        select: "username",
       })
       .exec(function (err, result) {
         if (err) {
-          res.status(500).json({ message: err })
+          res.status(500).json({ message: err });
         }
         for (let i = 0; i < result.length; i++) {
           let obj = {
@@ -24,8 +23,8 @@ exports.findAll = async (req, res) => {
             lecturer: result[i].lecturer ? result[i].lecturer.username : null,
             category: result[i].category,
             dateStart: result[i].dateStart,
-            dateEnd: result[i].dateEnd
-          }
+            dateEnd: result[i].dateEnd,
+          };
           courses.push(obj);
         }
         return res.status(200).json({ data: courses });
@@ -55,7 +54,16 @@ exports.findByID = async (req, res) => {
 };
 
 exports.create = async (req, res) => {
-  const { name, shortDesc, content, categoryID, tuition, lecturer, dateStart, dateEnd } = req.body;
+  const {
+    name,
+    shortDesc,
+    content,
+    categoryID,
+    tuition,
+    lecturer,
+    dateStart,
+    dateEnd,
+  } = req.body;
   if (!name || !shortDesc || !content) {
     return res.status(400).send({
       message: "name anf content not empty.",
@@ -89,7 +97,15 @@ exports.create = async (req, res) => {
 
 exports.update = async (req, res) => {
   const { id } = req.params;
-  const { shortDesc, content, categoryID, tuition, lecture, dateStart, dateEnd } = req.body;
+  const {
+    shortDesc,
+    content,
+    categoryID,
+    tuition,
+    lecture,
+    dateStart,
+    dateEnd,
+  } = req.body;
 
   try {
     const course = await db.Course.findById({ _id: id });
@@ -98,7 +114,7 @@ exports.update = async (req, res) => {
     } else {
       const result = await db.Course.findOneAndUpdate(
         { _id: id },
-        { $set: req.body },
+        { $set: req.body }
       );
       if (result) {
         const data = await db.Course.findOne({ _id: result._id });
@@ -169,6 +185,14 @@ exports.getAllCurriculumByCourseId = async (req, res) => {
       return res.status(404).json({ message: "Not found course " + id });
     }
 
+    //get list day in diligence
+
+    var diligence = await db.StudentCourseDiligence.findOne({
+      userId: req.userData.id,
+      courseId: data._id,
+    });
+
+    var list = diligence.listDateLearning;
     const curriculumsByCourseId = course.curriculums;
     const data = await db.Curriculum.find()
 
@@ -184,6 +208,18 @@ exports.getVideoById = async (req, res) => {
     const { id } = req.body;
     const data = await db.Curriculum.findById({ _id: id });
     if (data) {
+      //update diligence
+      var diligence = await db.StudentCourseDiligence.findOne({
+        userId: req.userData.id,
+        courseId: data._id,
+      });
+      if (diligence != null) {
+        const date = new Date();
+        const index = date.getDate();
+        diligence.listDateLearning[index].isLearning = true;
+        await diligence.save();
+      }
+
       return res.status(200).json({ data: data });
     } else {
       return res.status(400).json({ message: "Không tồn tại tài khoản." });
