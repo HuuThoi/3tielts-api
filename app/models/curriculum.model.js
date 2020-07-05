@@ -8,11 +8,15 @@ const CurriculumSchema = mongoose.Schema({
     linkDoc: String,
     linkHomework: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Mocktest",
+        ref: "MockingTest",
     },
     isDoneHomework: {
         type: Boolean,
         default: false
+    },
+    courseID: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Course",
     }
 
 }, {
