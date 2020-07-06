@@ -185,25 +185,33 @@ exports.getAllCurriculumByCourseId = async (req, res) => {
       return res.status(404).json({ message: "Not found course " + id });
     }
 
-    //get list day in diligence
-
-    var diligence = await db.StudentCourseDiligence.findOne({
-      userId: req.userData.id,
-      courseId: course._id,
-    });
-
-    var list = diligence.listDateLearning;
-
     //will be tested in future
     const curriculumsByCourseId = course.curriculums;
     const data = await db.Curriculum.find()
 
-    return res.status(200).json({ data: data, diligence: diligence });
+    return res.status(200).json({ data: data });
   } catch (err) {
     console.log("err: ", err);
     return res.status(500).json({ message: err });
   }
 };
+
+exports.getDiligenceDateInCourse = async (req, res) => {
+  const id = req.params.id;
+  const course = await db.Course.findById({ _id: id });
+  if (course == null) {
+    return res.status(404).json({ message: "Not found course " + id });
+  }
+
+  //get list day in diligence
+  var diligence = await db.StudentCourseDiligence.findOne({
+    userId: req.userData.id,
+    courseId: course._id,
+  });
+
+  var list = diligence.listDateLearning;
+  return res.status(200).json({ data: list });
+}
 
 exports.getVideoById = async (req, res) => {
   try {
