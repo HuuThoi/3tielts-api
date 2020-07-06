@@ -22,4 +22,5 @@ module.exports = {
     AbsenceRoute: require("./absence.route"),
     VideoRoute: require("./video.route"),
     CourseRequest: require("./courseRequest.route"),
+    Curriculum: require("./curriculum.route"),
 };

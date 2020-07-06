@@ -8,9 +8,9 @@ exports.findAll = async (req, res) => {
     limit = parseInt(limit);
     offset = parseInt(offset);
 
-    const length = await db.Video.find().countDocuments();
+    const length = await db.Upload.find().countDocuments();
 
-    const data = await db.Video.find()
+    const data = await db.Upload.find()
       .limit(limit)
       .skip((offset - 1) * limit);
     // .populate({
@@ -23,6 +23,36 @@ exports.findAll = async (req, res) => {
 
     if (data.length > 0) {
       return res.status(200).json({ data, length });
+    } else {
+      return res.status(400).json({ message: "Không tìm thấy dữ liệu." });
+    }
+  } catch (err) {
+    console.log("err: ", err);
+    return res.status(500).json({ message: "Có lỗi xảy ra" });
+  }
+};
+exports.find = async (req, res) => {
+  try {
+    // let { limit, offset } = req.params;
+
+    // limit = parseInt(limit);
+    // offset = parseInt(offset);
+
+    // const length = await db.Upload.find().countDocuments();
+
+    const data = await db.Upload.find({resourceType:'video'})
+      // .limit(limit)
+      // .skip((offset - 1) * limit);
+    // .populate({
+    //   path: 'CourseId',
+    //   // match: { isBlock: false },
+    //   select: ['-password', '-passwordHash'],
+    // })
+
+    console.log("data", data);
+
+    if (data.length > 0) {
+      return res.status(200).json({ data });
     } else {
       return res.status(400).json({ message: "Không tìm thấy dữ liệu." });
     }
@@ -44,14 +74,40 @@ exports.upload = (req, res) => {
       message: "Không tìm thấy file",
     });
   } 
-
-  const {path } = req.file;
+ 
+  const {path, mimetype } = req.file;
+  if(mimetype === 'application/pdf'){
+    const {filename} = req.file;
+    const pdf = new db.Upload({
+      url: path,
+      originalName: filename,
+      resourceType: mimetype,
+      desc: ""
+    });
+    pdf.save((err, result) => {
+      if (err) {
+        console.log("err ", err);
+        return res.status(500).json({
+          message: "Đã có lỗi xảy ra (upload thành công).",
+        });
+      }
+      if (result) {
+        // const data = await Assignment.find
+        console.log(result);
+        return res.status(200).json({
+          message: "Upload thành công.",
+          data: result,
+        });
+      } 
+    })
+  }
+  else{
   // console.log(path)
   uploadVideo(path) /* If there is an image, upload it */
     .then((result) => {
       /* If the upload is successful */
       console.log(result)
-      const video = new db.Video({
+      const video = new db.Upload({
         url: result.url,
         originalName: result.original_filename,
         resourceType: result.resource_type,
@@ -83,6 +139,7 @@ exports.upload = (req, res) => {
         message: error.message,
       });
     });
+  }
 };
 
 exports.delete = async (req, res) => {
@@ -95,7 +152,7 @@ exports.delete = async (req, res) => {
   }
 
   try {
-    const result = await db.Video.findOneAndDelete({
+    const result = await db.Upload.findOneAndDelete({
       _id,
     });
     if (result) {

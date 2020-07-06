@@ -3,7 +3,10 @@ const mongoose = require("mongoose");
 const CurriculumSchema = mongoose.Schema({
     name: String,
     status: Number,
-    linkVideo: String,
+    linkVideo: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Upload",
+    },
     length: String,
     linkDoc: String,
     linkHomework: {

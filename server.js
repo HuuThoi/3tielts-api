@@ -189,6 +189,7 @@ app.use("/absences", route.AbsenceRoute);
 app.use("/feedbacks", route.FeedbackRoute);
 app.use("/video", route.VideoRoute);
 app.use("/courseRequests", route.CourseRequest);
+app.use("/curriculums", route.Curriculum);
 
 //caych error
 app.use((req, res, next) => {

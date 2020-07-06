@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const VideoSchema = mongoose.Schema({
+const UploadSchema = mongoose.Schema({
     url: {
         type: String,
     },
@@ -17,5 +17,5 @@ const VideoSchema = mongoose.Schema({
     timestamps: true,
 });
 
-const Video = mongoose.model("Video", VideoSchema);
-module.exports = Video;
+const Upload = mongoose.model("Upload", UploadSchema);
+module.exports = Upload;

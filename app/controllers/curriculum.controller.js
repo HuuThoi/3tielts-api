@@ -12,7 +12,8 @@ exports.findAll = async (req, res) => {
       .limit(limit)
       .skip((offset - 1) * limit)
       .populate("courseID")
-      .populate("linkHomework");
+      .populate("linkHomework")
+      .populate("linkVideo");
 
 
     // const data = assignment.map((item) => {
@@ -65,7 +66,8 @@ exports.create = (req, res) => {
 
       const data = await db.Curriculum.findById({ _id: result._id })
       .populate("courseID")
-      .populate("linkHomework");
+      .populate("linkHomework")
+      .populate("linkVideo");
       console.log(data)
 
       return res.status(200).json({
