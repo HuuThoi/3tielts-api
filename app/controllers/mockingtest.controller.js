@@ -33,6 +33,35 @@ exports.findAll = async (req, res) => {
     });
   }
 };
+exports.find = async (req, res) => {
+  try {
+    // let { limit, offset } = req.params;
+    // limit = parseInt(limit);
+    // offset = parseInt(offset);
+
+    // const length = await db.MockingTest.find().countDocuments();
+    const data = await db.MockingTest.find()
+      .populate("categoryID");
+
+    // const data = assignment.map((item) => {
+    //     const { displayName, email } = item;
+    //     return { displayName, email };
+    // })
+    if (data) {
+      return res.status(200).json({
+        data
+      });
+    }
+    return res.status(400).json({
+      message: "Không có bài tập nào.",
+    });
+  } catch (err) {
+    console.log("err: ", err);
+    res.status(500).send({
+      message: "Có lỗi xảy ra",
+    });
+  }
+};
 
 exports.create = async (req, res) => {
   const MockingTest = db.MockingTest;

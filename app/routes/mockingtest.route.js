@@ -5,6 +5,7 @@ const controller = require("../controllers/mockingtest.controller");
 router.use(function (req, res, next) {next()});
 
 router.get("/:limit/:offset", controller.findAll);
+router.get("/all", controller.find);
 // router.get("/:id", controller.getById)
 router.post("/", controller.create);
 router.put('/:id', controller.update);
