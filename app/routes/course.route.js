@@ -1,6 +1,7 @@
 const express = require("express");
 var router = express.Router();
 const controller = require("../controllers/course.controller");
+const { authJwt } = require("../middlewares/index");
 
 router.use(function (req, res, next) {
     next();
@@ -19,7 +20,9 @@ router.put("/:id", controller.update);
 router.delete("/", controller.delete);
 
 router.get("/support/dropdown", controller.getDropdown);
-router.get("/:id/curriculum", controller.getAllCurriculumByCourseId);
-router.post("/curriculums/video/detail", controller.getVideoById);
+router.get("/mycourses/all", [authJwt.verifyToken], controller.getMyCourse);
+router.get("/:id/curriculum", [authJwt.verifyToken], controller.getAllCurriculumByCourseId);
+router.get("/:id/diligences", [authJwt.verifyToken], controller.getDiligenceDateInCourse);
+router.post("/curriculums/video/detail", [authJwt.verifyToken], controller.getVideoById);
 
 module.exports = router;

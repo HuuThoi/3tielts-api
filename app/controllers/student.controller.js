@@ -136,7 +136,7 @@ exports.update = async (req, res) => {
     db.User.findByIdAndUpdate(req.params.id, {
       $set: {
         address: address,
-        birthdate: new Date(birthdate),
+        // birthdate: new Date(birthdate),
         gender: gender,
         isBlock: isBlock
       }
