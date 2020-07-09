@@ -180,16 +180,20 @@ exports.findNewCoures = async (req, res) => {
 exports.getAllCurriculumByCourseId = async (req, res) => {
   const id = req.params.id;
   try {
-    const course = await db.Course.findById({ _id: id });
+    const course = await db.Course.findById({ _id: id }).populate({
+      path: "curriculums",
+      populate: ["linkVideo", "linkDoc"],
+    }
+    );
     if (course == null) {
       return res.status(404).json({ message: "Not found course " + id });
     }
 
     //will be tested in future
     const curriculumsByCourseId = course.curriculums;
-    const data = await db.Curriculum.find()
+    // const data = await db.Curriculum.find()
 
-    return res.status(200).json({ data: data });
+    return res.status(200).json({ data: curriculumsByCourseId });
   } catch (err) {
     console.log("err: ", err);
     return res.status(500).json({ message: err });
@@ -216,7 +220,9 @@ exports.getDiligenceDateInCourse = async (req, res) => {
 exports.getVideoById = async (req, res) => {
   try {
     const { id } = req.body;
-    const data = await db.Curriculum.findById({ _id: id });
+    const data = await db.Curriculum.findById({ _id: id }).populate({
+      path: "linkVideo",
+    });
     if (data) {
       //update diligence
       var diligence = await db.StudentCourseDiligence.findOne({
