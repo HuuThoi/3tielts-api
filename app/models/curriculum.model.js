@@ -8,7 +8,10 @@ const CurriculumSchema = mongoose.Schema({
         ref: "Upload",
     },
     length: String,
-    linkDoc: String,
+    linkDoc: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Upload",
+    },
     linkHomework: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "MockingTest",

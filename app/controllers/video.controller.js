@@ -1,4 +1,6 @@
 const db = require("../models/index");
+var convert = require('convert-seconds');
+
 const { uploadVideo, uploadFromBuffer } = require("../middlewares/cloudinary");
 
 exports.findAll = async (req, res) => {
@@ -40,8 +42,9 @@ exports.find = async (req, res) => {
 
     // const length = await db.Upload.find().countDocuments();
 
-    const data = await db.Upload.find({resourceType:'video'})
-      // .limit(limit)
+    const dataVideo = await db.Upload.find({resourceType:'video'})
+    const dataDoc = await db.Upload.find({resourceType:'application/pdf'})
+    // .limit(limit)
       // .skip((offset - 1) * limit);
     // .populate({
     //   path: 'CourseId',
@@ -49,10 +52,10 @@ exports.find = async (req, res) => {
     //   select: ['-password', '-passwordHash'],
     // })
 
-    console.log("data", data);
+    console.log("data", dataDoc);
 
-    if (data.length > 0) {
-      return res.status(200).json({ data });
+    if (dataVideo.length > 0) {
+      return res.status(200).json({ dataVideo, dataDoc });
     } else {
       return res.status(400).json({ message: "Không tìm thấy dữ liệu." });
     }
@@ -107,11 +110,16 @@ exports.upload = (req, res) => {
     .then((result) => {
       /* If the upload is successful */
       console.log(result)
+      const {duration} = result;
+      const length = convert(duration).hours + "h" + convert(duration).minutes  + "min" + convert(duration).seconds + "s";
+
+      duration
       const video = new db.Upload({
         url: result.url,
         originalName: result.original_filename,
         resourceType: result.resource_type,
-        desc: ""
+        desc: "",
+        duration: length
       });
       video.save((err, result) => {
         if (err) {

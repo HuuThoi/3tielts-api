@@ -12,7 +12,8 @@ const UploadSchema = mongoose.Schema({
     },
     resourceType: {
         type: String,
-    }
+    },
+    duration: String
 }, {
     timestamps: true,
 });
