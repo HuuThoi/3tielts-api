@@ -12,7 +12,7 @@ exports.findAll = async (req, res) => {
 
     const length = await db.Upload.find().countDocuments();
 
-    const data = await db.Upload.find()
+    const data = await db.Upload.find().sort({createdAt: -1})
       .limit(limit)
       .skip((offset - 1) * limit);
     // .populate({
@@ -42,8 +42,8 @@ exports.find = async (req, res) => {
 
     // const length = await db.Upload.find().countDocuments();
 
-    const dataVideo = await db.Upload.find({resourceType:'video'})
-    const dataDoc = await db.Upload.find({resourceType:'application/pdf'})
+    const dataVideo = await db.Upload.find({resourceType:'video'}).sort({createdAt: -1})
+    const dataDoc = await db.Upload.find({resourceType:'application/pdf'}).sort({createdAt: -1})
     // .limit(limit)
       // .skip((offset - 1) * limit);
     // .populate({
