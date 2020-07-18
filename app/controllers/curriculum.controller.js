@@ -11,6 +11,7 @@ exports.findAll = async (req, res) => {
     const data = await db.Curriculum.find()
       .limit(limit)
       .skip((offset - 1) * limit)
+      .sort({createdAt: -1})
       .populate("courseID")
       .populate("linkHomework")
       .populate("linkVideo")
@@ -40,10 +41,10 @@ exports.findAll = async (req, res) => {
 };
 
 exports.create = (req, res) => {
-  const assignment = new db.Curriculum(req.body);
+  const curriculum = new db.Curriculum(req.body);
   console.log(req.body);
 
-  assignment.save(async (err, result) => {
+  curriculum.save(async (err, result) => {
     if (err) {
       console.log("err ", err);
       return res.status(500).json({
@@ -74,12 +75,12 @@ exports.create = (req, res) => {
       console.log(data)
 
       return res.status(200).json({
-        message: "Tạo bài tập thành công.",
+        message: "Tạo bài học thành công.",
         data: data,
       });
     } else {
       return res.status(400).json({
-        message: "Tạo bài tập thất bại.",
+        message: "Tạo bài học thất bại.",
       });
     }
   });
@@ -87,7 +88,7 @@ exports.create = (req, res) => {
 
 exports.update = async (req, res) => {
   console.log(req.body);
-  const { _id, name, contents } = req.body;
+  const { _id, name, linkVideo, linkDoc, courseID, linkHomework } = req.body;
 
   if (!_id) {
     return res.status(400).json({
@@ -100,37 +101,44 @@ exports.update = async (req, res) => {
   // }
 
   try {
-    const MockingTest = db.MockingTest;
-    const assignment = await MockingTest.findOne({
+    const Curriculum = db.Curriculum;
+    const curriculum = await Curriculum.findOne({
       _id,
     });
 
-    if (assignment) {
-      const result = await MockingTest.findOneAndUpdate(
+    if (curriculum) {
+      const result = await Curriculum.findOneAndUpdate(
         {
           _id,
         },
         {
-          name: name || assignment.name,
-          contents: contents || assignment.contents,
+          name: name || curriculum.name,
+          linkVideo: linkVideo || curriculum.linkVideo,
+          linkDoc: linkDoc || curriculum.linkDoc,
+          courseID: courseID || curriculum.courseID,
+          linkHomework: linkHomework || curriculum.linkHomework
         }
       );
       if (result) {
-        const data = await MockingTest.findOne({
+        const data = await Curriculum.findOne({
           _id: result._id,
-        });
+        }).populate("courseID")
+        .populate("linkHomework")
+        .populate("linkVideo")
+        .populate("linkDoc");
+        ;
         // .populate('majorId')
 
         if (data) {
           return res.status(200).json({
-            message: "Cập nhật bài tập thành công.",
+            message: "Cập nhật bài học thành công.",
             data,
           });
         }
       }
     } else {
       return res.status(400).json({
-        message: "Không tìm thấy bài tập.",
+        message: "Không tìm thấy bài học.",
       });
     }
   } catch (err) {
@@ -151,8 +159,7 @@ exports.delete = async (req, res) => {
   }
 
   try {
-    const MockingTest = db.MockingTest;
-    const result = await MockingTest.findOneAndDelete({
+    const result = await db.Curriculum.findOneAndDelete({
       _id,
     });
     if (result) {

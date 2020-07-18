@@ -8,7 +8,7 @@ exports.findAll = async (req, res) => {
     offset = parseInt(offset);
 
     const length = await db.MockingTest.find().countDocuments();
-    const data = await db.MockingTest.find()
+    const data = await db.MockingTest.find().sort({createdAt: -1})
       .limit(limit)
       .skip((offset - 1) * limit)
       .populate("categoryID");
@@ -40,7 +40,7 @@ exports.find = async (req, res) => {
     // offset = parseInt(offset);
 
     // const length = await db.MockingTest.find().countDocuments();
-    const data = await db.MockingTest.find()
+    const data = await db.MockingTest.find().sort({createdAt: -1})
       .populate("categoryID");
 
     // const data = assignment.map((item) => {
