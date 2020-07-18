@@ -27,17 +27,17 @@ router.post("/signin", controller.signin);
 router.get("/me", [authJwt.verifyToken], controller.getCurrentUser);
 
 router.post("/verify-me", async (req, res) => {
-  if(!req.body.token) 
-  return res.status(200).json({
-    isValid: false
-  });
-  
+  if (!req.body.token)
+    return res.status(200).json({
+      isValid: false
+    });
+
   jwt.verify(req.body.token, config.jwtSecret, (err, decoded) => {
     if (!err) {
-    return res.status(200).json({
+      return res.status(200).json({
         isValid: true
       });
-    }else{
+    } else {
       return res.status(200).json({
         isValid: false
       });

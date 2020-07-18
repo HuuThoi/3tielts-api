@@ -23,4 +23,5 @@ module.exports = {
     VideoRoute: require("./video.route"),
     CourseRequest: require("./courseRequest.route"),
     Curriculum: require("./curriculum.route"),
+    Dashboard: require("./dashboard.route"),
 };

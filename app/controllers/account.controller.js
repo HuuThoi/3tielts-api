@@ -28,8 +28,9 @@ exports.signup = (req, res) => {
 };
 
 exports.signin = (req, res) => {
+  const { emailOrUsername } = req.body;
   db.User.findOne({
-    email: req.body.email,
+    $or: [{ email: emailOrUsername }, { username: emailOrUsername }]
   }).exec((err, user) => {
     if (err) {
       res.status(500).send({ message: err });

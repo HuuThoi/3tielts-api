@@ -15,6 +15,7 @@ const CourseSchema = mongoose.Schema({
     shortDesc: String,
     content: String,
     new: Boolean,
+    isConfirmed: Boolean,
     category: {
         type: String,
         default: "vỡ lòng",//vỡ lòng/ sơ cấp/ trung cấp/ thượng cấp

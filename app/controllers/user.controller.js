@@ -16,6 +16,10 @@ exports.findAll = async (req, res) => {
 
         limit = parseInt(limit)
         offset = parseInt(offset)
+
+
+
+
         const length = await User.find().countDocuments()
 
         const data = await User.find()
@@ -31,7 +35,7 @@ exports.findAll = async (req, res) => {
             return res.status(200).json({ data, length })
         }
         else {
-            return res.status(400).json({ message: "Không tìm thấy dữ liệu." })
+            return res.status(400).json({ message: "not found" })
         }
     }
     catch (err) {

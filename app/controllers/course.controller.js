@@ -3,7 +3,7 @@ const db = require("../models/index");
 exports.findAll = async (req, res) => {
   const courses = [];
   try {
-    await db.Course.find({})
+    await db.Course.find()
       .populate({
         path: "lecturer",
         select: "username",
@@ -24,6 +24,7 @@ exports.findAll = async (req, res) => {
             category: result[i].category,
             dateStart: result[i].dateStart,
             dateEnd: result[i].dateEnd,
+            isConfirmed: result[i].isConfirmed ? "Đã xác nhận" : "Chưa xác nhận"
           };
           courses.push(obj);
         }
@@ -38,7 +39,7 @@ exports.findAll = async (req, res) => {
 exports.findByID = async (req, res) => {
   try {
     const { id } = req.params;
-    const courses = await db.Course.findById({ _id: id }).populate({
+    const courses = await db.Course.findById({ _id: id, isConfirmed: true }).populate({
       path: "categoryID",
     });
 
@@ -64,6 +65,19 @@ exports.create = async (req, res) => {
     dateStart,
     dateEnd,
   } = req.body;
+
+  let model = {
+    name: name,
+    shortDesc: shortDesc,
+    content: content,
+    categoryID: categoryID,
+    tuition: tuition,
+    dateStart: dateStart,
+    dateEnd: dateEnd,
+    lecturer: lecturer,
+    isConfirmed: true
+  }
+
   if (!name || !shortDesc || !content) {
     return res.status(400).send({
       message: "name anf content not empty.",
@@ -78,12 +92,12 @@ exports.create = async (req, res) => {
         .json({ message: "Khóa học đã tồn tại, nhập khóa học khác" });
     } else {
       console.log("BODY", req.body);
-      const course = new db.Course(req.body);
+      const course = new db.Course(model);
       const result = await course.save();
       if (result) {
         return res
           .status(200)
-          .json({ message: "Tạo khóa học thành công.", course: req.body });
+          .json({ message: "Tạo khóa học thành công." });
       } else {
         return res.status(400).json({ message: "Tạo khóa học thất bại." });
       }
@@ -108,7 +122,7 @@ exports.update = async (req, res) => {
   } = req.body;
 
   try {
-    const course = await db.Course.findById({ _id: id });
+    const course = await db.Course.findById({ _id: id, isConfirmed: true });
     if (course == null) {
       return res.status(404).json({ message: "Not found course" + id });
     } else {
@@ -132,7 +146,7 @@ exports.update = async (req, res) => {
 
 exports.delete = async (req, res) => {
   const { id } = req.params;
-  const course = await db.Course.findById({ _id: id });
+  const course = await db.Course.findById({ _id: id, isConfirmed: true });
   if (course == null) {
     return res.status(404).json({ message: "Not found course" + id });
   }
@@ -152,7 +166,7 @@ exports.delete = async (req, res) => {
 
 exports.getDropdown = async (req, res) => {
   try {
-    let courses = await db.Course.find().select({ _id: 1, name: 1 });
+    let courses = await db.Course.find({ isConfirmed: true }).select({ _id: 1, name: 1 });
     return res.status(200).json({ data: courses });
   } catch (err) {
     console.log("err: ", err);
@@ -162,7 +176,7 @@ exports.getDropdown = async (req, res) => {
 
 exports.findNewCoures = async (req, res) => {
   try {
-    const courses = await db.Course.find({ isNew: true })
+    const courses = await db.Course.find({ isNew: true, isConfirmed: true })
       .limit(2)
       .populate({ path: "categoryID" });
     if (courses) {
@@ -180,7 +194,7 @@ exports.findNewCoures = async (req, res) => {
 exports.getAllCurriculumByCourseId = async (req, res) => {
   const id = req.params.id;
   try {
-    const course = await db.Course.findById({ _id: id }).populate({
+    const course = await db.Course.findById({ _id: id, isConfirmed: true }).populate({
       path: "curriculums",
       populate: ["linkVideo", "linkDoc"],
     }
@@ -202,7 +216,7 @@ exports.getAllCurriculumByCourseId = async (req, res) => {
 
 exports.getDiligenceDateInCourse = async (req, res) => {
   const id = req.params.id;
-  const course = await db.Course.findById({ _id: id });
+  const course = await db.Course.findById({ _id: id, isConfirmed: true });
   if (course == null) {
     return res.status(404).json({ message: "Not found course " + id });
   }
@@ -249,7 +263,7 @@ exports.getVideoById = async (req, res) => {
 exports.getMyCourse = async (req, res) => {
   const courses = [];
   try {
-    await db.Course.find({ studentList: { $in: req.userData.id } })
+    await db.Course.find({ isConfirmed: true, studentList: { $in: req.userData.id } })
       .populate({
         path: "lecturer",
         select: "username"
@@ -276,5 +290,91 @@ exports.getMyCourse = async (req, res) => {
   } catch (err) {
     console.log("err: ", err);
     return res.status(500).json({ message: err });
+  }
+};
+
+
+exports.teacherCreate = async (req, res) => {
+  const {
+    name,
+    shortDesc,
+    content,
+    categoryID,
+    tuition,
+    dateStart,
+    dateEnd,
+  } = req.body;
+
+  const lecturer = req.userData.id;
+  let model = {
+    name: name,
+    shortDesc: shortDesc,
+    content: content,
+    categoryID: categoryID,
+    tuition: tuition,
+    dateStart: dateStart,
+    dateEnd: dateEnd,
+    lecturer: lecturer
+  }
+
+  if (!name || !shortDesc || !content) {
+    return res.status(400).send({
+      message: "name anf content not empty.",
+    });
+  }
+  try {
+    const data = await db.Course.findOne({ name });
+
+    if (data) {
+      return res
+        .status(400)
+        .json({ message: "Khóa học đã tồn tại, nhập khóa học khác" });
+    } else {
+      console.log("BODY", req.body);
+      const course = new db.Course(model);
+      const result = await course.save();
+      if (result) {
+        return res
+          .status(200)
+          .json({ message: "Tạo khóa học thành công.", course: req.body });
+      } else {
+        return res.status(400).json({ message: "Tạo khóa học thất bại." });
+      }
+    }
+  } catch {
+    return res
+      .status(500)
+      .json({ message: "Đã có lỗi xảy ra, vui lòng thử lại." });
+  }
+};
+
+exports.confirmCourse = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const course = await db.Course.findById({ _id: id, isConfirmed: true });
+    if (course == null) {
+      return res.status(404).json({ message: "Not found course" + id });
+    } else {
+      if (course.isConfirmed) {
+        return res
+          .status(200)
+          .json({});
+      } else {
+        const result = await db.Course.findOneAndUpdate(
+          { _id: id },
+          { $set: { isConfirmed: true } }
+        );
+        if (result) {
+          const data = await db.Course.findOne({ _id: result._id });
+          if (data) {
+            return res
+              .status(200)
+              .json({ message: "Xác nhận khóa học thành công.", data });
+          }
+        }
+      }
+    }
+  } catch (err) {
+    return res.status(500).json({ message: "Đã có lỗi xảy ra.", err });
   }
 };

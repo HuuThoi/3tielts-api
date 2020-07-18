@@ -148,7 +148,7 @@ app.get("/seed-data", (req, res) => {
         contents: "Content of MockingTest " + num,
 
       },
-      (err, seedUser) => {}
+      (err, seedUser) => { }
     );
   }
   res.json({ message: "Seed data created" });
@@ -162,7 +162,7 @@ app.get("/seed-data", (req, res) => {
         title: "Title of Response " + num,
 
       },
-      (err, seedUser) => {}
+      (err, seedUser) => { }
     );
   }
   res.json({ message: "Seed data created" });
@@ -190,6 +190,7 @@ app.use("/feedbacks", route.FeedbackRoute);
 app.use("/video", route.VideoRoute);
 app.use("/courseRequests", route.CourseRequest);
 app.use("/curriculums", route.Curriculum);
+app.use("/dashboard", route.Dashboard);
 
 //caych error
 app.use((req, res, next) => {
