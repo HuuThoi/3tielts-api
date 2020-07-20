@@ -12,7 +12,7 @@ exports.findAll = async (req, res) => {
     const data = await db.Feedback.find()
       .populate({
         path: "userID",
-        select: "displayName"
+        select: "username"
       });
     for (let i = 0; i < data.length; i++) {
       let obj = {
@@ -21,7 +21,7 @@ exports.findAll = async (req, res) => {
         typeID: data[i].typeID,
         rate: data[i].rate,
         status: data[i].status,
-        user: data[i].userID != null ? data[i].studentID.displayName : null,
+        user: data[i].userID != null ? data[i].studentID.username : null,
       }
       fbs.push(obj);
     }

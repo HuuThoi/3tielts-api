@@ -1,7 +1,7 @@
 module.exports = {
     AccountRoute: require("./account.route"),
+    AssignmentRoute: require("./assignment.route"),
     AdminRoute: require("./admin.route"),
-    // AssignmentRoute: require("./assignment.route"),
     CategoryRoute: require("./category.route"),
     ClassRoute: require("./class.route"),
     CommentRoute: require("./comment.route"),
@@ -9,8 +9,8 @@ module.exports = {
     DocumentRoute: require("./document.route"),
     FeedbackRoute: require("./feedback.route"),
     // FeedbackDetailRoute: require("./feedbackdetail.route"),
-    // MockingTestRoute: require("./mockingtest.route"),
-    // ResponseRoute: require("./response.route"),
+    MockingTestRoute: require("./mockingtest.route"),
+    ResponseRoute: require("./response.route"),
     ScheduleRoute: require("./schedule.route"),
     QuestionRoute: require("./question.route"),
     ShiftRoute: require("./shift.route"),
@@ -20,4 +20,8 @@ module.exports = {
     // TestListRoute: require("./testlist.route"),
     UserRoute: require("./user.route"),
     AbsenceRoute: require("./absence.route"),
+    VideoRoute: require("./video.route"),
+    CourseRequest: require("./courseRequest.route"),
+    Curriculum: require("./curriculum.route"),
+    Dashboard: require("./dashboard.route"),
 };

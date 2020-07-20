@@ -3,15 +3,26 @@ const mongoose = require("mongoose");
 const CurriculumSchema = mongoose.Schema({
     name: String,
     status: Number,
-    linkVideo: String,
-    linkDoc : String,
+    linkVideo: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Upload",
+    },
+    length: String,
+    linkDoc: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Upload",
+    },
     linkHomework: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Mocktest",
+        ref: "MockingTest",
     },
     isDoneHomework: {
-        type : Boolean,
+        type: Boolean,
         default: false
+    },
+    courseID: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Course",
     }
 
 }, {

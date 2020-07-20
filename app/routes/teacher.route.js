@@ -19,4 +19,6 @@ router.put("/:id", [authJwt.verifyToken], controller.update);
 router.delete("/:id", [authJwt.verifyToken], controller.delete);
 router.get("/block/:id", [authJwt.verifyToken], controller.blockTeacher);
 
+router.get("/support/dropdown", controller.getDropdown);
+
 module.exports = router;

@@ -11,12 +11,12 @@ exports.findAll = async (req, res) => {
 
     const data = await db.Comment.find()
       .limit(limit)
-      .skip((offset - 1)*limit)
-      // .populate({
-      //   path: 'userId',
-      //   // match: { isBlock: false },
-      //   select: ['-password', '-passwordHash'],
-      // })
+      .skip((offset - 1) * limit)
+    // .populate({
+    //   path: 'userId',
+    //   // match: { isBlock: false },
+    //   select: ['-password', '-passwordHash'],
+    // })
 
     if (data.length > 0) {
       return res.status(200).json({ data, length })
@@ -31,10 +31,10 @@ exports.findAll = async (req, res) => {
   }
 }
 
-exports.findByID= async (req, res) => {
+exports.findByID = async (req, res) => {
   try {
-    const {id} = req.params;
-    const category = await db.Comment.find({_id:id}).populate({path:'authorID'})
+    const { id } = req.params;
+    const category = await db.Comment.find({ _id: id }).populate({ path: 'authorID' })
     if (category) {
       return res.status(200).json({ data: category })
     }
@@ -49,27 +49,27 @@ exports.findByID= async (req, res) => {
 }
 
 /**
- * {body: {email, password, displayName}}
+ * {body: {email, password, username}}
  */
 exports.create = async (req, res) => {
-  const {title,content,datePosted,like, } = req.body;
-  if (!title || !content ) {
+  const { title, content, datePosted, like, } = req.body;
+  if (!title || !content) {
     return res.status(400).send({
       message: "title and content not empty."
     })
   }
   try {
     // console.log("BODY",req.body)
-      const comment = new db.Comment(req.body)
-      //db.Comment.setPasswordHash(password)
-       console.log(comment);
-      const result = await comment.save();
-      console.log("result: ", result);
-      if (result) {
-        return res.status(200).json({ message: "Tạo cate thành công.", comment: req.body });
-      } else {
-        return res.status(400).json({ message: "Tạo cate thất bại." });
-      }
+    const comment = new db.Comment(req.body)
+    //db.Comment.setPasswordHash(password)
+    console.log(comment);
+    const result = await comment.save();
+    console.log("result: ", result);
+    if (result) {
+      return res.status(200).json({ message: "Tạo cate thành công.", comment: req.body });
+    } else {
+      return res.status(400).json({ message: "Tạo cate thất bại." });
+    }
   } catch {
     return res.status(500).json({ message: "Đã có lỗi xảy ra, vui lòng thử lại." });
   }
@@ -82,35 +82,37 @@ exports.create = async (req, res) => {
 
 exports.update = async (req, res) => {
   // console.log(req.body)
-  const {title,content,datePosted,like, } = req.body;
+  const { title, content, datePosted, like, } = req.body;
   if (!_id) {
-      return res.status(400).json({ message: "Id không được rỗng" })
+    return res.status(400).json({ message: "Id không được rỗng" })
   }
   if (!name) {
-      return res.status(400).json({ message: "Tên tag hoặc ngành học không được rỗng" })
+    return res.status(400).json({ message: "Tên tag hoặc ngành học không được rỗng" })
   }
   try {
-      const category = await db.Comment.findOne({ _id })
-      if(category) {
-          const result = await db.Comment.findOneAndUpdate({ _id }, 
-                                                        { title: title || comment.title,
-                                                          content: content || comment.content,
-                                                          datePosted: datePosted || comment.datePosted,
-                                                          like: status })
-          if (result) {
-              const data = await db.Comment.findOne({ _id: result._id })
-              if (data) {
-                  return res.status(200).json({ message: "Cập nhật category năng thành công.", data })
-              }
-          }
+    const category = await db.Comment.findOne({ _id })
+    if (category) {
+      const result = await db.Comment.findOneAndUpdate({ _id },
+        {
+          title: title || comment.title,
+          content: content || comment.content,
+          datePosted: datePosted || comment.datePosted,
+          like: status
+        })
+      if (result) {
+        const data = await db.Comment.findOne({ _id: result._id })
+        if (data) {
+          return res.status(200).json({ message: "Cập nhật category năng thành công.", data })
+        }
       }
-      else {
-          return res.status(400).json({ message: "Không tìm thấy db.Comment." })
-      }
+    }
+    else {
+      return res.status(400).json({ message: "Không tìm thấy db.Comment." })
+    }
   }
   catch (err) {
-      console.log('err: ', err)
-      return res.status(500).json({ message: "Đã có lỗi xảy ra." })
+    console.log('err: ', err)
+    return res.status(500).json({ message: "Đã có lỗi xảy ra." })
   }
 }
 
@@ -121,20 +123,20 @@ exports.update = async (req, res) => {
 exports.delete = async (req, res) => {
   const { _id } = req.body
   if (!_id) {
-      return res.status(400).json({ message: "Id không được rỗng" })
+    return res.status(400).json({ message: "Id không được rỗng" })
   }
 
   try {
-      const result = await db.Comment.findOneAndDelete({ _id })
-      if (result) {
-          return res.status(200).json({ message: "Xóa category thành công.", data: result })
-      }
-      else {
-          return res.status(400).json({ message: "Không tìm thấy db.Comment." })
-      }
+    const result = await db.Comment.findOneAndDelete({ _id })
+    if (result) {
+      return res.status(200).json({ message: "Xóa category thành công.", data: result })
+    }
+    else {
+      return res.status(400).json({ message: "Không tìm thấy db.Comment." })
+    }
   }
   catch (err) {
-      console.log('err: ', err)
-      return res.status(500).json({ message: "Đã có lỗi xảy ra." })
+    console.log('err: ', err)
+    return res.status(500).json({ message: "Đã có lỗi xảy ra." })
   }
 }

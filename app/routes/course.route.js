@@ -1,6 +1,7 @@
 const express = require("express");
 var router = express.Router();
 const controller = require("../controllers/course.controller");
+const { authJwt } = require("../middlewares/index");
 
 router.use(function (req, res, next) {
     next();
@@ -12,12 +13,18 @@ router.use(function (req, res, next) {
 // 4 API cập nhật
 // 5 API xóa
 
-router.get("/:limit/:offset", controller.findAll);
+router.get("/all", controller.findAll);
 router.get("/:id", controller.findByID);
 router.post("/", controller.create);
-router.put("/update/:id", controller.update);
+router.put("/:id", controller.update);
 router.delete("/", controller.delete);
 
 router.get("/support/dropdown", controller.getDropdown);
+router.get("/mycourses/all", [authJwt.verifyToken], controller.getMyCourse);
+router.get("/confirm/:id", [authJwt.verifyToken, authJwt.isAdmin], controller.confirmCourse);
+router.post("/teacher/create", [authJwt.verifyToken, authJwt.isTeacher], controller.teacherCreate);
+router.get("/:id/curriculum", [authJwt.verifyToken], controller.getAllCurriculumByCourseId);
+router.get("/:id/diligences", [authJwt.verifyToken], controller.getDiligenceDateInCourse);
+router.post("/curriculums/video/detail", [authJwt.verifyToken], controller.getVideoById);
 
 module.exports = router;

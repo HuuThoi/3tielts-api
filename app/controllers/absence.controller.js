@@ -15,7 +15,7 @@ exports.findAll = async (req, res) => {
         select: "name"
       }).populate({
         path: "userID",
-        select: "displayName"
+        select: "username"
       });
     for (let i = 0; i < data.length; i++) {
       let obj = {
@@ -26,7 +26,7 @@ exports.findAll = async (req, res) => {
         status: data[i].status,
         statusName: data[i].status ? "Đã duyệt" : "Chưa duyệt",
         className: data[i].classID != null ? data[i].classID.name : null,
-        studentName: data[i].studentID != null ? data[i].studentID.displayName : null,
+        studentName: data[i].studentID != null ? data[i].studentID.username : null,
       }
       absences.push(obj);
     }

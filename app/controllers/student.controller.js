@@ -35,12 +35,14 @@ const bcrypt = require("bcryptjs");
 exports.findAll = async (req, res) => {
   const students = [];
   try {
-    await db.User.find({ role: EUserTypes.STUDENT })
+    await db.User.find({
+      $or: [{ role: EUserTypes.STUDENT }, { wantToUpgrade: true }]
+    })
       //.populate({
       // path: "userID",
       // select: "email"
       //})
-      .exec(function (err, result) {
+      .sort({ wantToUpgrade: 1 }).exec(function (err, result) {
         console.log(result);
 
         if (err) {
@@ -49,13 +51,14 @@ exports.findAll = async (req, res) => {
         for (let i = 0; i < result.length; i++) {
           let obj = {
             id: result[i]._id,
-            displayName: result[i].displayName,
+            username: result[i].username,
             isBlocked: result[i].isBlock == true ? "True" : "False",
             phone: result[i].phone,
             email: result[i].email,
             gender: result[i].gender,
             address: result[i].address,
-            dateExpire: result[i].dateExpire
+            dateExpire: result[i].dateExpire,
+            wantToUpgrade: result[i].wantToUpgrade
           }
           students.push(obj);
         }
@@ -81,7 +84,7 @@ exports.findById = async (req, res) => {
           birthdate: student.birthdate,
           gender: student.gender,
           email: student.email,
-          displayName: student.displayName,
+          username: student.username,
           isBlock: student.isBlock
         }
         res.json(data);
@@ -94,7 +97,7 @@ exports.findById = async (req, res) => {
 };
 
 exports.create = async (req, res) => {
-  const { address, birthdate, password, gender, email, displayName } = req.body;
+  const { address, birthdate, password, gender, email, username } = req.body;
   try {
     // var user = await db.User.findOne({ email: email });
     // if (user != null) {
@@ -103,20 +106,20 @@ exports.create = async (req, res) => {
 
     db.User.create({
       address: address,
-      birthdate: birthdate,
+      // birthdate: birthdate,
       password: bcrypt.hashSync(password, 8),
       gender: gender,
       email: email,
-      displayName: displayName,
+      username: username,
       role: EUserTypes.STUDENT
     }, function (err, user) {
       if (err) {
-        //return res.send("error saving student");
+        return res.status(500).json({ message: "error saving student" + err });
       } else {
         db.Student.create({
           userID: user._id
         });
-        //return res.send("Success");
+        return res.json({ message: "Success" });
       }
     });
   } catch (err) {
@@ -133,7 +136,7 @@ exports.update = async (req, res) => {
     db.User.findByIdAndUpdate(req.params.id, {
       $set: {
         address: address,
-        birthdate: new Date(birthdate),
+        // birthdate: new Date(birthdate),
         gender: gender,
         isBlock: isBlock
       }
@@ -174,11 +177,11 @@ exports.delete = async (req, res) => {
   }
 };
 
-exports.blockStudent = async (req, res) => {
+exports.upgradeStudent = async (req, res) => {
   try {
     db.User.findByIdAndUpdate(req.params.id, {
       $set: {
-        isBlock: true,
+        role: EUserTypes.STUDENT,
       }
     })
       .then(student => {
