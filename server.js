@@ -158,7 +158,7 @@ app.use(function (err, req, res, next) {
 });
 
 //running app
-http.listen(parseInt(process.env.PORT) || 8080, () => {
-  console.log("Server is listening http://localhost:8080");
+http.listen(parseInt(process.env.PORT) || 5000, () => {
+  console.log(`Server is listening http://localhost:5000`);
 });
 module.exports = app;
