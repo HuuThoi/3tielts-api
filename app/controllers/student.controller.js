@@ -58,7 +58,8 @@ exports.findAll = async (req, res) => {
             gender: result[i].gender,
             address: result[i].address,
             dateExpire: result[i].dateExpire,
-            wantToUpgrade: result[i].wantToUpgrade
+            wantToUpgrade: result[i].wantToUpgrade == true ? "True" : "False",
+            birthdate: result[i].birthdate
           }
           students.push(obj);
         }
@@ -106,7 +107,7 @@ exports.create = async (req, res) => {
 
     db.User.create({
       address: address,
-      // birthdate: birthdate,
+      birthdate: birthdate,
       password: bcrypt.hashSync(password, 8),
       gender: gender,
       email: email,
@@ -136,7 +137,7 @@ exports.update = async (req, res) => {
     db.User.findByIdAndUpdate(req.params.id, {
       $set: {
         address: address,
-        // birthdate: new Date(birthdate),
+        birthdate: birthdate,
         gender: gender,
         isBlock: isBlock
       }

@@ -10,7 +10,7 @@ const db = require("../models/index");
 exports.findAll = async (req, res) => {
   const userData = req.userData;
 
-  const classes = [];
+  var classes = [];
   try {
     if (userData.role == EUserTypes.ADMIN) {
       await Class.find()
