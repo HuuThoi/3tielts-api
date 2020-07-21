@@ -31,7 +31,7 @@ const UserSchema = mongoose.Schema(
         birthdate: Date,
         googleID: String,
         facebookID: String,
-        adress: String,
+        address: String,
         role: {
             type: String,
             default: EUserType.STANDARD,

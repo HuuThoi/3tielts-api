@@ -39,7 +39,7 @@ exports.findAll = async (req, res) => {
                         email: result[i].email,
                         gender: result[i].gender,
                         address: result[i].address,
-
+                        birthdate: result[i].birthdate
                     }
                     teachers.push(obj);
                 }
@@ -197,10 +197,10 @@ exports.blockTeacher = async (req, res) => {
 
 exports.getDropdown = async (req, res) => {
     try {
-      let data = await db.User.find({role: EUserTypes.TEACHER}).select({ _id: 1, username: 1 });
-      return res.status(200).json({ data: data });
+        let data = await db.User.find({ role: EUserTypes.TEACHER }).select({ _id: 1, username: 1 });
+        return res.status(200).json({ data: data });
     } catch (err) {
-      console.log("err: ", err);
-      return res.status(500).json({ message: err });
+        console.log("err: ", err);
+        return res.status(500).json({ message: err });
     }
-  };
+};

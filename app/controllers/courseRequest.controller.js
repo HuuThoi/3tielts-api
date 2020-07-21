@@ -54,7 +54,7 @@ exports.update = async (req, res) => {
         const course = await db.Course.findById({ _id: result.courseID });
 
         if (course.studentList.length > 0) {
-          const found = course.studentList.find(x => x === item.userID);
+          const found = course.studentList.find(x => x.toString() === item.userID);
           if (found === null || found === undefined) {
             course.studentList.push(item.userID);
             await course.save();

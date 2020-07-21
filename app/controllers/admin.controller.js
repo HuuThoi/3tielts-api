@@ -18,7 +18,8 @@ exports.findAll = async (req, res) => {
                 phone: item.phone,
                 birthdate: item.birthdate,
                 gender: item.gender,
-                isBlock: item.isBlock ? "Bị khóa" : "Không"
+                isBlock: item.isBlock ? "Bị khóa" : "Không",
+                address: item.address
             }
 
             return v;

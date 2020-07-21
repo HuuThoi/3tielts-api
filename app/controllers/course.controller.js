@@ -1,4 +1,5 @@
 const db = require("../models/index");
+const { ObjectID } = require("mongodb");
 
 exports.findAll = async (req, res) => {
   const courses = [];
@@ -39,14 +40,14 @@ exports.findAll = async (req, res) => {
 exports.findByID = async (req, res) => {
   try {
     const { id } = req.params;
-    const courses = await db.Course.findById({ _id: id, isConfirmed: true }).populate({
+    const courses = await db.Course.findOne({ _id: id, isConfirmed: true }).populate({
       path: "categoryID",
     });
 
     if (courses) {
       return res.status(200).json({ data: courses });
     } else {
-      return res.status(400).json({ message: "Không tồn tại tài khoản." });
+      return res.status(400).json({ message: "Không tồn tại khoas hoc" });
     }
   } catch (err) {
     console.log("err: ", err);
@@ -122,7 +123,7 @@ exports.update = async (req, res) => {
   } = req.body;
 
   try {
-    const course = await db.Course.findById({ _id: id, isConfirmed: true });
+    const course = await db.Course.findOne({ _id: id, isConfirmed: true });
     if (course == null) {
       return res.status(404).json({ message: "Not found course" + id });
     } else {
@@ -146,7 +147,7 @@ exports.update = async (req, res) => {
 
 exports.delete = async (req, res) => {
   const { id } = req.params;
-  const course = await db.Course.findById({ _id: id, isConfirmed: true });
+  const course = await db.Course.findById({ _id: id });
   if (course == null) {
     return res.status(404).json({ message: "Not found course" + id });
   }
@@ -216,18 +217,19 @@ exports.getAllCurriculumByCourseId = async (req, res) => {
 
 exports.getDiligenceDateInCourse = async (req, res) => {
   const id = req.params.id;
-  const course = await db.Course.findById({ _id: id, isConfirmed: true });
+  var course = await db.Course.findById({ _id: ObjectID(id) });
   if (course == null) {
     return res.status(404).json({ message: "Not found course " + id });
   }
-
   //get list day in diligence
   var diligence = await db.StudentCourseDiligence.findOne({
     userId: req.userData.id,
-    courseId: course._id,
+    courseId: ObjectID(id),
   });
 
-  var list = diligence.listDateLearning;
+  console.log(diligence);
+
+  var list = diligence != null ? diligence.listDateLearning : null;
   return res.status(200).json({ data: list });
 }
 
@@ -241,12 +243,12 @@ exports.getVideoById = async (req, res) => {
       //update diligence
       var diligence = await db.StudentCourseDiligence.findOne({
         userId: req.userData.id,
-        courseId: data._id,
+        courseId: data.courseID,
       });
       if (diligence != null) {
         const date = new Date();
         const index = date.getDate();
-        diligence.listDateLearning[index].isLearning = true;
+        diligence.listDateLearning[index] = true;
         await diligence.save();
       }
 
