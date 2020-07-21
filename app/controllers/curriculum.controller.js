@@ -11,19 +11,18 @@ exports.findAll = async (req, res) => {
     const data = await db.Curriculum.find()
       .limit(limit)
       .skip((offset - 1) * limit)
-      .sort({createdAt: -1})
+      .sort({ createdAt: -1 })
       .populate("courseID")
       .populate("linkHomework")
       .populate("linkVideo")
       .populate("linkDoc");
-
 
     // const data = assignment.map((item) => {
     //     const { displayName, email } = item;
     //     return { displayName, email };
     // })
     if (data) {
-        console.log(data)
+      console.log(data);
       return res.status(200).json({
         data,
         length,
@@ -41,6 +40,12 @@ exports.findAll = async (req, res) => {
 };
 
 exports.create = (req, res) => {
+  if (req.body.linkHomework === "") {
+    req.body.linkHomework = null;
+  }
+  if (req.body.linkDoc === "") {
+    req.body.linkDoc = null;
+  }
   const curriculum = new db.Curriculum(req.body);
   console.log(req.body);
 
@@ -67,12 +72,12 @@ exports.create = (req, res) => {
       }
 
       const data = await db.Curriculum.findById({ _id: result._id })
-      .populate("courseID")
-      .populate("linkHomework")
-      .populate("linkVideo")
-      .populate("linkDoc");
-      
-      console.log(data)
+        .populate("courseID")
+        .populate("linkHomework")
+        .populate("linkVideo")
+        .populate("linkDoc");
+
+      console.log(data);
 
       return res.status(200).json({
         message: "Tạo bài học thành công.",
@@ -116,17 +121,17 @@ exports.update = async (req, res) => {
           linkVideo: linkVideo || curriculum.linkVideo,
           linkDoc: linkDoc || curriculum.linkDoc,
           courseID: courseID || curriculum.courseID,
-          linkHomework: linkHomework || curriculum.linkHomework
+          linkHomework: linkHomework || curriculum.linkHomework,
         }
       );
       if (result) {
         const data = await Curriculum.findOne({
           _id: result._id,
-        }).populate("courseID")
-        .populate("linkHomework")
-        .populate("linkVideo")
-        .populate("linkDoc");
-        ;
+        })
+          .populate("courseID")
+          .populate("linkHomework")
+          .populate("linkVideo")
+          .populate("linkDoc");
         // .populate('majorId')
 
         if (data) {
