@@ -12,7 +12,7 @@ const DocumentSchema = mongoose.Schema({
     name: String,
     shortDesc: String,
     contents: String,
-    image : String,
+    image: String,
     categoryId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Category",
@@ -23,7 +23,7 @@ const DocumentSchema = mongoose.Schema({
     },
     comments: [{
         content: String,
-    }, ],
+    },],
     isRecommend: Boolean,
     upload: {
         type: Date,

@@ -1,5 +1,6 @@
 const db = require("../models/index");
 const EUserTypes = require("../enums/EUserTypes");
+const nodemailer = require("nodemailer");
 
 
 exports.findAll = async (req, res) => {
@@ -69,6 +70,54 @@ exports.update = async (req, res) => {
             role: EUserTypes.STUDENT,
           }
         })
+
+        try {
+          db.User.findOne({ _id: item.userID })
+            .then((user) => {
+              //send mail notify
+              var emailTransportOptions = {
+                "host": "smtp.gmail.com",
+                "port": 465,
+                "secure": true,
+                "auth": {
+                  "user": "khactrieuhcmus@gmail.com",
+                  "pass": "khactrieuserver"
+                },
+                "tls": {
+                  "rejectUnauthorized": false
+                }
+              }
+              var transporter = nodemailer.createTransport(emailTransportOptions);
+
+              var content = "";
+              content += `<div>
+                            <h2>Khóa học ${course.name} của bạn đã được xác nhận</h2>
+                            <h2>Bạn có thể học ngay lúc này</h2>
+                          </div>  
+                          `;
+
+              var mailOptions = {
+                from: `khactrieuhcmus@gmail.com`,
+                to: user.email,
+                subject: "Gửi xác nhận",
+                html: content,
+              };
+
+              transporter.sendMail(mailOptions, function (error, info) {
+                if (error) {
+                  console.log(error);
+                  return res.status(400).json({ success: false });
+                } else {
+                  console.log("Email sent: " + info.response);
+                  return res.json({ success: true });
+                }
+              });
+
+            });
+        } catch (err) {
+          return res.status(500).json({ message: err })
+        }
+
 
         //add to studentCourseDiligence
 

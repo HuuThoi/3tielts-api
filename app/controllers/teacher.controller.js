@@ -109,12 +109,12 @@ exports.create = async (req, res) => {
             role: EUserTypes.TEACHER
         }, function (err, user) {
             if (err) {
-                //return res.send("error saving teacher");
+                return res.send("error saving teacher");
             } else {
                 db.Teacher.create({
                     userID: user._id
                 });
-                //return res.send("Success");
+                return res.send("Success");
             }
         });
     } catch (err) {

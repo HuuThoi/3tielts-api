@@ -1,5 +1,6 @@
 const db = require("../models/index");
 const { ObjectID } = require("mongodb");
+const EUserTypes = require("../enums/EUserTypes")
 
 exports.findAll = async (req, res) => {
   const courses = [];
@@ -45,7 +46,9 @@ exports.findByID = async (req, res) => {
     });
 
     if (courses) {
-      return res.status(200).json({ data: courses });
+      const teacher = await db.User.findOne({ _id: courses.lecturer, role: EUserTypes.TEACHER })
+
+      return res.status(200).json({ data: courses, teacher: teacher ? teacher.username : null });
     } else {
       return res.status(400).json({ message: "Không tồn tại khoas hoc" });
     }
@@ -195,7 +198,7 @@ exports.findNewCoures = async (req, res) => {
 exports.getAllCurriculumByCourseId = async (req, res) => {
   const id = req.params.id;
   try {
-    const course = await db.Course.findById({ _id: id, isConfirmed: true }).populate({
+    const course = await db.Course.findOne({ _id: ObjectID(id), isConfirmed: true }).populate({
       path: "curriculums",
       populate: ["linkVideo", "linkDoc"],
     }
@@ -208,7 +211,9 @@ exports.getAllCurriculumByCourseId = async (req, res) => {
     const curriculumsByCourseId = course.curriculums;
     // const data = await db.Curriculum.find()
 
-    return res.status(200).json({ data: curriculumsByCourseId });
+    return res.status(200).json({
+      data: curriculumsByCourseId
+    });
   } catch (err) {
     console.log("err: ", err);
     return res.status(500).json({ message: err });
@@ -275,17 +280,19 @@ exports.getMyCourse = async (req, res) => {
           res.status(500).json({ message: err })
         }
         for (let i = 0; i < result.length; i++) {
-          let obj = {
-            id: result[i]._id,
-            name: result[i].name,
-            shortDesc: result[i].shortDesc,
-            tuition: result[i].tuition,
-            lecturer: result[i].lecturer ? result[i].lecturer.username : null,
-            category: result[i].category,
-            dateStart: result[i].dateStart,
-            dateEnd: result[i].dateEnd
+          if (result[i].dateEnd && ((new Date().getTime() - result[i].dateEnd.getTime()) / (60000 * 60 * 24)) < 0) {
+            let obj = {
+              id: result[i]._id,
+              name: result[i].name,
+              shortDesc: result[i].shortDesc,
+              tuition: result[i].tuition,
+              lecturer: result[i].lecturer ? result[i].lecturer.username : null,
+              category: result[i].category,
+              dateStart: result[i].dateStart,
+              dateEnd: result[i].dateEnd
+            }
+            courses.push(obj);
           }
-          courses.push(obj);
         }
         return res.status(200).json({ data: courses });
       });
