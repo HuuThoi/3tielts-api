@@ -66,7 +66,7 @@ exports.findAllNoPaging = async (req, res) => {
 
 exports.findById = async (req, res) => {
     try {
-        db.User.findById(req.params.id)
+        await db.User.findById(req.params.id)
             .then((teacher) => {
                 if (!teacher) {
                     return res.status(404).send({
@@ -93,11 +93,10 @@ exports.findById = async (req, res) => {
 exports.create = async (req, res) => {
     const { address, birthdate, password, gender, email, username } = req.body;
     try {
-        // db.User.findOne({ email: email }, function (err, result) {
-        //     if (result) {
-        //         res.status(400).json({ message: "Email is existed" })
-        //     }
-        // });
+        var _user = await db.User.findOne({ email: email });
+        if (_user != null) {
+            return res.status(400).json({ message: "Email is existed" })
+        }
 
         db.User.create({
             address: address,
@@ -109,7 +108,7 @@ exports.create = async (req, res) => {
             role: EUserTypes.TEACHER
         }, function (err, user) {
             if (err) {
-                return res.send("error saving teacher");
+                return res.status(400).json({ message: err });
             } else {
                 db.Teacher.create({
                     userID: user._id

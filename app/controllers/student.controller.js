@@ -100,10 +100,10 @@ exports.findById = async (req, res) => {
 exports.create = async (req, res) => {
   const { address, birthdate, password, gender, email, username } = req.body;
   try {
-    // var user = await db.User.findOne({ email: email });
-    // if (user != null) {
-    //   return res.status(400).json({ message: "Email is existed" })
-    // };
+    var _user = await db.User.findOne({ email: email });
+    if (_user != null) {
+      return res.status(400).json({ message: "Email is existed" })
+    }
 
     db.User.create({
       address: address,

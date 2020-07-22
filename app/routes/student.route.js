@@ -16,11 +16,11 @@ router.use(function (req, res, next) {
 //router.post("/register", controller.register);
 // router.put('/update', controller.);
 
-router.get("/all", [authJwt.verifyToken], controller.findAll);
-router.post("/", [authJwt.verifyToken], controller.create);
-router.get("/:id", [authJwt.verifyToken], controller.findById);
-router.put("/:id", [authJwt.verifyToken], controller.update);
-router.delete("/:id", [authJwt.verifyToken], controller.delete);
-router.get("/upgrade/:id", [authJwt.verifyToken], controller.upgradeStudent);
+router.get("/all", [authJwt.verifyToken, authJwt.isManagePermission], controller.findAll);
+router.post("/", [authJwt.verifyToken, authJwt.isAdmin], controller.create);
+router.get("/:id", [authJwt.verifyToken, authJwt.isAdmin], controller.findById);
+router.put("/:id", [authJwt.verifyToken, authJwt.isAdmin], controller.update);
+router.delete("/:id", [authJwt.verifyToken, authJwt.isAdmin], controller.delete);
+router.get("/upgrade/:id", [authJwt.verifyToken, authJwt.isAdmin], controller.upgradeStudent);
 
 module.exports = router;

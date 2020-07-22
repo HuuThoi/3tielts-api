@@ -13,13 +13,13 @@ router.use(function (req, res, next) {
 // 4 API cập nhật
 // 5 API xóa
 
-router.get("/all", controller.findAll);
-router.get("/:id", controller.findByID);
-router.post("/", controller.create);
-router.put("/:id", controller.update);
-router.delete("/", controller.delete);
+router.get("/all", [authJwt.verifyToken], controller.findAll);
+router.get("/:id", [authJwt.verifyToken], controller.findByID);
+router.post("/", [authJwt.verifyToken, authJwt.isManagePermission], controller.create);
+router.put("/:id", [authJwt.verifyToken, authJwt.isManagePermission], controller.update);
+router.delete("/", [authJwt.verifyToken, authJwt.isManagePermission], controller.delete);
 
-router.get("/support/dropdown", controller.getDropdown);
+router.get("/support/dropdown", [authJwt.verifyToken, authJwt.isManagePermission], controller.getDropdown);
 router.get("/mycourses/all", [authJwt.verifyToken], controller.getMyCourse);
 router.get("/confirm/:id", [authJwt.verifyToken, authJwt.isAdmin], controller.confirmCourse);
 router.post("/teacher/create", [authJwt.verifyToken, authJwt.isTeacher], controller.teacherCreate);
