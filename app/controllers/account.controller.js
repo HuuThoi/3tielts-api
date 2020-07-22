@@ -29,6 +29,7 @@ exports.signup = (req, res) => {
 
 exports.signin = (req, res) => {
   const { emailOrUsername } = req.body;
+  console.log(req.body)
   db.User.findOne({
     $or: [{ email: emailOrUsername }, { username: emailOrUsername }]
   }).exec((err, user) => {

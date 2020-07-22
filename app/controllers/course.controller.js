@@ -1,6 +1,6 @@
 const db = require("../models/index");
 const { ObjectID } = require("mongodb");
-const EUserTypes = require("../enums/EUserTypes")
+const EUserTypes = require("../enums/EUserTypes");
 
 exports.findAll = async (req, res) => {
   const courses = [];
@@ -26,7 +26,9 @@ exports.findAll = async (req, res) => {
             category: result[i].category,
             dateStart: result[i].dateStart,
             dateEnd: result[i].dateEnd,
-            isConfirmed: result[i].isConfirmed ? "Đã xác nhận" : "Chưa xác nhận"
+            isConfirmed: result[i].isConfirmed
+              ? "Đã xác nhận"
+              : "Chưa xác nhận",
           };
           courses.push(obj);
         }
@@ -38,19 +40,98 @@ exports.findAll = async (req, res) => {
   }
 };
 
+exports.findAllByTeacherID = async (req, res) => {
+  const userData = req.userData;
+  const courses = [];
+  try {
+    if (userData.role == EUserTypes.TEACHER) {
+      await db.Course.find({ lecturer: { $in: userData.id } })
+        .populate({
+          path: "lecturer",
+          select: "username",
+        })
+        .exec(function (err, result) {
+          if (err) {
+            res.status(500).json({ message: err });
+          }
+          for (let i = 0; i < result.length; i++) {
+            let obj = {
+              id: result[i]._id,
+              name: result[i].name,
+              shortDesc: result[i].shortDesc,
+              content: result[i].content,
+              new: result[i].new == true ? "Lớp mới" : "",
+              tuition: result[i].tuition,
+              lecturer: result[i].lecturer ? result[i].lecturer.username : null,
+              category: result[i].category,
+              dateStart: result[i].dateStart,
+              dateEnd: result[i].dateEnd,
+              isConfirmed: result[i].isConfirmed
+                ? "Đã xác nhận"
+                : "Chưa xác nhận",
+            };
+            courses.push(obj);
+          }
+          return res.status(200).json({ data: courses });
+        });
+    } else if (userData.role == EUserTypes.ADMIN) {
+      await db.Course.find()
+        .populate({
+          path: "lecturer",
+          select: "username",
+        })
+        .exec(function (err, result) {
+          if (err) {
+            res.status(500).json({ message: err });
+          }
+          for (let i = 0; i < result.length; i++) {
+            let obj = {
+              id: result[i]._id,
+              name: result[i].name,
+              shortDesc: result[i].shortDesc,
+              content: result[i].content,
+              new: result[i].new == true ? "Lớp mới" : "",
+              tuition: result[i].tuition,
+              lecturer: result[i].lecturer ? result[i].lecturer.username : null,
+              category: result[i].category,
+              dateStart: result[i].dateStart,
+              dateEnd: result[i].dateEnd,
+              isConfirmed: result[i].isConfirmed
+                ? "Đã xác nhận"
+                : "Chưa xác nhận",
+            };
+            courses.push(obj);
+          }
+          return res.status(200).json({ data: courses });
+        });
+    }
+  } catch (err) {
+    console.log("err: ", err);
+    return res.status(500).json({ message: err });
+  }
+};
+
 exports.findByID = async (req, res) => {
   try {
     const { id } = req.params;
-    const courses = await db.Course.findOne({ _id: id, isConfirmed: true }).populate({
+    const courses = await db.Course.findOne({
+      _id: id,
+      isConfirmed: true,
+    }).populate({
       path: "categoryID",
     });
 
     if (courses) {
-      const teacher = await db.User.findOne({ _id: courses.lecturer, role: EUserTypes.TEACHER })
+      const teacher = await db.User.findOne({
+        _id: courses.lecturer,
+        role: EUserTypes.TEACHER,
+      });
 
-      return res.status(200).json({ data: courses, teacher: teacher ? teacher.username : null });
+      return res
+        .status(200)
+        .json({ data: courses, teacher: teacher ? teacher.username : null });
     } else {
-      return res.status(400).json({ message: "Không tồn tại khoas hoc" });
+      return res.status(400).json({ message: "Không tồn tại khóa hoc" });
     }
   } catch (err) {
     console.log("err: ", err);
@@ -79,8 +160,8 @@ exports.create = async (req, res) => {
     dateStart: dateStart,
     dateEnd: dateEnd,
     lecturer: lecturer,
-    isConfirmed: true
-  }
+    isConfirmed: true,
+  };
 
   if (!name || !shortDesc || !content) {
     return res.status(400).send({
@@ -99,9 +180,7 @@ exports.create = async (req, res) => {
       const course = new db.Course(model);
       const result = await course.save();
       if (result) {
-        return res
-          .status(200)
-          .json({ message: "Tạo khóa học thành công." });
+        return res.status(200).json({ message: "Tạo khóa học thành công." });
       } else {
         return res.status(400).json({ message: "Tạo khóa học thất bại." });
       }
@@ -170,7 +249,10 @@ exports.delete = async (req, res) => {
 
 exports.getDropdown = async (req, res) => {
   try {
-    let courses = await db.Course.find({ isConfirmed: true }).select({ _id: 1, name: 1 });
+    let courses = await db.Course.find({ isConfirmed: true }).select({
+      _id: 1,
+      name: 1,
+    });
     return res.status(200).json({ data: courses });
   } catch (err) {
     console.log("err: ", err);
@@ -198,11 +280,13 @@ exports.findNewCoures = async (req, res) => {
 exports.getAllCurriculumByCourseId = async (req, res) => {
   const id = req.params.id;
   try {
-    const course = await db.Course.findOne({ _id: ObjectID(id), isConfirmed: true }).populate({
+    const course = await db.Course.findOne({
+      _id: ObjectID(id),
+      isConfirmed: true,
+    }).populate({
       path: "curriculums",
       populate: ["linkVideo", "linkDoc"],
-    }
-    );
+    });
     if (course == null) {
       return res.status(404).json({ message: "Not found course " + id });
     }
@@ -212,7 +296,7 @@ exports.getAllCurriculumByCourseId = async (req, res) => {
     // const data = await db.Curriculum.find()
 
     return res.status(200).json({
-      data: curriculumsByCourseId
+      data: curriculumsByCourseId,
     });
   } catch (err) {
     console.log("err: ", err);
@@ -236,7 +320,7 @@ exports.getDiligenceDateInCourse = async (req, res) => {
 
   var list = diligence != null ? diligence.listDateLearning : null;
   return res.status(200).json({ data: list });
-}
+};
 
 exports.getVideoById = async (req, res) => {
   try {
@@ -270,17 +354,25 @@ exports.getVideoById = async (req, res) => {
 exports.getMyCourse = async (req, res) => {
   const courses = [];
   try {
-    await db.Course.find({ isConfirmed: true, studentList: { $in: req.userData.id } })
+    await db.Course.find({
+      isConfirmed: true,
+      studentList: { $in: req.userData.id },
+    })
       .populate({
         path: "lecturer",
-        select: "username"
+        select: "username",
       })
       .exec(function (err, result) {
         if (err) {
-          res.status(500).json({ message: err })
+          res.status(500).json({ message: err });
         }
         for (let i = 0; i < result.length; i++) {
-          if (result[i].dateEnd && ((new Date().getTime() - result[i].dateEnd.getTime()) / (60000 * 60 * 24)) < 0) {
+          if (
+            result[i].dateEnd &&
+            (new Date().getTime() - result[i].dateEnd.getTime()) /
+              (60000 * 60 * 24) <
+              0
+          ) {
             let obj = {
               id: result[i]._id,
               name: result[i].name,
@@ -289,11 +381,12 @@ exports.getMyCourse = async (req, res) => {
               lecturer: result[i].lecturer ? result[i].lecturer.username : null,
               category: result[i].category,
               dateStart: result[i].dateStart,
-              dateEnd: result[i].dateEnd
-            }
+              dateEnd: result[i].dateEnd,
+            };
             courses.push(obj);
           }
         }
+        console.log(courses);
         return res.status(200).json({ data: courses });
       });
   } catch (err) {
@@ -301,7 +394,6 @@ exports.getMyCourse = async (req, res) => {
     return res.status(500).json({ message: err });
   }
 };
-
 
 exports.teacherCreate = async (req, res) => {
   const {
@@ -323,8 +415,8 @@ exports.teacherCreate = async (req, res) => {
     tuition: tuition,
     dateStart: dateStart,
     dateEnd: dateEnd,
-    lecturer: lecturer
-  }
+    lecturer: lecturer,
+  };
 
   if (!name || !shortDesc || !content) {
     return res.status(400).send({
@@ -365,9 +457,7 @@ exports.confirmCourse = async (req, res) => {
       return res.status(404).json({ message: "Not found course" + id });
     } else {
       if (course.isConfirmed) {
-        return res
-          .status(200)
-          .json({});
+        return res.status(200).json({});
       } else {
         const result = await db.Course.findOneAndUpdate(
           { _id: id },

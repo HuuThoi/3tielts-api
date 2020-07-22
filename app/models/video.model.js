@@ -13,6 +13,10 @@ const UploadSchema = mongoose.Schema({
     resourceType: {
         type: String,
     },
+    teacherID: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Users",
+    },
     duration: String
 }, {
     timestamps: true,

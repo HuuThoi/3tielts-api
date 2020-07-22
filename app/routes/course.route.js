@@ -14,6 +14,7 @@ router.use(function (req, res, next) {
 // 5 API xóa
 
 router.get("/all", controller.findAll);
+router.get("/dropdown-by-id", [authJwt.verifyToken], controller.findAllByTeacherID);
 router.get("/:id", controller.findByID);
 router.post("/", controller.create);
 router.put("/:id", controller.update);

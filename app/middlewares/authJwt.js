@@ -5,7 +5,7 @@ const EUserType = require("../enums/EUserTypes");
 
 verifyToken = (req, res, next) => {
   let token = req.headers["authorization"];
-
+console.log(token)
 if (!token) {
     return res.status(403).send({ message: "Forbidden!" });
   }
@@ -22,6 +22,7 @@ if (!token) {
         role: user.role
       }
       req.userData = userData;
+      console.log(userData)
       next();
     });
   });

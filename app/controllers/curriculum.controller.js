@@ -1,41 +1,103 @@
 const db = require("../models/index");
+const EUserTypes = require("../enums/EUserTypes");
 
 // Retrieving and return all admins to the database
 exports.findAll = async (req, res) => {
+  const userData = req.userData;
+  let { limit, offset } = req.params;
+  limit = parseInt(limit);
+  offset = parseInt(offset);
+  // try {
+  //   let { limit, offset } = req.params;
+  //   limit = parseInt(limit);
+  //   offset = parseInt(offset);
+
+  //   const length = await db.Curriculum.find().countDocuments();
+  //   const data = await db.Curriculum.find()
+  //     .limit(limit)
+  //     .skip((offset - 1) * limit)
+  //     .sort({ createdAt: -1 })
+  //     .populate("courseID")
+  //     .populate("linkHomework")
+  //     .populate("linkVideo")
+  //     .populate("linkDoc");
+
+  //   // const data = assignment.map((item) => {
+  //   //     const { displayName, email } = item;
+  //   //     return { displayName, email };
+  //   // })
+  //   if (data) {
+  //     // console.log(data);
+  //     return res.status(200).json({
+  //       data,
+  //       length,
+  //     });
+  //   }
+  //   return res.status(400).json({
+  //     message: "Không có bài tập nào.",
+  //   });
+  // } catch (err) {
+  //   console.log("err: ", err);
+  //   res.status(500).send({
+  //     message: "Có lỗi xảy ra",
+  //   });
+  // }
+
+  var classes = [];
   try {
-    let { limit, offset } = req.params;
-    limit = parseInt(limit);
-    offset = parseInt(offset);
+    if (userData.role == EUserTypes.ADMIN) {
+      const length = await db.Curriculum.find().countDocuments();
+      const data = await db.Curriculum.find()
+        .limit(limit)
+        .skip((offset - 1) * limit)
+        .sort({ createdAt: -1 })
+        .populate("courseID")
+        .populate("linkHomework")
+        .populate("linkVideo")
+        .populate("linkDoc");
 
-    const length = await db.Curriculum.find().countDocuments();
-    const data = await db.Curriculum.find()
-      .limit(limit)
-      .skip((offset - 1) * limit)
-      .sort({ createdAt: -1 })
-      .populate("courseID")
-      .populate("linkHomework")
-      .populate("linkVideo")
-      .populate("linkDoc");
+      if (data) {
+        // console.log(data);
+        return res.status(200).json({
+          data,
+          length,
+        });
+      }
+      return res.status(400).json({
+        message: "Không có bài tập nào.",
+      });
+    } else if (userData.role == EUserTypes.TEACHER) {
+      const courses = await db.Course.find({ lecturer: userData.id });
 
-    // const data = assignment.map((item) => {
-    //     const { displayName, email } = item;
-    //     return { displayName, email };
-    // })
-    if (data) {
-      console.log(data);
-      return res.status(200).json({
-        data,
-        length,
+      if (courses) {
+        const length = await db.Curriculum.find({
+          courseID: { $in: courses },
+        }).countDocuments();
+        const data = await db.Curriculum.find({ courseID: { $in: courses } })
+        .limit(limit)
+        .skip((offset - 1) * limit)
+        .sort({ createdAt: -1 })
+        .populate("courseID")
+        .populate("linkHomework")
+        .populate("linkVideo")
+        .populate("linkDoc");
+
+        if (data) {
+          // console.log(data);
+          return res.status(200).json({
+            data,
+            length,
+          });
+        }
+      }
+      return res.status(400).json({
+        message: "Không có bài tập nào.",
       });
     }
-    return res.status(400).json({
-      message: "Không có bài tập nào.",
-    });
+    // return res.status(200).json({ data: classes });
   } catch (err) {
     console.log("err: ", err);
-    res.status(500).send({
-      message: "Có lỗi xảy ra",
-    });
+    return res.status(500).json({ message: err });
   }
 };
 
