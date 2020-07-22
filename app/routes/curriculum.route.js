@@ -1,9 +1,9 @@
 const express = require("express");
 var router = express.Router();
 const controller = require("../controllers/curriculum.controller");
-const { authJwt } = require("../middlewares/index");
+const { verifySignUp, authJwt } = require("../middlewares/index");
 
-router.use(function (req, res, next) {next()});
+router.use(function (req, res, next) { next() });
 
 router.get("/:limit/:offset", [authJwt.verifyToken, authJwt.isManagePermission], controller.findAll);
 // router.get("/:id", controller.getById)

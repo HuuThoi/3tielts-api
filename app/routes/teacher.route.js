@@ -11,13 +11,13 @@ router.use(function (req, res, next) {
     next();
 });
 
-router.get("/all", [authJwt.verifyToken], controller.findAll);
-router.get("/all-nopaging", [authJwt.verifyToken], controller.findAllNoPaging);
-router.post("/", [authJwt.verifyToken], controller.create);
-router.get("/:id", [authJwt.verifyToken], controller.findById);
-router.put("/:id", [authJwt.verifyToken], controller.update);
-router.delete("/:id", [authJwt.verifyToken], controller.delete);
-router.get("/block/:id", [authJwt.verifyToken], controller.blockTeacher);
+router.get("/all", [authJwt.verifyToken, authJwt.isAdmin], controller.findAll);
+router.get("/all-nopaging", [authJwt.verifyToken, authJwt.isAdmin], controller.findAllNoPaging);
+router.post("/", [authJwt.verifyToken, authJwt.isAdmin], controller.create);
+router.get("/:id", [authJwt.verifyToken, authJwt.isAdmin], controller.findById);
+router.put("/:id", [authJwt.verifyToken, authJwt.isAdmin], controller.update);
+router.delete("/:id", [authJwt.verifyToken, authJwt.isAdmin], controller.delete);
+router.get("/block/:id", [authJwt.verifyToken, authJwt.isAdmin], controller.blockTeacher);
 
 router.get("/support/dropdown", controller.getDropdown);
 
