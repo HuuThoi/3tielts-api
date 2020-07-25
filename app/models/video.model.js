@@ -17,6 +17,10 @@ const UploadSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Users",
     },
+    isActive: {
+        type: Boolean,
+        default: true
+    },
     duration: String
 }, {
     timestamps: true,

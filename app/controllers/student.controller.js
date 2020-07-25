@@ -1,6 +1,8 @@
 const db = require("../models/index");
 const EUserTypes = require("../enums/EUserTypes")
 const bcrypt = require("bcryptjs");
+const mailTransporterOptions = require("../config/mail-options");
+const nodemailer = require("nodemailer");
 
 
 //Get all student
@@ -36,6 +38,7 @@ exports.findAll = async (req, res) => {
   const students = [];
   try {
     await db.User.find({
+      isActive: true,
       $or: [{ role: EUserTypes.STUDENT }, { wantToUpgrade: true }]
     })
       //.populate({
@@ -120,6 +123,34 @@ exports.create = async (req, res) => {
         db.Student.create({
           userID: user._id
         });
+
+        //sendmail
+        var transporter = nodemailer.createTransport(mailTransporterOptions.emailTransportOptions);
+        var content = "";
+        content += `<div>
+                      <h2>Admin vừa tạo tài khoản cho bạn:</h2>
+                      <h3>Username: ${user.username}</h3>
+                      <h3>Password: ${password}</h3>
+                      <h3 style="color:red">Vui lòng cập nhật mật khau ngay khi đăng nhập</h3>
+                    </div>  
+                    `;
+        var mailOptions = {
+          from: `khactrieuhcmus@gmail.com`,
+          to: user.email,
+          subject: "Gửi xác nhận",
+          html: content,
+        };
+
+        transporter.sendMail(mailOptions, function (error, info) {
+          if (error) {
+            console.log(error);
+            return res.status(400).json({ success: false });
+          } else {
+            console.log("Email sent: " + info.response);
+            return res.json({ success: true });
+          }
+        });
+
         return res.json({ message: "Success" });
       }
     });
@@ -160,17 +191,19 @@ exports.update = async (req, res) => {
 
 exports.delete = async (req, res) => {
   try {
-    db.User.findOneAndRemove({
-      _id: req.params.id,
-    },
-      function (err, student) {
-        if (err) {
-          res.send("error removing");
-        } else {
-          res.send({ message: "Student deleted successfully!" });
-        }
+    db.User.findByIdAndUpdate(req.params.id, {
+      $set: {
+        isActive: false,
       }
-    );
+    })
+      .then(c => {
+        if (!c) {
+          return res.status(404).send({
+            message: "Note not found with id " + req.params.id
+          });
+        }
+        res.json({ message: "Delete student successfully" });
+      })
   } catch (err) {
     res.status(500).send({
       message: err.message || "Some error occurred while retrieving shifts.",

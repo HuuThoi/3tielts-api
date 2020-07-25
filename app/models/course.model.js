@@ -20,6 +20,10 @@ const CourseSchema = mongoose.Schema({
         type: String,
         default: "vỡ lòng",//vỡ lòng/ sơ cấp/ trung cấp/ thượng cấp
     },
+    isActive: {
+        type: Boolean,
+        default: true
+    },
     dateStart: {
         type: Date,
         default: Date,

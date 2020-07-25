@@ -1,7 +1,7 @@
 const db = require("../models/index");
 const EUserTypes = require("../enums/EUserTypes");
 const nodemailer = require("nodemailer");
-
+const mailTransporterOptions = require("../config/mail-options");
 
 exports.findAll = async (req, res) => {
   const c = await db.Request.find();
@@ -75,27 +75,13 @@ exports.update = async (req, res) => {
           db.User.findOne({ _id: item.userID })
             .then((user) => {
               //send mail notify
-              var emailTransportOptions = {
-                "host": "smtp.gmail.com",
-                "port": 465,
-                "secure": true,
-                "auth": {
-                  "user": "khactrieuhcmus@gmail.com",
-                  "pass": "khactrieuserver"
-                },
-                "tls": {
-                  "rejectUnauthorized": false
-                }
-              }
-              var transporter = nodemailer.createTransport(emailTransportOptions);
-
+              var transporter = nodemailer.createTransport(mailTransporterOptions.emailTransportOptions);
               var content = "";
               content += `<div>
                             <h2>Khóa học ${course.name} của bạn đã được xác nhận</h2>
                             <h2>Bạn có thể học ngay lúc này</h2>
                           </div>  
                           `;
-
               var mailOptions = {
                 from: `khactrieuhcmus@gmail.com`,
                 to: user.email,
@@ -112,7 +98,6 @@ exports.update = async (req, res) => {
                   return res.json({ success: true });
                 }
               });
-
             });
         } catch (err) {
           return res.status(500).json({ message: err })

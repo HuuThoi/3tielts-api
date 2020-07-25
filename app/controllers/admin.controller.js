@@ -4,11 +4,13 @@ const jwt = require("jsonwebtoken");
 const jwtSecretConfig = require("../config/jwt-secret.config");
 const EUserTypes = require("../enums/EUserTypes")
 var bcrypt = require("bcryptjs");
+const mailTransporterOptions = require("../config/mail-options");
+const nodemailer = require("nodemailer");
 
 // Retrieving and return all admins to the database
 exports.findAll = async (req, res) => {
     try {
-        const admin = await db.User.find({ role: "Admin" });
+        const admin = await db.User.find({ role: "Admin", isActive: true });
         const data = admin.map((item) => {
             const v =
             {
@@ -58,9 +60,35 @@ exports.create = async (req, res) => {
                 },
                 (err, result) => {
                     if (err) {
-                        res.status(400).json({ message: err });
+                        return res.status(400).json({ message: err });
                     } else {
-                        res.json({ result: result });
+                        //sendmail
+                        var transporter = nodemailer.createTransport(mailTransporterOptions.emailTransportOptions);
+                        var content = "";
+                        content += `<div>
+                      <h2>Admin vừa tạo tài khoản cho bạn:</h2>
+                      <h3>Username: ${user.username}</h3>
+                      <h3>Password: ${password}</h3>
+                      <h3 style="color:red">Vui lòng cập nhật mật khau ngay khi đăng nhập</h3>
+                    </div>  
+                    `;
+                        var mailOptions = {
+                            from: `khactrieuhcmus@gmail.com`,
+                            to: user.email,
+                            subject: "Gửi xác nhận",
+                            html: content,
+                        };
+
+                        transporter.sendMail(mailOptions, function (error, info) {
+                            if (error) {
+                                console.log(error);
+                                return res.status(400).json({ success: false });
+                            } else {
+                                console.log("Email sent: " + info.response);
+                                return res.json({ success: true });
+                            }
+                        });
+                        return res.json({ result: result });
                     }
                 }
             );

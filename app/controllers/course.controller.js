@@ -5,7 +5,7 @@ const EUserTypes = require("../enums/EUserTypes");
 exports.findAll = async (req, res) => {
   const courses = [];
   try {
-    await db.Course.find()
+    await db.Course.find({ isActive: true })
       .populate({
         path: "lecturer",
         select: "username",
@@ -234,14 +234,19 @@ exports.delete = async (req, res) => {
     return res.status(404).json({ message: "Not found course" + id });
   }
   try {
-    const result = await db.Course.findOneAndDelete({ _id });
-    if (result) {
-      return res
-        .status(200)
-        .json({ message: "Xóa course thành công.", data: result });
-    } else {
-      return res.status(400).json({ message: "Không tìm thấy course." });
-    }
+    db.Course.findByIdAndUpdate(req.params.id, {
+      $set: {
+        isActive: false,
+      }
+    })
+      .then(c => {
+        if (!c) {
+          return res.status(404).send({
+            message: "Note not found with id " + req.params.id
+          });
+        }
+        res.json({ message: "Delete course successfully" });
+      })
   } catch (err) {
     return res.status(500).json({ message: "Đã có lỗi xảy ra." + err });
   }
@@ -370,8 +375,8 @@ exports.getMyCourse = async (req, res) => {
           if (
             result[i].dateEnd &&
             (new Date().getTime() - result[i].dateEnd.getTime()) /
-              (60000 * 60 * 24) <
-              0
+            (60000 * 60 * 24) <
+            0
           ) {
             let obj = {
               id: result[i]._id,

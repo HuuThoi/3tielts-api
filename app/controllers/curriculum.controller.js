@@ -47,7 +47,7 @@ exports.findAll = async (req, res) => {
   try {
     if (userData.role == EUserTypes.ADMIN) {
       const length = await db.Curriculum.find().countDocuments();
-      const data = await db.Curriculum.find()
+      const data = await db.Curriculum.find({ isActive: true })
         .limit(limit)
         .skip((offset - 1) * limit)
         .sort({ createdAt: -1 })
@@ -67,20 +67,20 @@ exports.findAll = async (req, res) => {
         message: "Không có bài tập nào.",
       });
     } else if (userData.role == EUserTypes.TEACHER) {
-      const courses = await db.Course.find({ lecturer: userData.id });
+      const courses = await db.Course.find({ lecturer: userData.id, isActive: true });
 
       if (courses) {
         const length = await db.Curriculum.find({
           courseID: { $in: courses },
         }).countDocuments();
         const data = await db.Curriculum.find({ courseID: { $in: courses } })
-        .limit(limit)
-        .skip((offset - 1) * limit)
-        .sort({ createdAt: -1 })
-        .populate("courseID")
-        .populate("linkHomework")
-        .populate("linkVideo")
-        .populate("linkDoc");
+          .limit(limit)
+          .skip((offset - 1) * limit)
+          .sort({ createdAt: -1 })
+          .populate("courseID")
+          .populate("linkHomework")
+          .populate("linkVideo")
+          .populate("linkDoc");
 
         if (data) {
           // console.log(data);
@@ -217,28 +217,41 @@ exports.update = async (req, res) => {
 };
 
 exports.delete = async (req, res) => {
-  const { _id } = req.body;
-  console.log(req.body);
-  if (!_id) {
-    return res.status(400).json({
-      message: "Id không được rỗng",
-    });
-  }
+  // const { _id } = req.body;
+  // console.log(req.body);
+  // if (!_id) {
+  //   return res.status(400).json({
+  //     message: "Id không được rỗng",
+  //   });
+  // }
 
   try {
-    const result = await db.Curriculum.findOneAndDelete({
-      _id,
-    });
-    if (result) {
-      return res.status(200).json({
-        message: "Xóa bài tập thành công.",
-        data: result,
-      });
-    } else {
-      return res.status(400).json({
-        message: "Không tìm thấy bài tập.",
-      });
-    }
+    // const result = await db.Curriculum.findOneAndDelete({
+    //   _id,
+    // });
+    // if (result) {
+    //   return res.status(200).json({
+    //     message: "Xóa bài tập thành công.",
+    //     data: result,
+    //   });
+    // } else {
+    //   return res.status(400).json({
+    //     message: "Không tìm thấy bài tập.",
+    //   });
+    // }
+    db.Curriculum.findByIdAndUpdate(req.params.id, {
+      $set: {
+        isActive: false,
+      }
+    })
+      .then(c => {
+        if (!c) {
+          return res.status(404).send({
+            message: "Curriculum not found with id " + req.params.id
+          });
+        }
+        res.json({ message: "Delete curriculum successfully" });
+      })
   } catch (err) {
     console.log("err: ", err);
     return res.status(500).json({

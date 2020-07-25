@@ -18,7 +18,7 @@ router.get("/dropdown-by-id", [authJwt.verifyToken], controller.findAllByTeacher
 router.get("/:id", controller.findByID);
 router.post("/", controller.create);
 router.put("/:id", controller.update);
-router.delete("/", controller.delete);
+router.delete("/:id", controller.delete);
 
 
 router.get("/support/dropdown", controller.getDropdown);

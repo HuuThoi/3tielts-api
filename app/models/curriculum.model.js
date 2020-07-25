@@ -23,6 +23,10 @@ const CurriculumSchema = mongoose.Schema({
     courseID: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Course",
+    },
+    isActive: {
+        type: Boolean,
+        default: true
     }
 
 }, {
