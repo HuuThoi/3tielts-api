@@ -226,9 +226,7 @@ exports.delete = async (req, res) => {
   // }
 
   try {
-    // const result = await db.Curriculum.findOneAndDelete({
-    //   _id,
-    // });
+    const result = await db.Curriculum.findOne({ _id: req.params.id });
     // if (result) {
     //   return res.status(200).json({
     //     message: "Xóa bài tập thành công.",
@@ -250,7 +248,7 @@ exports.delete = async (req, res) => {
             message: "Curriculum not found with id " + req.params.id
           });
         }
-        res.json({ message: "Delete curriculum successfully" });
+        res.json({ message: "Delete curriculum successfully", data: result });
       })
   } catch (err) {
     console.log("err: ", err);
