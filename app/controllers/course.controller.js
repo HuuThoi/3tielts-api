@@ -358,6 +358,7 @@ exports.getVideoById = async (req, res) => {
 
 exports.getMyCourse = async (req, res) => {
   const courses = [];
+  var archieves = [];
   try {
     await db.Course.find({
       isConfirmed: true,
@@ -389,10 +390,22 @@ exports.getMyCourse = async (req, res) => {
               dateEnd: result[i].dateEnd,
             };
             courses.push(obj);
+          } else {
+            let obj = {
+              id: result[i]._id,
+              name: result[i].name,
+              shortDesc: result[i].shortDesc,
+              tuition: result[i].tuition,
+              lecturer: result[i].lecturer ? result[i].lecturer.username : null,
+              category: result[i].category,
+              dateStart: result[i].dateStart,
+              dateEnd: result[i].dateEnd,
+            };
+            archieves.push(obj);
           }
         }
         console.log(courses);
-        return res.status(200).json({ data: courses });
+        return res.status(200).json({ data: courses, archieves });
       });
   } catch (err) {
     console.log("err: ", err);
