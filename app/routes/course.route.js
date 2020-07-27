@@ -27,6 +27,7 @@ router.get("/confirm/:id", [authJwt.verifyToken, authJwt.isAdmin], controller.co
 router.post("/teacher/create", [authJwt.verifyToken, authJwt.isTeacher], controller.teacherCreate);
 router.get("/:id/curriculum", [authJwt.verifyToken], controller.getAllCurriculumByCourseId);
 router.get("/:id/diligences", [authJwt.verifyToken], controller.getDiligenceDateInCourse);
+router.get("/:id/test-grade/result", [authJwt.verifyToken], controller.getTestGradeCourse);
 router.post("/curriculums/video/detail", [authJwt.verifyToken], controller.getVideoById);
 
 module.exports = router;

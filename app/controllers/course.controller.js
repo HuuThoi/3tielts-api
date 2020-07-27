@@ -495,3 +495,84 @@ exports.confirmCourse = async (req, res) => {
     return res.status(500).json({ message: "Đã có lỗi xảy ra.", err });
   }
 };
+
+exports.getTestGradeCourse = async (req, res) => {
+  const id = req.params.id;
+  //get all course's test(curriculum)
+  const course = await db.Course.findOne({
+    _id: ObjectID(id),
+    isConfirmed: true,
+  }).populate({
+    path: "curriculums",
+    populate: ["linkVideo", "linkDoc", "linkHomework"],
+  });
+  if (course == null) {
+    return res.status(404).json({ message: "Not found course " + id });
+  }
+  console.log("course: ", course);
+
+
+  var curriculums = course.curriculums;
+  var testsId = [];
+  for (let i = 0; i < curriculums.length; i++) {
+    if (curriculums[i].linkHomework !== null && curriculums[i].linkHomework.id != null) {
+      testsId.push(curriculums[i].linkHomework.id);
+    }
+  }
+  //get all student's test
+  const userData = req.userData;
+  const currentUser = await db.User.findById(userData.id);
+  if (currentUser == null)
+    return res.status(404).json({ message: "User not found" });
+
+  var userTests = currentUser.tests;
+
+  // console.log("testsId", testsId);
+  // console.log("userTests", userTests);
+
+  //compare to get list test in course
+  var scoreTests = [];
+  if (userTests && userTests.length > 0) {
+    for (let i = 0; i < userTests.length; i++) {
+      const found = testsId.find(x => x === userTests[i].id);
+      if (found !== null && found !== undefined) {
+        var o = {
+          grade: userTests[i].grades,
+          numberOfQuestion: userTests[i].answerKeys.length ? userTests[i].answerKeys.length : 0
+        }
+        scoreTests.push(o);
+      }
+    }
+  }
+  // //count score follow number right question/number of question in this test
+  let sumScore = 0;
+  let sumQuestions = 0;
+
+  if (scoreTests.length > 0) {
+    for (let i = 0; i < scoreTests.length; i++) {
+      sumScore = +sumScore + scoreTests[i].grade;
+      sumQuestions = +sumQuestions + scoreTests[i].numberOfQuestion;
+    }
+  }
+
+  var dataResult = {
+    numberTests: userTests.length,
+    status: "Dưới trung bình",
+  }
+  var rate = sumQuestions != 0 ? (sumScore / sumQuestions) : 0;
+
+  if (rate >= 0.5) {
+    if (rate < 0.7) {
+      dataResult.status = " Trung bình";
+    }
+    if (rate >= 0.7 && rate < 0.8) {
+      dataResult.status = " Khá";
+    }
+    if (rate >= 0.8) {
+      dataResult.status = " Giỏi";
+    }
+  }
+
+  //return data
+  return res.json({ data: dataResult })
+};
