@@ -104,6 +104,7 @@ exports.create = async (req, res) => {
             address: address,
             birthdate: birthdate,
             password: bcrypt.hashSync(password, 8),
+            passwordHash: bcrypt.hashSync(password, 8),
             gender: gender,
             email: email,
             username: username,
