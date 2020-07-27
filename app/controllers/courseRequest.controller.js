@@ -69,7 +69,7 @@ exports.update = async (req, res) => {
           $set: {
             role: EUserTypes.STUDENT,
           }
-        })
+        }).exec();
 
         try {
           db.User.findOne({ _id: item.userID })
