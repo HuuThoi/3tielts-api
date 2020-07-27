@@ -3,6 +3,7 @@ var convert = require("convert-seconds");
 const EUserTypes = require("../enums/EUserTypes");
 
 const { uploadVideo, uploadFromBuffer } = require("../middlewares/cloudinary");
+const { upload } = require("../middlewares/s3UploadClient");
 
 exports.findAll = async (req, res) => {
   try {
@@ -28,7 +29,7 @@ exports.findAll = async (req, res) => {
 
       console.log("data", data);
 
-      if (data.length > 0) {
+      if (data) {
         return res.status(200).json({ data, length });
       } else {
         return res.status(400).json({ message: "Không tìm thấy dữ liệu." });
@@ -48,7 +49,7 @@ exports.findAll = async (req, res) => {
       //   select: ['-password', '-passwordHash'],
       // })
 
-      if (data.length > 0) {
+      if (data) {
         return res.status(200).json({ data, length });
       } else {
         return res.status(400).json({ message: "Không tìm thấy dữ liệu." });
@@ -69,28 +70,27 @@ exports.find = async (req, res) => {
       const dataDoc = await db.Upload.find({
         resourceType: "application/pdf",
       }).sort({ createdAt: -1 });
-   
 
       console.log("data", dataDoc);
 
-      if (dataVideo.length > 0) {
+      if (dataVideo && dataDoc) {
         return res.status(200).json({ dataVideo, dataDoc });
       } else {
         return res.status(400).json({ message: "Không tìm thấy dữ liệu." });
       }
-    }
-    else if (userData.role == EUserTypes.TEACHER) {
-      const dataVideo = await db.Upload.find({ $and: [{ resourceType: "video" },{ teacherID: userData.id }]}).sort({
+    } else if (userData.role == EUserTypes.TEACHER) {
+      const dataVideo = await db.Upload.find({
+        $and: [{ resourceType: "video" }, { teacherID: userData.id }],
+      }).sort({
         createdAt: -1,
       });
       const dataDoc = await db.Upload.find({
         resourceType: "application/pdf",
       }).sort({ createdAt: -1 });
-   
 
       console.log("data", dataDoc);
 
-      if (dataVideo.length > 0) {
+      if (dataVideo && dataDoc) {
         return res.status(200).json({ dataVideo, dataDoc });
       } else {
         return res.status(400).json({ message: "Không tìm thấy dữ liệu." });
@@ -121,7 +121,7 @@ exports.upload = (req, res) => {
   if (mimetype === "application/pdf") {
     const { filename } = req.file;
     const pdf = new db.Upload({
-      url: path,
+      url: "https://my-final-project-ptudwnc.s3.ap-southeast-1.amazonaws.com/files_from_node/1595354285451Reading%2BTest%2BAnswers.pdf",
       originalName: filename,
       resourceType: mimetype,
       desc: "",
@@ -194,6 +194,42 @@ exports.upload = (req, res) => {
         });
       });
   }
+};
+exports.uploadDocument = (req, res) => {
+  console.log(req.files);
+  const userData = req.userData;
+  /* Check if there is an image */
+  if (!req.files) {
+    return res.status(400).json({
+      /* Send back a failure message */
+
+      message: "Không tìm thấy file",
+    });
+  }
+
+  const pdf = new db.Upload({
+    url: req.files[0].location,
+    originalName: req.files[0].filename,
+    resourceType: req.files[0].mimetype,
+    desc: "",
+    teacherID: userData.id,
+  });
+  pdf.save((err, result) => {
+    if (err) {
+      console.log("err ", err);
+      return res.status(500).json({
+        message: "Đã có lỗi xảy ra (upload thành công).",
+      });
+    }
+    if (result) {
+      // const data = await Assignment.find
+      console.log(result);
+      return res.status(200).json({
+        message: "Upload thành công.",
+        data: result,
+      });
+    }
+  });
 };
 
 exports.delete = async (req, res) => {
