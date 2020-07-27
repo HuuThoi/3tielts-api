@@ -45,7 +45,7 @@ exports.findAllByTeacherID = async (req, res) => {
   const courses = [];
   try {
     if (userData.role == EUserTypes.TEACHER) {
-      await db.Course.find({ lecturer: { $in: userData.id } })
+      await db.Course.find({ isActive: true, lecturer: { $in: userData.id } })
         .populate({
           path: "lecturer",
           select: "username",
@@ -75,7 +75,7 @@ exports.findAllByTeacherID = async (req, res) => {
           return res.status(200).json({ data: courses });
         });
     } else if (userData.role == EUserTypes.ADMIN) {
-      await db.Course.find()
+      await db.Course.find({ isActive: true })
         .populate({
           path: "lecturer",
           select: "username",

@@ -57,7 +57,8 @@ exports.create = async (req, res) => {
                     address: address,
                     password: bcrypt.hashSync(password, 8),
                     passwordHash: bcrypt.hashSync(password, 8),
-                    role: "Admin"
+                    role: "Admin",
+                    isActive: true,
                 },
                 (err, result) => {
                     if (err) {
@@ -68,14 +69,14 @@ exports.create = async (req, res) => {
                         var content = "";
                         content += `<div>
                       <h2>Admin vừa tạo tài khoản cho bạn:</h2>
-                      <h3>Username: ${user.username}</h3>
+                      <h3>Username: ${result.username}</h3>
                       <h3>Password: ${password}</h3>
                       <h3 style="color:red">Vui lòng cập nhật mật khau ngay khi đăng nhập</h3>
                     </div>  
                     `;
                         var mailOptions = {
                             from: `khactrieuhcmus@gmail.com`,
-                            to: user.email,
+                            to: result.email,
                             subject: "Gửi xác nhận",
                             html: content,
                         };
@@ -100,15 +101,24 @@ exports.create = async (req, res) => {
 }
 
 exports.updateBlockStatus = async (req, res) => {
-    var user = db.User.findById(req.params.id);
-    if (!user) return res.status(404).json({ message: "Không tìm thấy admin" })
+    try {
+        db.User.findByIdAndUpdate(req.params.id, {
+            $set: {
+                isBlock: true,
+            }
+        })
+            .then(admin => {
+                if (!admin) {
+                    return res.status(404).send({
+                        message: "Note not found with id " + req.params.id
+                    });
+                }
+                res.json({ message: "Block admin successfully" });
+            })
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Some error occurred while retrieving shifts.",
 
-    user.updateOne({ isBlock: !user.isBlock }, (err, success) => {
-        if (err) {
-            return res.status(400).json({ message: err });
-        }
-        else {
-            return res.status(200).json({ message: "success" })
-        }
-    })
+        })
+    }
 }

@@ -13,7 +13,7 @@ router.use(function (req, res, next) {
 // 4 API cập nhật
 // 5 API xóa
 
-router.get("/all", controller.findAll);
+router.get("/all", [authJwt.verifyToken], controller.findAllByTeacherID);
 router.get("/dropdown-by-id", [authJwt.verifyToken], controller.findAllByTeacherID);
 router.get("/:id", controller.findByID);
 router.post("/", controller.create);
