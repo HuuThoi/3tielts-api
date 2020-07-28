@@ -85,7 +85,7 @@ exports.find = async (req, res) => {
         createdAt: -1,
       });
       const dataDoc = await db.Upload.find({
-        resourceType: "application/pdf",
+        $and: [{ resourceType: "application/pdf" }, { teacherID: userData.id }],
       }).sort({ createdAt: -1 });
 
       console.log("data", dataDoc);
